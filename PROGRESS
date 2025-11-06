@@ -1,0 +1,9 @@
+May 22: boot loader
+May 24: rtt
+May 27: i2c at24c256
+May 28 u8g2, oled, mui, joystick
+June 1 first debug with bmp/free-dap. usb works.
+July 4. added lua.
+Oct 13. release.
+Oct. 28. problems with serial port uart2 / jtag gpio (share pins)
+

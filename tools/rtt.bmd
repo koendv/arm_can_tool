@@ -1,0 +1,20 @@
+#!/bin/bash
+# debugging using black magic probe and rtt
+if [ -f rtthread.elf -a -c /dev/ttyACM0 ]
+then
+  if fuser -s /dev/ttyACM0
+  then
+    echo "debugger already running"
+    exit
+  fi
+  arm-none-eabi-gdb-py3 -q \
+    -ex 'set confirm off' \
+    -ex 'target extended-remote /dev/ttyACM0 ' \
+    -ex 'file rtthread.elf' \
+    -ex 'monitor swd' \
+    -ex 'attach 1' \
+    -ex 'monitor rtt' \
+    -ex "python rtt_addr = int(gdb.parse_and_eval('&_SEGGER_RTT'))" \
+    -ex "python gdb.execute(f'monitor rtt ram 0x{rtt_addr:x} 0x{rtt_addr + 0x40:x}')" \
+    -ex 'run'
+fi

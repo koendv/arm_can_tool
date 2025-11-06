@@ -1,0 +1,87 @@
+/* ======== PDF Styles for WeasyPrint ======== */
+
+/* ----- Page setup ----- */
+@page {
+  size: A4;
+  margin: 1in;
+}
+
+/* ----- Base typography ----- */
+body {
+  /* Fallback stack: Latin → CJK → generic serif */
+  font-family: "Linux Libertine", "Noto Serif CJK SC", serif;
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #222;
+  word-break: break-word;   /* allow wrapping CJK text gracefully */
+}
+
+/* Headings */
+
+/* Apply a page break before every h1, except the first */
+h1 {
+  page-break-before: always;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+  page-break-after: avoid;
+}
+
+/* Prevent awkward breaks in normal text */
+p {
+  orphans: 4;
+  widows: 4;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+/* ----- Images ----- */
+img {
+  display: block;
+  margin: 1em auto;
+  max-width: 100%;    /* never overflow horizontally */
+  height: auto;       /* maintain aspect ratio */
+  page-break-inside: avoid; /* keep image with caption */
+}
+
+/* Optional: captions under images */
+figure, figcaption {
+  text-align: center;
+  font-size: 9pt;
+  color: #555;
+}
+
+/* ----- Code blocks ----- */
+pre, code {
+  font-family: "Noto Sans Mono CJK SC", "Noto Mono", monospace;
+  font-size: 10pt;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+  padding: 2px 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ----- Tables ----- */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 10pt;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+

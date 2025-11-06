@@ -1,0 +1,13 @@
+diff --git a/components/drivers/i2c/dev_soft_i2c.c b/components/drivers/i2c/dev_soft_i2c.c
+index a9c661e5c6..16c7d8167d 100644
+--- a/components/drivers/i2c/dev_soft_i2c.c
++++ b/components/drivers/i2c/dev_soft_i2c.c
+@@ -27,6 +27,8 @@
+ #define DBG_TAG                         "I2C_S"
+ #ifdef RT_I2C_BITOPS_DEBUG
+     #define DBG_LEVEL                   DBG_LOG
++#else
++    #define DBG_LEVEL                   DBG_INFO
+ #endif
+ #include <rtdbg.h>
+ 

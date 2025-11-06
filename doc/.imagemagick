@@ -1,0 +1,2 @@
+convert input.pbm -rotate 90 -bordercolor white -border 1 -bordercolor black -border 1 output.png
+convert input.png -resize 300x thumbnail.png

@@ -1,0 +1,189 @@
+# workflow to build and release firmware for arm_can_tool
+# creates .uf2 binary
+# loosely based upon rt-thread bsp_buildings workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
+      - 'doc/**'
+     # Toggle push on/off:
+     # Uncomment the next line to disable all pushes temporarily
+      - '**/*'
+
+name: arm_can_tool
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build arm_can_tool
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - name: install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget tar xz-utils build-essential python3 python3-pip jq git zip
+          sudo apt-get install -y pandoc weasyprint ghostscript fonts-linuxlibertine fonts-noto-cjk fonts-noto-mono
+
+      - name: install python
+        uses: actions/setup-python@main
+        with:
+          python-version: 3.8
+
+      - name: install arm-gnu-toolchain-13.2
+        run: |
+          TOOLCHAIN_TGZ=arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
+          URL="https://github.com/RT-Thread/toolchains-ci/releases/download/v1.8/${TOOLCHAIN_TGZ}"
+          echo "Downloading ${URL}"
+          wget -q "$URL" -O "/tmp/${TOOLCHAIN_TGZ}"
+          sudo mkdir -p /opt
+          sudo tar -xf "/tmp/${TOOLCHAIN_TGZ}" -C /opt
+          # Find extracted directory and expose it
+          TC_DIR=$(find /opt -maxdepth 1 -type d -name "arm-gnu-toolchain-*" | head -n1)
+          echo "Found toolchain in $TC_DIR"
+          echo "RTT_EXEC_PATH=${TC_DIR}/bin" >> $GITHUB_ENV
+          echo "PATH=${TC_DIR}/bin:$PATH" >> $GITHUB_ENV
+          /bin/bash -lc "${TC_DIR}/bin/arm-none-eabi-gcc --version || true"
+
+      - name: install rt-thread
+        uses: actions/checkout@v4
+        with:
+          repository: RT-Thread/rt-thread
+          path: src/rt-thread
+          fetch-depth: 0
+
+      - name: install rt-thread 'env'
+        shell: bash
+        run: |
+          wget https://raw.githubusercontent.com/RT-Thread/env/master/install_ubuntu.sh
+          chmod 777 install_ubuntu.sh
+          ./install_ubuntu.sh
+          pip install -r src/rt-thread/tools/requirements.txt
+          git config --global http.postBuffer 524288000
+          echo "RTT_ROOT=${{ github.workspace }}/src/rt-thread" >> $GITHUB_ENV
+          echo "RTT_CC=gcc" >> $GITHUB_ENV
+          echo "export PATH=~/.env/tools/scripts:$PATH" > ~/.env/env.sh
+
+      - name: checkout arm_can_tool sources
+        uses: actions/checkout@v4
+        with:
+          repository: koendv/arm_can_tool
+          path: src/rt-thread/bsp/at32/arm_can_tool
+          fetch-depth: 0
+
+      - name: check setup
+        if: ${{ success() }}
+        shell: bash
+        env:
+          RTT_EXEC_PATH: ${{ env.RTT_EXEC_PATH }}
+        run: |
+          echo RTT_EXEC_PATH: ${RTT_EXEC_PATH}
+          echo RTT_CC: ${RTT_CC}
+
+      - name: install and patch rtthread packages
+        if: ${{ success() }}
+        shell: bash
+        env:
+          RTT_EXEC_PATH: ${{ env.RTT_EXEC_PATH }}
+        working-directory: src/rt-thread/bsp/at32/arm_can_tool
+        run: |
+          pwd
+          source ~/.env/env.sh
+          ./tools/install_pkgs.sh
+
+      - name: scons compile
+        if: ${{ success() }}
+        shell: bash
+        env:
+          RTT_ROOT: ${{ env.RTT_ROOT }}
+          RTT_EXEC_PATH: ${{ env.RTT_EXEC_PATH }}
+        working-directory: src/rt-thread/bsp/at32/arm_can_tool
+        run: |
+          source ~/.env/env.sh
+          scons
+          ls -l rt-thread.* rtthread.*
+
+      - name: convert binary to uf2
+        if: ${{ success() }}
+        shell: bash
+        working-directory: src/rt-thread/bsp/at32/arm_can_tool
+        run: |
+          ./tools/uf2conv/uf2conv.py -c -b 0x90000000 -f 0xf35c900d -o rtthread.uf2 rtthread.bin
+          mkdir ~/arm_can_tool_firmware
+          cp rtthread.uf2 doc/INSTALL.md ~/arm_can_tool_firmware/
+
+      - name: pdf manual
+        if: ${{ success() }}
+        shell: bash
+        working-directory: src/rt-thread/bsp/at32/arm_can_tool
+        run: |
+          ./tools/md2pdf README.md
+          cp README.pdf ~/arm_can_tool_firmware/
+
+      - name: checkout bootloader
+        uses: actions/checkout@v4
+        with:
+          repository: koendv/at32f405-uf2boot
+          path: src/at32f405-uf2boot
+          fetch-depth: 0
+
+      - name: build bootloader
+        if: ${{ success() }}
+        shell: bash
+        working-directory: src/at32f405-uf2boot/ports/ArteryTek/at32f402_405
+        run: |
+          source ~/.env/env.sh
+          make BOARD=arm_can_tool all
+          cp .build/arm_can_tool/cherryuf2_arm_can_tool.bin ~/arm_can_tool_firmware/
+          cp .build/arm_can_tool/cherryuf2_arm_can_tool.elf ~/arm_can_tool_firmware/
+
+      - name: zip
+        if: ${{ success() }}
+        shell: bash
+        run: |
+          cd ~
+          zip -r9 ~/arm_can_tool_firmware.zip arm_can_tool_firmware/
+
+      - name: upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm_can_tool_firmware
+          path: ~/arm_can_tool_firmware.zip
+          retention-days: 1
+
+  release:
+    name: release arm_can_tool
+    runs-on: ubuntu-22.04
+    needs: build
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+
+      - name: download firmware
+        uses: actions/download-artifact@v4
+        with:
+          name: arm_can_tool_firmware
+          path: artifacts
+
+      - name: release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "artifacts/arm_can_tool_firmware.zip"
+          body: "arm_can_tool firmware, current git"
+          tag: current
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+
+# not truncated

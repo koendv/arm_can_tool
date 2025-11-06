@@ -1,0 +1,8 @@
+Creative Commons Zero (CC0) License
+------------------------------------
+
+The author(s) have dedicated all copyright and related and neighboring rights to the public domain.
+
+You can freely use, modify, and distribute this project for any purpose, even commercially, all without asking permission.
+
+This project is released "as-is" and there are no warranties or liabilities.

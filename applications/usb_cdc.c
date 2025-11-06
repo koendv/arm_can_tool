@@ -1,0 +1,379 @@
+#include "rtthread.h"
+#include "rtdevice.h"
+#include "usbd_core.h"
+#include "usbd_cdc.h"
+#include "usb_desc.h"
+#include "usb_cdc.h"
+#include "serials.h"
+#include "canbus.h"
+#include "logger.h"
+#include "settings.h"
+
+/*
+   implements two serial ports, cdc0 and cdc1.
+   cdc0 is gdb server. see gdb_if.c
+   cdc1 is uart/rtt terminal. see rtt_if.c
+ */
+
+/* XXX This code needs a cleanup. */
+
+/* for logging put #define DBG_LVL DBG_INFO in usb_config.h */
+
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX static uint8_t cdc0_read_buffer[CDC_MAX_MPS];
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX static uint8_t cdc1_read_buffer[CDC_MAX_MPS];
+
+static bool                   cdc_is_configured = false;
+static bool                   cdc0_dtr          = false;
+static bool                   cdc1_dtr          = false;
+static rt_sem_t               ep_write_sem      = RT_NULL;
+static rt_sem_t               cdc_tx_busy_sem   = RT_NULL;
+static rt_wqueue_t            cdc0_wqueue;
+static struct rt_ringbuffer   cdc0_read_rb;
+static uint8_t                cdc0_ring_buffer[4 * CDC_MAX_MPS];
+static bool                   cdc0_read_busy = false;
+static rt_sem_t               cdc1_out_sem   = RT_NULL;
+static int32_t                cdc1_out_nbytes;
+static struct cdc_line_coding cdc_line[2];
+
+static void cdc0_next_read();
+static void cdc1_next_read();
+static void cdc1_out_thread(void *parameter);
+
+void cdc_init()
+{
+    USB_LOG_RAW("cdc init");
+    ep_write_sem    = rt_sem_create("usb write", 1, RT_IPC_FLAG_FIFO);
+    cdc_tx_busy_sem = rt_sem_create("cdc_tx", 0, RT_IPC_FLAG_FIFO);
+    cdc1_out_sem    = rt_sem_create("cdc1_out", 0, RT_IPC_FLAG_FIFO);
+    rt_wqueue_init(&cdc0_wqueue);
+    rt_ringbuffer_init(&cdc0_read_rb, cdc0_ring_buffer, sizeof(cdc0_ring_buffer));
+    rt_thread_t thread = rt_thread_create("cdc1_out", cdc1_out_thread, RT_NULL, 1024, 25, 10);
+    if (thread != RT_NULL)
+        rt_thread_startup(thread);
+    else
+        LOG_E("cdc1 thread fail");
+}
+
+/* called by usb stack ********************************************************/
+
+void cdc_configured(uint8_t busid)
+{
+    (void)busid;
+    cdc_is_configured = true;
+    /* setup first out ep read transfer */
+    cdc0_next_read();
+    cdc1_next_read();
+}
+
+void cdc_reset(uint8_t busid)
+{
+    (void)busid;
+    cdc0_read_busy = false;
+    rt_ringbuffer_reset(&cdc0_read_rb);
+}
+
+void cdc_connected(uint8_t busid)
+{
+    USB_LOG_RAW("cdc connected");
+}
+
+void cdc_disconnected(uint8_t busid)
+{
+    USB_LOG_RAW("cdc disconnected");
+}
+
+/* modem settings *************************************************************/
+
+void usbd_cdc_acm_set_line_coding(uint8_t busid, uint8_t intf, struct cdc_line_coding *line_coding)
+{
+    (void)busid;
+    uint32_t cdc_number;
+
+    if (intf == CDC0_INTF)
+        cdc_number = 0;
+    else if (intf == CDC1_INTF)
+        cdc_number = 1;
+    else
+        return;
+    if (line_coding == NULL) return;
+    if (memcmp(line_coding, (uint8_t *)&cdc_line[cdc_number], sizeof(struct cdc_line_coding)) != 0)
+    {
+        memcpy((uint8_t *)&cdc_line[cdc_number], line_coding, sizeof(struct cdc_line_coding));
+        if (intf == CDC0_INTF)
+            cdc0_set_speed(line_coding->dwDTERate);
+        else if (intf == CDC1_INTF)
+            cdc1_set_speed(line_coding->dwDTERate);
+    }
+}
+
+rt_weak void cdc0_set_speed(uint32_t speed)
+{
+    (void)speed;
+}
+
+rt_weak void cdc1_set_speed(uint32_t speed)
+{
+    (void)speed;
+}
+
+void usbd_cdc_acm_get_line_coding(uint8_t busid, uint8_t intf, struct cdc_line_coding *line_coding)
+{
+    (void)busid;
+    uint32_t cdc_number;
+
+    memset(line_coding, 0, sizeof(struct cdc_line_coding));
+    if (intf == CDC0_INTF)
+        cdc_number = 0;
+    else if (intf == CDC1_INTF)
+        cdc_number = 1;
+    else
+        return;
+    memcpy(line_coding, (uint8_t *)&cdc_line[cdc_number], sizeof(struct cdc_line_coding));
+}
+
+/* dtr ************************************************************************/
+
+void usbd_cdc_acm_set_dtr(uint8_t busid, uint8_t intf, bool dtr)
+{
+    if (intf == CDC0_INTF)
+    {
+        USB_LOG_RAW("cdc0 intf %d dtr %d", intf, dtr);
+        cdc0_dtr = dtr;
+        cdc0_next_read();
+        cdc0_set_dtr(cdc0_dtr);
+    }
+    else if (intf == CDC1_INTF)
+    {
+        USB_LOG_RAW("cdc1 intf %d dtr %d", intf, dtr);
+        cdc1_dtr = dtr;
+        cdc1_next_read();
+        cdc1_set_dtr(cdc1_dtr);
+    }
+    else
+    {
+        USB_LOG_RAW("cdc? intf %d dtr %d", intf, dtr);
+    }
+}
+
+rt_weak void cdc0_set_dtr(bool dtr)
+{
+    (void)dtr;
+}
+
+rt_weak void cdc1_set_dtr(bool dtr)
+{
+    (void)dtr;
+}
+
+
+bool cdc0_connected()
+{
+    return cdc_is_configured && cdc0_dtr;
+}
+
+bool cdc1_connected()
+{
+    return cdc_is_configured && cdc1_dtr;
+}
+
+/* write to host **************************************************************/
+
+/* cdc0 writing to host */
+
+void usbd_cdc0_acm_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
+{
+    USB_LOG_RAW("cdc0 actual in len %d", nbytes);
+    if ((nbytes != 0) && (nbytes % CDC_MAX_MPS == 0))
+    {
+        usbd_ep_start_write(BUSID0, CDC0_IN_EP, NULL, 0); /* zero-length packet */
+    }
+    else
+    {
+        rt_sem_release(cdc_tx_busy_sem);
+    }
+}
+
+void cdc0_write(uint8_t *buf, uint32_t nbytes)
+{
+    if (!(cdc_is_configured && cdc0_dtr)) return;
+    // wait until usb transmit available
+    rt_sem_take(ep_write_sem, RT_WAITING_FOREVER);
+    usbd_ep_start_write(BUSID0, CDC0_IN_EP, buf, nbytes);
+    // wait until usb write finished
+    rt_sem_take(cdc_tx_busy_sem, RT_WAITING_FOREVER);
+    rt_sem_release(ep_write_sem);
+}
+
+/* cdc1 writing to host */
+
+void usbd_cdc1_acm_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
+{
+    USB_LOG_RAW("cdc1 actual in len %d", nbytes);
+    if ((nbytes != 0) && (nbytes % CDC_MAX_MPS == 0))
+    {
+        usbd_ep_start_write(BUSID0, CDC1_IN_EP, NULL, 0); /* zero-length packet */
+    }
+    else
+    {
+        rt_sem_release(cdc_tx_busy_sem);
+    }
+}
+
+void cdc1_write(uint8_t *buf, uint32_t nbytes)
+{
+    /* log all cdc1 output to file */
+    if (settings.logging_enable)
+        logger(buf, nbytes);
+
+    if (!(cdc_is_configured && cdc1_dtr)) return;
+    // wait until usb transmit available
+    rt_sem_take(ep_write_sem, RT_WAITING_FOREVER);
+    usbd_ep_start_write(BUSID0, CDC1_IN_EP, buf, nbytes);
+    // wait until usb write finished
+    rt_sem_take(cdc_tx_busy_sem, RT_WAITING_FOREVER);
+    rt_sem_release(ep_write_sem);
+}
+
+/* read from host *************************************************************/
+
+/* cdc0 reading from host */
+
+static void cdc0_next_read()
+{
+    USB_LOG_RAW("cdc0 next read");
+    usbd_ep_start_read(BUSID0, CDC0_OUT_EP, cdc0_read_buffer, sizeof(cdc0_read_buffer));
+    cdc0_read_busy = true;
+}
+
+void usbd_cdc0_acm_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
+{
+    USB_LOG_RAW("cdc0 actual out len %d", nbytes);
+    rt_ringbuffer_put(&cdc0_read_rb, cdc0_read_buffer, nbytes);
+    if (nbytes > 0)
+        rt_wqueue_wakeup_all(&cdc0_wqueue, 0);
+    if (rt_ringbuffer_space_len(&cdc0_read_rb) >= CDC_MAX_MPS)
+        cdc0_next_read();
+    else
+        cdc0_read_busy = false;
+}
+
+uint32_t cdc0_get(uint8_t *buf, uint16_t length)
+{
+    rt_size_t len;
+    len = rt_ringbuffer_get(&cdc0_read_rb, buf, length);
+    if (!cdc0_read_busy && rt_ringbuffer_space_len(&cdc0_read_rb) >= CDC_MAX_MPS)
+    {
+        cdc0_next_read();
+    }
+    return len;
+}
+
+char cdc0_getchar()
+{
+    char      ch;
+    rt_size_t len;
+    len = rt_ringbuffer_getchar(&cdc0_read_rb, &ch);
+    if (!cdc0_read_busy && rt_ringbuffer_space_len(&cdc0_read_rb) >= CDC_MAX_MPS)
+    {
+        cdc0_next_read();
+    }
+    if (len == 1)
+        return ch;
+    else
+        return -1;
+}
+
+char cdc0_getchar_timeout(uint32_t timeout_ticks)
+{
+    char      ch  = -1;
+    rt_size_t len = 0;
+
+    /* take character from ringbuffer */
+    len = rt_ringbuffer_getchar(&cdc0_read_rb, &ch);
+    /* schedule next usb read */
+    if (!cdc0_read_busy && rt_ringbuffer_space_len(&cdc0_read_rb) >= CDC_MAX_MPS)
+    {
+        cdc0_next_read();
+    }
+    /* use character from ringbuffer */
+    if (len == 1)
+        return ch;
+    /* no characters in ringbuffer, wait until next character is available */
+    rt_wqueue_wait(&cdc0_wqueue, 0, timeout_ticks);
+    /* take character from ringbuffer */
+    len = rt_ringbuffer_getchar(&cdc0_read_rb, &ch);
+    if (!cdc0_read_busy && rt_ringbuffer_space_len(&cdc0_read_rb) >= CDC_MAX_MPS)
+    {
+        cdc0_next_read();
+    }
+    /* use character from ringbuffer */
+    if (len == 1)
+        return ch;
+    /* no characters in ringbuffer, timeout */
+    return -1;
+}
+
+bool cdc0_recv_empty()
+{
+    return rt_ringbuffer_data_len(&cdc0_read_rb) == 0;
+}
+
+/* cdc1 reading from host */
+
+static void cdc1_next_read()
+{
+    USB_LOG_RAW("cdc1 next read");
+    usbd_ep_start_read(BUSID0, CDC1_OUT_EP, cdc1_read_buffer, sizeof(cdc1_read_buffer));
+}
+
+void usbd_cdc1_acm_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
+{
+    USB_LOG_RAW("cdc1 actual out len %d", nbytes);
+    cdc1_out_nbytes = nbytes;
+    rt_sem_release(cdc1_out_sem);
+}
+
+static void cdc1_out_thread(void *parameter)
+{
+    while (1)
+    {
+        rt_sem_take(cdc1_out_sem, RT_WAITING_FOREVER);
+        USB_LOG_RAW("cdc1 out handler len %d", cdc1_out_nbytes);
+#if 1
+        if (cdc1_out_nbytes > 512)
+        {
+            USB_LOG_RAW("cdc1 drop %d", cdc1_out_nbytes);
+            cdc1_next_read();
+            continue;
+        }
+#endif
+        switch (settings.cdc1_output)
+        {
+        case CDC1_SERIAL0:
+            USB_LOG_RAW("cdc1 out serial0 %d", cdc1_out_nbytes);
+            if (settings.serial0_enable)
+                serial0_write(cdc1_read_buffer, cdc1_out_nbytes);
+            break;
+        case CDC1_SERIAL1:
+            USB_LOG_RAW("cdc1 out serial1 %d", cdc1_out_nbytes);
+            if (settings.serial1_enable)
+                serial1_write(cdc1_read_buffer, cdc1_out_nbytes);
+            break;
+        case CDC1_RTT:
+            USB_LOG_RAW("cdc1 out rtt %d", cdc1_out_nbytes);
+            if (settings.rtt_enable)
+                rtt_read(cdc1_read_buffer, cdc1_out_nbytes);
+            break;
+        case CDC1_CAN:
+            USB_LOG_RAW("cdc1 out can %d", cdc1_out_nbytes);
+            if (settings.can1_slcan)
+                ascii2can(cdc1_read_buffer, cdc1_out_nbytes);
+            break;
+        default:
+            USB_LOG_RAW("cdc1 out unknown port %d", settings.cdc1_output);
+            break;
+        }
+        cdc1_next_read();
+    }
+}
+

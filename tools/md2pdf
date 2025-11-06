@@ -1,0 +1,16 @@
+#!/bin/bash
+# make pdf documentation
+# - converts README.md markdown in README.pdf 
+# - adds schematic and pcb layout
+# - compresses pdf 
+#
+# pcb was post-processed to put both sides of the pcb on the same page:
+# /usr/bin/pdfjam --outfile output.pdf --nup '2x1' --trim '-0.5cm -0.5cm -0.5cm -0.5cm' --a4paper --noautoscale 'true' -- input.pdf 1,2 
+#
+
+MARKDOWN=${1:-README.md}
+# convert markdown to pdf
+BASE_URL="https://github.com/koendv/arm_can_tool/blob/main/"
+pandoc ${MARKDOWN} -o /tmp/markdown.pdf --pdf-engine=weasyprint --metadata base-url=${BASE_URL} -c doc/style.css
+# add schematic and pcb, compress pdf
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=${MARKDOWN%.md}.pdf /tmp/markdown.pdf doc/SCH_Schematic1.pdf doc/PCB_PCB1.pdf

@@ -1,0 +1,13 @@
+diff --git a/bsp/at32/libraries/rt_drivers/drv_rtc.c b/bsp/at32/libraries/rt_drivers/drv_rtc.c
+index 7a67780015..d2444d11af 100644
+--- a/bsp/at32/libraries/rt_drivers/drv_rtc.c
++++ b/bsp/at32/libraries/rt_drivers/drv_rtc.c
+@@ -151,7 +151,7 @@ static rt_err_t rt_rtc_config(void)
+ 
+     if (ertc_bpr_data_read(ERTC_DT1)!= BKUP_REG_DATA)
+     {
+-        LOG_I("RTC hasn't been configured, please use <date> command to config.");
++        //LOG_I("RTC hasn't been configured, please use <date> command to config.");
+ 
+         /* configure the ertc divider */
+         ertc_divider_set(0x7F, 0xFF);

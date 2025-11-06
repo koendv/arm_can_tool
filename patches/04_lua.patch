@@ -1,0 +1,83 @@
+diff --git a/lua-5.3.4/linit.c b/lua-5.3.4/linit.c
+index 434da99..9052b72 100644
+--- a/lua-5.3.4/linit.c
++++ b/lua-5.3.4/linit.c
+@@ -34,6 +34,8 @@
+ #include "lualib.h"
+ #include "lauxlib.h"
+ 
++extern int luaopen_dap(lua_State *L);
++extern int luaopen_bmd(lua_State *L);
+ 
+ /*
+ ** these libs are loaded by lua.c and are readily available to any Lua
+@@ -51,6 +53,8 @@ static const luaL_Reg loadedlibs[] =
+     {LUA_MATHLIBNAME, luaopen_math},
+     {LUA_UTF8LIBNAME, luaopen_utf8},
+     {LUA_DBLIBNAME, luaopen_debug},
++    {"dap", luaopen_dap},
++    {"bmd", luaopen_bmd},
+ #if defined(LUA_COMPAT_BITLIB)
+     {LUA_BITLIBNAME, luaopen_bit32},
+ #endif
+diff --git a/lua-5.3.4/luaconf.h b/lua-5.3.4/luaconf.h
+index 334c731..e471667 100644
+--- a/lua-5.3.4/luaconf.h
++++ b/lua-5.3.4/luaconf.h
+@@ -185,6 +185,18 @@
+ ** non-conventional directories.
+ */
+ #define LUA_VDIR    LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
++
++#define LUA_LDIR "/flash/lua/"
++
++#define LUA_PATH_DEFAULT \
++        "/sdcard/lua/?.lua;" \
++        "/sdcard/lua/?/init.lua;" \
++        "/flash/lua/?.lua;" \
++        "/flash/lua/?/init.lua"
++
++#define LUA_CPATH_DEFAULT  ""
++
++#if 0
+ #if defined(_WIN32) /* { */
+ /*
+ ** In Windows, any exclamation mark ('!') in the path is replaced by the
+@@ -215,6 +227,7 @@
+ #define LUA_CPATH_DEFAULT \
+         LUA_CDIR"?.so;" LUA_CDIR"loadall.so;" "./?.so"
+ #endif          /* } */
++#endif
+ 
+ 
+ /*
+diff --git a/lua2rtt.c b/lua2rtt.c
+index feab79e..c1f2955 100644
+--- a/lua2rtt.c
++++ b/lua2rtt.c
+@@ -347,7 +347,7 @@ static int lua2rtt(int argc, char **argv)
+         rt_strncpy(handle.argv[1], argv[1], len);
+     }
+ 
+-    rt_uint8_t prio = rt_thread_self()->current_priority+1;
++    rt_uint8_t prio = RT_SCHED_PRIV(rt_thread_self()).current_priority + 1;
+     handle.thread = rt_thread_create("lua", lua2rtt_run, RT_NULL, LUA2RTT_THREAD_STACK_SIZE, prio, 10);
+     if(handle.thread == RT_NULL)
+     {
+diff --git a/lua2rtt.h b/lua2rtt.h
+index d7374eb..ea9c7cf 100644
+--- a/lua2rtt.h
++++ b/lua2rtt.h
+@@ -30,10 +30,10 @@ do{                                          \
+ #define LUA2RTT_THREAD_STACK_SIZE 10240
+ #endif
+ #ifndef LUA2RTT_CMD_SIZE
+-#define LUA2RTT_CMD_SIZE 512
++#define LUA2RTT_CMD_SIZE 160
+ #endif
+ #ifndef LUA2RTT_HISTORY_LINES
+-#define LUA2RTT_HISTORY_LINES 5
++#define LUA2RTT_HISTORY_LINES 2
+ #endif
+ 
+ enum lua2rtt_input_stat

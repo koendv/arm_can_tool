@@ -1,0 +1,34 @@
+diff --git a/components/drivers/can/dev_can.c b/components/drivers/can/dev_can.c
+index 186f113828..e37778df7d 100644
+--- a/components/drivers/can/dev_can.c
++++ b/components/drivers/can/dev_can.c
+@@ -919,6 +919,14 @@ int cmd_canstat(int argc, void **argv)
+         "Bus Off !"
+     };
+ 
++#ifdef BSP_USING_CAN1
++    if (argc == 1)
++    {
++      argv[1] = "can1";
++      argc = 2;
++    }
++#endif
++
+     if (argc >= 2)
+     {
+         struct rt_can_status status;
+diff --git a/components/drivers/include/drivers/dev_can.h b/components/drivers/include/drivers/dev_can.h
+index c7e9a36140..81205d285a 100644
+--- a/components/drivers/include/drivers/dev_can.h
++++ b/components/drivers/include/drivers/dev_can.h
+@@ -208,8 +208,8 @@ enum CANBAUD
+  * @addtogroup group_CAN_Device
+  * @{
+  */
+-#define CAN_RX_FIFO0                (0x00000000U)  /*!< CAN receive FIFO 0 */
+-#define CAN_RX_FIFO1                (0x00000001U)  /*!< CAN receive FIFO 1 */
++#define RT_CAN_RX_FIFO0              (0x00000000U)  /*!< CAN receive FIFO 0 */
++#define RT_CAN_RX_FIFO1              (0x00000001U)  /*!< CAN receive FIFO 1 */
+ 
+ /**
+  * @brief CAN filter item

@@ -1,0 +1,7 @@
+#!/bin/sh
+# openocd debugging with rtt
+arm-none-eabi-gdb-py3 -ex "target remote localhost:3333" \
+  -ex "python rtt_addr = int(gdb.parse_and_eval('&_SEGGER_RTT'))" \
+  -ex "python gdb.execute(f'monitor rtt setup 0x{rtt_addr:x} 0x400')" \
+  -ex "monitor rtt start" \
+  rtthread.elf

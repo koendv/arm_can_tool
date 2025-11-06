@@ -1,0 +1,32 @@
+diff --git a/bsp/at32/libraries/rt_drivers/drv_usart.c b/bsp/at32/libraries/rt_drivers/drv_usart.c
+index c75d72c5ea..211fc51080 100644
+--- a/bsp/at32/libraries/rt_drivers/drv_usart.c
++++ b/bsp/at32/libraries/rt_drivers/drv_usart.c
+@@ -254,8 +254,10 @@ static void _uart_dma_receive(struct at32_uart *instance, rt_uint8_t *buffer, rt
+     /* enable usart interrupt */
+     usart_interrupt_enable(instance->uart_x, USART_PERR_INT, TRUE);
+     usart_interrupt_enable(instance->uart_x, USART_IDLE_INT, TRUE);
+-    /* enable transmit complete interrupt */
++    /* enable receive buffer full interrupt */
+     dma_interrupt_enable(dma_channel, DMA_FDT_INT, TRUE);
++    /* enable receive buffer half full interrupt */
++    dma_interrupt_enable(dma_channel, DMA_HDT_INT, TRUE);
+     /* enable dma receive */
+     usart_dma_receiver_enable(instance->uart_x, TRUE);
+ 
+diff --git a/bsp/at32/libraries/rt_drivers/drv_usart_v2.c b/bsp/at32/libraries/rt_drivers/drv_usart_v2.c
+index 68dcf60ccd..324f72873f 100644
+--- a/bsp/at32/libraries/rt_drivers/drv_usart_v2.c
++++ b/bsp/at32/libraries/rt_drivers/drv_usart_v2.c
+@@ -285,8 +285,10 @@ static void _uart_dma_receive(struct at32_uart *instance, rt_uint8_t *buffer, rt
+     /* enable usart interrupt */
+     usart_interrupt_enable(instance->uart_x, USART_PERR_INT, TRUE);
+     usart_interrupt_enable(instance->uart_x, USART_IDLE_INT, TRUE);
+-    /* enable transmit complete interrupt */
++    /* enable receive buffer full interrupt */
+     dma_interrupt_enable(dma_channel, DMA_FDT_INT, TRUE);
++    /* enable receive buffer half full interrupt */
++    dma_interrupt_enable(dma_channel, DMA_HDT_INT, TRUE);
+ 
+     /* enable dma receive */
+     usart_dma_receiver_enable(instance->uart_x, TRUE);
