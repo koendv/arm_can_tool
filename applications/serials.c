@@ -13,6 +13,9 @@
 #define BAUD_MIN 1647
 #define BAUD_MAX 6750000
 
+#define SERIAL_RX_STACK    1024
+#define SERIAL_RX_PRIORITY 25
+
 /* TODO to improve speed, avoid copying dma buffer with rt_device_read()
    but instead do swo_decode() directly on dma buffer */
 
@@ -198,6 +201,7 @@ static void serial0_rx_thread(void *parameter)
                 serial0_write(serial0_rx_buf, len); /* echo for debugging */
 #endif
             }
+        rt_thread_yield();
     }
 }
 
@@ -220,6 +224,7 @@ static void serial1_rx_thread(void *parameter)
                 serial1_write(serial1_rx_buf, len); /* echo for debugging */
 #endif
             }
+        rt_thread_yield();
     }
 }
 
@@ -245,6 +250,7 @@ static void serial2_rx_thread(void *parameter)
                 serial1_write(serial2_rx_buf, len); /* echo for debugging */
 #endif
             }
+        rt_thread_yield();
     }
 }
 
@@ -254,7 +260,7 @@ static void serial0_init(uint32_t speed)
 
     serial0_rx_sem = rt_sem_create(AUX_UART, 0, RT_IPC_FLAG_FIFO);
     serial0_set_speed(speed);
-    serial_thread = rt_thread_create(AUX_UART, serial0_rx_thread, RT_NULL, 1024, 25, 10);
+    serial_thread = rt_thread_create(AUX_UART, serial0_rx_thread, RT_NULL, SERIAL_RX_STACK, SERIAL_RX_PRIORITY, 10);
     if (serial_thread)
         rt_thread_startup(serial_thread);
     else
@@ -269,7 +275,7 @@ static void serial1_init(uint32_t speed)
 
     serial1_rx_sem = rt_sem_create(AUX1_UART, 0, RT_IPC_FLAG_FIFO);
     serial1_set_speed(speed);
-    serial_thread = rt_thread_create(AUX1_UART, serial1_rx_thread, RT_NULL, 1024, 25, 10);
+    serial_thread = rt_thread_create(AUX1_UART, serial1_rx_thread, RT_NULL, SERIAL_RX_STACK, SERIAL_RX_PRIORITY, 10);
     if (serial_thread)
         rt_thread_startup(serial_thread);
     else
@@ -284,7 +290,7 @@ static void serial2_init(uint32_t speed)
 
     serial2_rx_sem = rt_sem_create(AUX2_UART, 0, RT_IPC_FLAG_FIFO);
     serial2_set_speed(speed);
-    serial_thread = rt_thread_create(AUX2_UART, serial2_rx_thread, RT_NULL, 1024, 25, 10);
+    serial_thread = rt_thread_create(AUX2_UART, serial2_rx_thread, RT_NULL, SERIAL_RX_STACK, SERIAL_RX_PRIORITY, 10);
     if (serial_thread)
         rt_thread_startup(serial_thread);
     else
@@ -298,6 +304,7 @@ static int serials_init()
     serial0_init(serial_speeds[settings.serial0_speed]);
     serial1_init(serial_speeds[settings.serial1_speed]);
     serial2_init(serial_speeds[settings.serial2_speed]);
+    return RT_EOK;
 }
 
 INIT_COMPONENT_EXPORT(serials_init);
