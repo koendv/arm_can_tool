@@ -66,4 +66,6 @@ RUN ./tools/install_pkgs.sh
 
 RUN scons
 
+RUN ./tools/mk
+
 #not truncated
