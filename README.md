@@ -240,7 +240,7 @@ If the target console does not appear, swap txd and rxd.
 
 Connect target SWO to the "AUX" connector, pin SWO.
 In the serial menu, set the speed of serial2 to the speed of the target SWO and set _swo decode_: on.
-In the USB menu, check serial2 is enabled.
+In the Serial -> Serial Enable menu, check serial2 is enabled.
 
 Connect a terminal emulator (linux: minicom, windows: putty) to the _second_ usb serial port.
 SWO output appears in the terminal emulator.

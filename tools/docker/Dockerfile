@@ -18,6 +18,8 @@ RUN apt-get upgrade -y
 
 RUN apt-get install -y vim git wget python3 python-is-python3 python3-pip libncurses5-dev
 
+RUN apt-get install -y pandoc weasyprint ghostscript fonts-linuxlibertine fonts-noto-cjk fonts-noto-mono
+
 # toolchain
 RUN wget -O /tmp/toolchain.tgz -q "https://github.com/RT-Thread/toolchains-ci/releases/download/v1.8/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz"
 
