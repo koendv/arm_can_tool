@@ -919,6 +919,8 @@ To build the firmware from source, three options:
 
 These are builds on ubuntu linux.
 
+The source tree has a [TODO](https://github.com/koendv/arm_can_tool/blob/main/TODO.md) file that lists tasks to be done.
+
 ## Software Architecture
 
 ![software block](doc/software_block.svg)
@@ -932,7 +934,7 @@ The difference between black magic debug and free-dap (cmsis-dap) is the debugge
 
 [Cherry usb](https://github.com/cherry-embedded/CherryUSB) is an open source usb protocol stack. Within "arm can tool", cherry usb connects black magic debug and free-dap to different usb endpoints. The interaction between black magic debug and free-dap is minimal.
 
-[mui](https://github.com/olikraus/u8g2/wiki/muimanual) (minimal user interface) runs a small text menu on the oled display. mui is part of [u8g2](https://github.com/olikraus/u8g2/wiki), a lightweight graphics library. Navigating the menus is through a small multi-direction switch (joystick).
+[mui](https://github.com/olikraus/u8g2/wiki/muimanual) (minimal user interface) runs a small text menu on the oled display. mui is part of [u8g2](https://github.com/olikraus/u8g2/wiki), a lightweight graphics library. Navigating the menus is through a small multi-direction switch.
 
 One of the differences between "black magic debug" and "arm can tool" is that
 
@@ -1000,7 +1002,7 @@ Steps to order an assembled board.
 [![pcb front](doc/pictures/pcb_back_small.webp)](doc/pictures/pcb_back.webp)
 
 The board is assembled at jlcpcb using "economic" assembly. All components are smd components. No manual soldering is needed.
-The complete hardware design (schematic, PCB, and BOM) is published on OSHWHub: [arm_can_tool)(https://oshwlab.com/koendv/arm_can_tool).
+The complete hardware design (schematic, PCB, and BOM) is published on OSHWLab: [arm_can_tool](https://oshwlab.com/koendv/arm_can_tool).
 
 During the ordering process:
 
@@ -1017,6 +1019,8 @@ Do not request _ultrasonic_ board cleaning. The board contains the DS3231 real-t
 PCB assembly cost, without shipping and tax: \$115 for 2, \$153 for 5. (07/2025)
 
 ## Sourcing Components
+
+Where to get the parts.
 
 ### Processor
 
@@ -1339,7 +1343,7 @@ This method fails for the 4x33R resistor arrays, or the H5VU25U ESD protection, 
 
 # Deep Dive
 
-This project is a product of global collaboration and the open-source ecosystem. The core debugging software, [Black Magic Debug](https://black-magic.org/), was created by an international community of developers. This software is combined with other open-source components like the [RT-Thread](https://www.rt-thread.io/) operating system and the [CherryUSB](https://github.com/cherry-embedded/CherryUSB) stack. To create the hardware to bring it all to life, the design leverages the modern, accessible ecosystem of [EasyEDA](https://easyeda.com/) for design, the [AT32F405](https://www.arterychip.com/) microcontroller with strong performance at reasonable cost, and efficient on-demand manufacturing through partners like [JLCPCB](https://jlcpcb.com/). It demonstrates how open-source software and globally accessible hardware can come together to create a powerful, low-cost tool for developers everywhere.
+This project is a product of global collaboration and the open-source ecosystem. The core debugging software, [Black Magic Debug](https://black-magic.org/), was created by an international community of developers. This software is combined with other open-source components - from a one-man project like the [free-dap](https://github.com/ataradov/free-dap) CMSIS-DAP debugger, to group efforts like the [RT-Thread](https://www.rt-thread.io/) operating system and the [CherryUSB](https://github.com/cherry-embedded/CherryUSB) stack. To create the hardware to bring it all to life, the design leverages the modern, accessible ecosystem of [EasyEDA](https://easyeda.com/) for electronics design, the [AT32F405](https://www.arterychip.com/) microcontroller with strong performance at reasonable cost, and efficient on-demand manufacturing through partners like [JLCPCB](https://jlcpcb.com/). It demonstrates how open-source software and globally accessible hardware can come together to create a powerful, low-cost tool for developers everywhere.
 
 ## Critique
 
@@ -1397,6 +1401,8 @@ The internal flash is zero wait state. For increased speed, "hot" routines could
 
 ## Bit-banging
 
+A description of the hardware that connects to the target, and a discussion of speeds obtained.
+
 ### Pinout
 
 The _ARM_ connector provides four pins at target logic levels.
@@ -1421,13 +1427,13 @@ Accessing hardware GPIO registers directly is approximately 3 times faster than 
 
 ### Flash Write Speed Measurements
 
-It is natural to compare debuggers by how fast they are.
+The system consists of two different debuggers, running on the same hardware, the same operating system, connecting to the same target, with the same GPIO optimizations. As such, this data allows a comparison between Black Magic Debug and OpenOCD/free-dap.
 
 Flash write speed measurements were conducted using a MicroPython firmware image as the test payload. MicroPython was selected for the following reasons:
 - micropython is a well-known firmware project, available across platforms.
 - The binary size is large enough to achieve steady-state flash write behavior.
 - The micropython binary provides a representative workload, similar to actual embedded firmware deployment scenarios.
-- Disadvantage is that processors with little flash will need another benchmark. (Perhaps Arduino "Blink" is more suitable for small processors)
+- Disadvantage is that processors with little flash will need another benchmark. Perhaps Arduino "Blink" is more suitable for benchmarking writing flash of small processors.
 
 Flashing a STM32H7A3 with micropython:
 
@@ -1446,15 +1452,6 @@ Flashing a STM32F411 with micropython:
 
 Programming time includes erase and write phases. Speed values as reported by arm-none-eabi-gdb.
 
-This is not a debugger saying firmware has been written while merely caching requests, or a debugger not writing blocks to flash because contents are unchanged. These are speeds of real, physical flash writes.
-
-These are two different debuggers, running on the same hardware, the same operating system, connecting to the same target, with the same GPIO optimizations. As such, this data allows a comparison between Black Magic Debug and OpenOCD/free-dap.
-
-### UF2 Bootloader
-
-Comparison between SWD programming internal flash and UF2 programming external QSPI flash is not straightforward, as paths differ.
-This said, the UF2 bootloader programs the "arm can tool" firmware into the AT32F405’s QSPI flash at over 60 kbyte/s, indicating strong performance of CherryUSB, the UF2 implementation and QSPI subsystem.
-
 ### Future
 
 The software can be further optimized:
@@ -1463,6 +1460,11 @@ The software can be further optimized:
 - using DMA to GPIO for SWD/JTAG. rewrite swdptap_seq_out() and swdptap_seq_out_parity() using timer and dma to gpio, busy waiting until dma finishes.
 
 The at32f405 has 256 kbyte flash, shadowed in ram for running in zero wait state. Of these 256 kbyte flash, at the moment less than 32 kbyte are used for the uf2 bootloader. There is room.
+
+### UF2 Bootloader
+
+Comparison between SWD programming internal flash and UF2 programming external QSPI flash is not straightforward, as paths differ.
+This said, the UF2 bootloader programs the "arm can tool" firmware into the AT32F405’s QSPI flash at over 60 kbyte/s, indicating strong performance of CherryUSB, the UF2 implementation and QSPI subsystem.
 
 ## Single Wire Output
 
@@ -1623,6 +1625,7 @@ In most cases, EMI shielding may not be required. However, this design can serve
 - The [Black Magic Probe book](https://github.com/compuphase/Black-Magic-Probe-Book/releases/latest/download/BlackMagicProbe.pdf) covers setting up and using the Black Magic Probe.
 - [pyOCD](https://github.com/mbedmicro/pyOCD)
 - [probe-rs](https://probe.rs/) for rust
+- [oshwlab](https://oshwlab.com) and [oshwhub](https://oshwhub.com) open source hardware
 
 ## Software Components
 

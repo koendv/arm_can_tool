@@ -18,7 +18,7 @@ Add SLCAN input with CAN bus filters, and setting baud rate. (begun)
 ## Black Magic Debug
 
 Split gdb_main in two:
-- a callback from usb for running gdb commands. Perhaps use flex to parse gdb fileio?
+- a callback from usb for running gdb commands.
 - a task for polling target state when target is running.
   No way to avoid polling here; need to run SWD to see if target halted, in breakpoint, fault, waiting for semihosting, etc.
 
