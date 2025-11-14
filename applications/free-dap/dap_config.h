@@ -10,6 +10,8 @@
 #include "hal_config.h"
 /* for CONFIG_USB_HS */
 #include "usb_desc.h"
+#include "usb_serial_number.h"
+
 #ifdef PKG_USING_BLACKMAGIC
 extern void platform_init(void);
 #endif
@@ -47,7 +49,6 @@ extern void platform_init(void);
 #define DAP_CONFIG_FAST_CLOCK          910000
 
 /*- Prototypes --------------------------------------------------------------*/
-extern uint8_t usb_serial_number[13];
 
 /*- Implementations ---------------------------------------------------------*/
 

@@ -198,6 +198,7 @@ static int cmd_logger(int argc, char **argv)
     }
     else
         rt_kprintf("%s (-f|\"message\")\r\n", argv[0]);
+    return 0;
 }
 
 MSH_CMD_EXPORT_ALIAS(cmd_logger, logger, log arguments to file);

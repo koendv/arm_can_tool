@@ -163,6 +163,7 @@ bool platform_target_set_power(const bool power)
         rt_pin_write(TARGET_POWER_PIN, PIN_HIGH); // SWCLK out
     else
         rt_pin_write(TARGET_POWER_PIN, PIN_LOW);  // SWCLK in
+    return true;
 }
 
 /* return target voltage in 1/10 volt */

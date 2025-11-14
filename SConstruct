@@ -24,6 +24,7 @@ env = Environment(tools = ['mingw'],
     AR = rtconfig.AR, ARFLAGS = '-rc',
     LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS)
 env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
+env.Append(CCFLAGS=['-Wreturn-type'])
 
 if rtconfig.PLATFORM in ['iccarm']:
     env.Replace(CCCOM = ['$CC $CFLAGS $CPPFLAGS $_CPPDEFFLAGS $_CPPINCFLAGS -o $TARGET $SOURCES'])

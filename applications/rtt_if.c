@@ -26,7 +26,7 @@ int32_t rtt_read(uint8_t *buf, uint32_t len)
     if (rtt_read_rb == RT_NULL)
         rtt_read_rb = rt_ringbuffer_create(RTT_READ_BUF_SIZE);
 
-    rt_ringbuffer_put(rtt_read_rb, buf, len);
+    return rt_ringbuffer_put(rtt_read_rb, buf, len);
 }
 
 /* rtt host to target: read one character */

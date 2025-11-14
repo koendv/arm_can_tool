@@ -1,5 +1,6 @@
 #include <rtthread.h>
 #include <stdio.h>
+#include "usb_serial_number.h"
 
 #define MCU_ID1 (0x1FFFF7E8)
 

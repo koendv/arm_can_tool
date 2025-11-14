@@ -175,7 +175,7 @@ uint8_t mui_can1_set_speed(mui_t *ui, uint8_t msg)
     uint8_t retval = mui_u8g2_u8_opt_line_wa_mud_pi(ui, msg);
     if (settings.can1_speed > sizeof(can_speeds) / sizeof(can_speeds[0])) settings.can1_speed = 0;
     if ((msg == MUIF_MSG_EVENT_NEXT) || (msg == MUIF_MSG_EVENT_PREV))
-        can1_set_speed(can_speeds[settings.can1_speed]);
+        canbus_set_baudrate(can_speeds[settings.can1_speed]);
     return retval;
 }
 
@@ -435,6 +435,7 @@ static int mui_init(void)
     mui_threadid = rt_thread_create("mui", mui_thread, RT_NULL, MUI_STACK, 20, 10);
     if (mui_threadid != RT_NULL)
         rt_thread_startup(mui_threadid);
+    return 0;
 }
 
 INIT_COMPONENT_EXPORT(mui_init);

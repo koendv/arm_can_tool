@@ -4,8 +4,8 @@
 #include "usbd_cdc.h"
 #include "usb_desc.h"
 #include "usb_cdc.h"
+#include "usb_slcan.h"
 #include "serials.h"
-#include "canbus.h"
 #include "logger.h"
 #include "settings.h"
 
@@ -367,7 +367,7 @@ static void cdc1_out_thread(void *parameter)
         case CDC1_CAN:
             USB_LOG_RAW("cdc1 out can %d", cdc1_out_nbytes);
             if (settings.can1_slcan)
-                ascii2can(cdc1_read_buffer, cdc1_out_nbytes);
+                slcan_process(cdc1_read_buffer, cdc1_out_nbytes);
             break;
         default:
             USB_LOG_RAW("cdc1 out unknown port %d", settings.cdc1_output);

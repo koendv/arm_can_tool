@@ -147,6 +147,7 @@ static int multi_direction_switch()
         rt_pin_attach_irq(menu_gpio[i], PIN_IRQ_MODE_RISING_FALLING, button_changed, (void *)i);
         rt_pin_irq_enable(menu_gpio[i], PIN_IRQ_ENABLE);
     }
+    return 0;
 }
 
 /*

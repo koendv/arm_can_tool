@@ -37,6 +37,7 @@ static int cmd_trst(int argc, char **argv)
         rt_kprintf("trst_in low\r\n");
     else
         rt_kprintf("trst_in ?\r\n");
+    return 0;
 }
 
 MSH_CMD_EXPORT_ALIAS(cmd_trst, trst, reset target);

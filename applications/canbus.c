@@ -21,6 +21,7 @@
 #include <string.h>
 #include <usb_cdc.h>
 #include <canbus.h>
+#include <slcan.h>
 
 #define DBG_TAG "CAN"
 #define DBG_LVL DBG_INFO
@@ -30,91 +31,110 @@
 #define CAN_DEV   "can1"
 #define SLCAN_MTU (sizeof("T1111222281122334455667788EA5F\r\n") + 1)
 
+/* canbus hardware filter */
+can_hw_filter_bank_t can_hw_filter;
+
 static uint8_t     char_tx_buffer[SLCAN_MTU];
 static rt_device_t can_dev          = RT_NULL;
 static rt_thread_t can_rx_thread_id = RT_NULL;
 static rt_sem_t    can_rx_sem       = RT_NULL;
 
+/* Hardware-level CAN operations */
 
-/* convert ascii text to canbus message */
-
-int32_t ascii2can(uint8_t *buf, uint32_t nbytes)
+rt_err_t canbus_send_frame(struct rt_can_msg *msg)
 {
-    // XXX todo
+    if (!can_dev) return -RT_ERROR;
+
+    rt_size_t sent = rt_device_write(can_dev, 0, msg, sizeof(*msg));
+    return (sent > 0) ? RT_EOK : -RT_ERROR;
 }
 
-/* convert canbus message to slcan ascii text */
-
-static int can2ascii(rt_can_msg_t msg, char *tx_buffer, rt_bool_t print_timestamp)
+rt_err_t canbus_set_baudrate(uint32_t baudrate)
 {
-    int      pos  = 0;
-    uint32_t temp = 0;
+    if (!can_dev) return -RT_ERROR;
 
-    rt_memset(tx_buffer, 0, SLCAN_MTU);
-
-    /* RTR frame */
-    if (msg->rtr == RT_CAN_RTR)
-    {
-        if (msg->ide == RT_CAN_EXTID)
-        {
-            tx_buffer[pos] = 'R';
-        }
-        else
-        {
-            tx_buffer[pos] = 'r';
-        }
-    }
-    else /* data frame */
-    {
-        if (msg->ide == RT_CAN_EXTID)
-        {
-            tx_buffer[pos] = 'T';
-        }
-        else
-        {
-            tx_buffer[pos] = 't';
-        }
-    }
-    pos++;
-    /* id */
-    temp = msg->id;
-    if (msg->ide == RT_CAN_EXTID)
-    {
-        rt_snprintf(&(tx_buffer[pos]), 9, "%08X", temp);
-        pos += 8;
-    }
-    else
-    {
-        rt_snprintf(&(tx_buffer[pos]), 4, "%03X", temp);
-        pos += 3;
-    }
-    /* len */
-    tx_buffer[pos] = '0' + (msg->len & 0x0f);
-    pos++;
-    /* data */
-    if (msg->rtr != RT_CAN_RTR)
-    {
-        for (int i = 0; i < msg->len; i++)
-        {
-            rt_snprintf(&(tx_buffer[pos]), 3, "%02X", msg->data[i]);
-            pos += 2;
-        }
-    }
-    /* timestamp */
-    if (print_timestamp)
-    {
-        uint32_t tick = rt_tick_get();
-        rt_sprintf(&tx_buffer[pos], "%04lX", (tick & 0x0000FFFF));
-        pos += 4;
-    }
-    /* end */
-    tx_buffer[pos] = '\r';
-    pos++;
-    tx_buffer[pos] = '\n';
-    pos++;
-    tx_buffer[pos] = 0;
-    return pos;
+    return rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD, &baudrate);
 }
+
+rt_err_t canbus_set_autoretransmit(rt_bool_t mode)
+{
+    // Not implemented
+    return -RT_ERROR;
+}
+
+rt_err_t canbus_set_std_filter(uint32_t id, uint32_t mask)
+{
+    if (can_hw_filter.count >= MAX_CAN_HW_FILTER) return -RT_ERROR;
+    can_hw_filter.filter[can_hw_filter.count].mask     = mask;
+    can_hw_filter.filter[can_hw_filter.count].value    = id;
+    can_hw_filter.filter[can_hw_filter.count].extended = RT_FALSE;
+    can_hw_filter.count++;
+    return RT_EOK;
+}
+
+rt_err_t canbus_set_ext_filter(uint32_t id, uint32_t mask)
+{
+    if (can_hw_filter.count >= MAX_CAN_HW_FILTER) return -RT_ERROR;
+    can_hw_filter.filter[can_hw_filter.count].mask     = mask;
+    can_hw_filter.filter[can_hw_filter.count].value    = id;
+    can_hw_filter.filter[can_hw_filter.count].extended = RT_TRUE;
+    can_hw_filter.count++;
+    return RT_EOK;
+}
+
+rt_err_t canbus_begin_filter(void)
+{
+    memset(&can_hw_filter, 0, sizeof(can_hw_filter));
+    return RT_EOK;
+}
+
+rt_err_t canbus_end_filter(void)
+{
+    rt_err_t                    res                      = RT_EOK;
+    struct rt_can_filter_item   items[MAX_CAN_HW_FILTER] = {0};
+    struct rt_can_filter_config cfg                      = {0, 1, items};
+
+    if (!can_dev) return -RT_ERROR;
+    for (int i = 0; i < can_hw_filter.count; i++)
+    {
+        items[i].id       = can_hw_filter.filter[i].value;
+        items[i].ide      = can_hw_filter.filter[i].extended ? 1 : 0;
+        items[i].rtr      = 0;
+        items[i].mode     = 0;
+        items[i].mask     = can_hw_filter.filter[i].mask;
+        items[i].hdr_bank = -1;
+    }
+
+    cfg.count = can_hw_filter.count;
+    res       = rt_device_control(can_dev, RT_CAN_CMD_SET_FILTER, &cfg);
+
+#if 0
+    // Some drivers might require an explicit start command.
+    // This is driver-specific.
+    if (res == RT_EOK)
+    {
+        rt_uint32_t cmd_arg = 1;
+
+        res = rt_device_control(can_dev, RT_CAN_CMD_START, &cmd_arg);
+    }
+#endif
+
+    return res;
+}
+
+rt_err_t canbus_set_mode(int mode)
+{
+    if (!can_dev) return -RT_ERROR;
+
+    if (mode == RT_CAN_MODE_NORMAL || mode == RT_CAN_MODE_LISTEN || mode == RT_CAN_MODE_LOOPBACK)
+    {
+        rt_device_control(can_dev, RT_CAN_CMD_SET_MODE, (void *)mode);
+        return RT_EOK;
+    }
+    return -RT_ERROR;
+}
+
+/* CAN receive */
 
 static rt_err_t can_rx_handler(rt_device_t dev, rt_size_t size)
 {
@@ -131,14 +151,12 @@ static void can_rx_thread(void *param)
     {
         rx_msg.hdr_index = -1;
         rt_sem_take(can_rx_sem, RT_WAITING_FOREVER);
-        rt_device_read(can_dev, 0, &rx_msg, sizeof(rx_msg));
-        if (settings.can1_slcan)
+        if (rt_device_read(can_dev, 0, &rx_msg, sizeof(rx_msg)) > 0 && settings.can1_slcan)
         {
             /* slcan output */
-            can2ascii(&rx_msg, char_tx_buffer, RT_FALSE);
-            char_tx_buffer[sizeof(char_tx_buffer) - 1] = '\0';
-            cdc1_write(char_tx_buffer, strlen(char_tx_buffer));
+            slcan_parse_frame(&rx_msg);
         }
+        rt_thread_yield();
     }
 }
 
@@ -176,8 +194,7 @@ static void canbus_send()
 /* filter canbus messages in hardware */
 static rt_err_t canbus_set_filter()
 {
-#ifdef RT_CAN_USING_HDR
-    rt_err_t res;
+    rt_err_t res = RT_EOK;
 
     struct rt_can_filter_item items[5] =
         {
@@ -195,7 +212,7 @@ static rt_err_t canbus_set_filter()
         LOG_E("canbus %s set filter failed!", CAN_DEV);
         return -RT_ERROR;
     }
-#endif
+    return res;
 }
 
 void can1_set_speed(uint32_t speed)

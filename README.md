@@ -283,7 +283,80 @@ Use the menu `serial ->input` to choose where the usb serial port sends data com
 
 The canbus interface is classic CAN, up to 1Mbit/s. The canbus interface is isolated.
 
-At this moment the software just writes all canbus packets to the usb serial in slcan format. canbus slcan from host to probe needs work.
+CAN bus software is SLCAN from [canable-fw](https://github.com/normaldotcom/canable-fw), ported to rt-thread, with hardware filter extensions. If slcan is enabled, and everything else switched off, "arm can tool" behaves like a slcan adapter.
+
+Default behavior is passing all traffic from can bus to usb, in slcan format. If logging is enabled, the slcan output is logged to sd card as well.
+
+The SLCAN implementation has hardware filtering extensions. Hardware filtering of CAN bus packets allows selecting which CAN bus ID's to pass.
+
+A command line tool, _canfilter_, generates the SLCAN commands for a hardware filter.
+
+A filter to see only CAN bus IDs 0x100 to 0x1ff:
+
+```bash
+$ canfilter --std 0x100-0x1ff
+STM32 Hardware Format:
+ID=0x00000100 MASK=0x00000700 IDE=0 RTR=0 MODE=16BIT SCALE=32BIT FILTER=MASK
+```
+
+or with slcan output:
+
+```
+$ canfilter --output slcan --std 0x100-0x1ff
+SLCAN Hardware Register Format:
+F0
+F0020000000E00000000100
+F1
+```
+
+_canfilter_ also runs on "arm can tool" itself. When executing _canfilter_ from the rt-thread shell it is possible to set hardware filters directly.
+
+```
+msh />canfilter --output embedded --std 0x100-0x1ff
+Successfully applied 1 filters to CAN hardware
+```
+
+### `canfilter` Command-Line Options
+
+`canfilter` has the following command-line options:
+
+#### Filter Definition Options:
+- `--std`
+  Use 11-bit standard CAN IDs (default setting).
+
+- `--ext`
+  Use 29-bit extended CAN IDs.
+
+- `--data`
+  Filter data frames only (default setting).
+
+- `--rtr`
+  Filter remote transmission request (RTR) frames only.
+
+#### Output Control Options:
+- `--output FORMAT`
+  Specify the output format. Available formats: `stm`, `slcan`, `hal`, `embedded`.
+
+- `--mask`
+  Force mask mode for all filters, overriding other settings.
+
+- `--list`
+  Enable list mode optimization (default setting).
+
+- `--max N`
+  Set the maximum number of filters (default: platform-dependent).
+
+- `--verbose`
+  Enable verbose output, showing detailed information about the filtering algorithm.
+
+#### Testing and Verification Options:
+- `--test ID...`
+  Test specific CAN IDs against the generated filters.
+
+- `--selftest`
+  Run the built-in self-test to verify filter functionality.
+
+See  [canfilter manual](canfilter.md) for a complete description.
 
 ## User Interface & Display
 
@@ -1465,6 +1538,58 @@ The at32f405 has 256 kbyte flash, shadowed in ram for running in zero wait state
 
 Comparison between SWD programming internal flash and UF2 programming external QSPI flash is not straightforward, as paths differ.
 This said, the UF2 bootloader programs the "arm can tool" firmware into the AT32F405’s QSPI flash at over 60 kbyte/s, indicating strong performance of CherryUSB, the UF2 implementation and QSPI subsystem.
+
+## CAN Bus Hardware filtering
+
+The processor generates an interrupt for every received CAN bus frame, and on a heavily loaded CAN bus this interrupt rate can starve other system processes. From this perspective, hardware-level CAN frame filtering becomes essential—especially in debugging tools that provide both JTAG and CAN interfaces. By limiting processing to selected CAN identifiers and discarding unwanted frames before they trigger interrupts, hardware filtering prevents excessive CPU load and preserves overall system responsiveness.
+
+`canfilter` is a tool designed to generate and verify optimal hardware filters for CAN bus controllers. It is compatible with Windows, Linux, and can even run directly on USB-to-CAN adapters. The tool accepts human-readable CAN identifier ranges and translates them into efficient hardware filter configurations, optimizing the processing of CAN frames by the controller.
+
+### SLCAN Filter Configuration and Programming
+
+The SLCAN hardware extensions support a series of commands for configuring CAN bus filters. These commands allow the user to enable or disable filtering, as well as configure and apply hardware filters for both standard and extended CAN identifiers.
+
+#### Command Overview:
+
+- **FA**: Pass all frames (disable filtering).
+  *Mnemonic: A All*
+
+- **FB**: Block all frames (enable filtering, block all frames).
+  *Mnemonic: B Block*
+
+- **F<bank><fr1><fr2><mode><scale><ide><rtr>**: Filter Programming Command.
+  This command configures one filter bank of the CAN controller hardware.
+  The command fields are as follows:
+
+|Field   |Size         |Description                             |
+| ------ | ----------- | -------------------------------------- |
+|`F`     |1 char       |Filter command identifier.              |
+|`bank`  |2 hex digits |Filter bank number (00-27).             |
+|`fr1`   |8 hex digits |FR1 hardware register value.            |
+|`fr2`   |8 hex digits |FR2 hardware register value.            |
+|`mode`  |1 hex digit  |`0` = MASK mode, `1` = LIST mode.       |
+|`scale` |1 hex digit  |`0` = 16-bit scale, `1` = 32-bit scale. |
+|`ide`   |1 hex digit  |`0` = standard ID, `1` = extended ID.   |
+|`rtr`   |1 hex digit  |`0` = data frame, `1` = remote frame.   |
+
+- **F0**: Begin filter configuration (synchronization).
+  This command marks the start of the filter configuration process and prepares the system to receive filter settings.
+
+- **F1**: End filter configuration and apply changes.
+  This command applies the configured filter settings to the hardware. It is used in conjunction with **F0** to allow atomic setting of filters, ensuring the entire configuration is applied as a single unit.
+
+Example protocol flow:
+
+```
+F0 # Begin filter.
+F0020000000E00000000100 # Bank 0 filter
+F0160000000E00000000100 # Bank 1 filter
+F1 # Apply to hardware.
+```
+
+The `canfilter` tool computes the necessary hardware filter configurations based on user input. The generated filter configuration is then written to the CAN controller hardware using the SLCAN F command.
+
+For more information and to access the `canfilter` project, visit the [GitHub repository](https://github.com/koendv/canfilter).
 
 ## Single Wire Output
 
