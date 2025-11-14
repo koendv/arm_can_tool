@@ -40,6 +40,7 @@ static const settings_struct default_settings =
         .serial2_enable     = true,
         .can1_speed         = 0,
         .can1_slcan         = true,
+        .can1_hw_filter     = {0},
         .cdc1_output        = CDC1_SERIAL0,
         .screen_brightness  = 192,
         .screen_sleep_time  = 1,
@@ -66,6 +67,13 @@ void store_settings()
     settings.memwatch_cnt       = memwatch_cnt;
     settings.memwatch_timestamp = memwatch_timestamp;
 
+    /* copy can bus hardware filter settings *
+    memcpy(&settings.can1_hw_filter, &can_hw_filter, sizeof(can_hw_filter));
+
+    /* apply canbus filter */
+    if (can_hw_filter.count)
+        canbus_end_filter();
+
     /* calculate crc */
     settings.crc = 0;
     settings.crc = calc_crc();
@@ -81,6 +89,15 @@ void recall_settings()
 
     /* restore settings from eeprom */
     at24_read(0, (uint8_t *)&settings, sizeof(settings));
+
+    /* restore memwatch settings */
+    memcpy(memwatch_table, settings.memwatch_table, sizeof(memwatch_table));
+    memwatch_cnt       = settings.memwatch_cnt;
+    memwatch_timestamp = settings.memwatch_timestamp;
+
+    /* restore can filter settings */
+    memcpy(&can_hw_filter, &settings.can1_hw_filter, sizeof(can_hw_filter));
+
     /* check crc */
     saved_crc      = settings.crc;
     settings.crc   = 0;

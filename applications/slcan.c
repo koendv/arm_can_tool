@@ -103,6 +103,12 @@ rt_err_t slcan_parse_str(uint8_t *buf, uint8_t len)
     msg.ide = RT_CAN_STDID;
     msg.id  = 0;
 
+    if (buf == RT_NULL)
+    {
+        LOG_E("null buf?");
+        return -RT_EINVAL;
+    }
+
     // Convert from ASCII (2nd character to end)
     for (uint8_t i = 1; i < len; i++)
     {
@@ -200,26 +206,20 @@ rt_err_t slcan_parse_str(uint8_t *buf, uint8_t len)
 #if 1
     // Hardware Filter Commands
     // F0 - begin filter list
-    // F<mask3><value3> - standard filter
-    // F<mask8><value8> - extended filter
     // F1 - end filter list
     case 'F': // Add hardware filter
     {
-        if (len == 17)
-        { // F<mask8><value8> Set extended filter
-            uint32_t mask = 0, value = 0;
-            for (uint8_t i = 0; i < 8; i++)
-            {
-                mask  = (mask << 4) | buf[1 + i];
-                value = (value << 4) | buf[10 + i];
-            }
-            return canbus_set_ext_filter(value, mask);
+        if ((len == 2) && (buf[1] == 0xA))
+        { // FA pass all frames
+            canbus_pass_all();
+            LOG_I("pass all");
+            return RT_EOK;
         }
-        else if (len == 7)
-        { // F<mask3><value3> Set standard filter
-            uint32_t mask  = (buf[1] << 8) | (buf[2] << 4) | buf[3];
-            uint32_t value = (buf[5] << 8) | (buf[6] << 4) | buf[7];
-            return canbus_set_std_filter(value, mask);
+        else if ((len == 2) && (buf[1] == 0xB))
+        { // FB block all frames
+            canbus_block_all();
+            LOG_I("block all");
+            return RT_EOK;
         }
         else if ((len == 2) && (buf[1] == 0))
         { // F0 Clear all hardware filters
@@ -233,7 +233,29 @@ rt_err_t slcan_parse_str(uint8_t *buf, uint8_t len)
             LOG_I("hardware filter set");
             return RT_EOK;
         }
-        LOG_E("Invalid filter command format");
+        else if (len == 23)
+        { // Format: F<bank><fr1><fr2><mode><scale><ide><rtr> Set filter bank
+            /* Parse all fields from the 23-character command */
+            /* same as: sscanf(&cmd[1], "%2hhx%8lx%8lx%1hhx%1hhx%1hhx%1hhx", &bank, &fr1, &fr2, &mode, &scale, &ide, &rtr) */
+            uint8_t  bank = buf[1] << 4 | buf[2];
+            uint32_t fr1  = 0;
+            for (uint32_t i = 3; i <= 10; i++)
+                fr1 = fr1 << 4 | buf[i];
+            uint32_t fr2 = 0;
+            for (uint32_t i = 11; i <= 18; i++)
+                fr2 = fr2 << 4 | buf[i];
+            uint8_t mode  = buf[19];
+            uint8_t scale = buf[20];
+            uint8_t ide   = buf[21];
+            uint8_t rtr   = buf[22];
+            return canbus_set_filter(bank, fr1, fr2, mode, scale, ide, rtr);
+        }
+        else
+        {
+            LOG_E("Invalid filter format");
+            return -RT_EINVAL;
+        }
+        LOG_E("Invalid filter command");
         return -RT_EINVAL;
     }
 

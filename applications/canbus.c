@@ -22,6 +22,7 @@
 #include <usb_cdc.h>
 #include <canbus.h>
 #include <slcan.h>
+#include <at32f402_405_can.h>
 
 #define DBG_TAG "CAN"
 #define DBG_LVL DBG_INFO
@@ -62,23 +63,35 @@ rt_err_t canbus_set_autoretransmit(rt_bool_t mode)
     return -RT_ERROR;
 }
 
-rt_err_t canbus_set_std_filter(uint32_t id, uint32_t mask)
-{
-    if (can_hw_filter.count >= MAX_CAN_HW_FILTER) return -RT_ERROR;
-    can_hw_filter.filter[can_hw_filter.count].mask     = mask;
-    can_hw_filter.filter[can_hw_filter.count].value    = id;
-    can_hw_filter.filter[can_hw_filter.count].extended = RT_FALSE;
-    can_hw_filter.count++;
-    return RT_EOK;
-}
 
-rt_err_t canbus_set_ext_filter(uint32_t id, uint32_t mask)
+rt_err_t canbus_set_filter(uint8_t bank, uint32_t id, uint32_t mask, uint8_t mode, uint8_t scale, uint8_t ide, uint8_t rtr)
 {
-    if (can_hw_filter.count >= MAX_CAN_HW_FILTER) return -RT_ERROR;
-    can_hw_filter.filter[can_hw_filter.count].mask     = mask;
-    can_hw_filter.filter[can_hw_filter.count].value    = id;
-    can_hw_filter.filter[can_hw_filter.count].extended = RT_TRUE;
+    if (can_hw_filter.count >= MAX_CAN_HW_FILTER)
+    {
+        LOG_E("filter bank full");
+        return -RT_ERROR;
+    }
+
+    for (int i = 0; i < can_hw_filter.count; i++)
+    {
+        if (can_hw_filter.filter[i].bank == bank)
+        {
+            LOG_E("filter bank %d already configured", bank);
+            return -RT_ERROR;
+        }
+    }
+
+    can_hw_filter.filter[can_hw_filter.count].bank  = bank;
+    can_hw_filter.filter[can_hw_filter.count].id    = id;
+    can_hw_filter.filter[can_hw_filter.count].mask  = mask;
+    can_hw_filter.filter[can_hw_filter.count].mode  = mode;
+    can_hw_filter.filter[can_hw_filter.count].scale = scale;
+    can_hw_filter.filter[can_hw_filter.count].ide   = ide;
+    can_hw_filter.filter[can_hw_filter.count].rtr   = rtr;
     can_hw_filter.count++;
+
+    LOG_D("filter added: bank=%d, id=0x%08lx, mask=0x%08lx, ide=%s, rtr=%s", bank, id, mask, ide ? "ext" : "std", rtr ? "rtr" : "data");
+
     return RT_EOK;
 }
 
@@ -88,38 +101,203 @@ rt_err_t canbus_begin_filter(void)
     return RT_EOK;
 }
 
+#if 1
+
+/* implement filters in rt-thread - 32-bit filters */
 rt_err_t canbus_end_filter(void)
 {
-    rt_err_t                    res                      = RT_EOK;
+    rt_err_t res = RT_EOK;
+
+    if (!can_dev) return -RT_ERROR;
+
+    // Use RT-Thread filter configuration
     struct rt_can_filter_item   items[MAX_CAN_HW_FILTER] = {0};
     struct rt_can_filter_config cfg                      = {0, 1, items};
 
-    if (!can_dev) return -RT_ERROR;
+    // Configure each filter using RT-Thread API
     for (int i = 0; i < can_hw_filter.count; i++)
     {
-        items[i].id       = can_hw_filter.filter[i].value;
-        items[i].ide      = can_hw_filter.filter[i].extended ? 1 : 0;
-        items[i].rtr      = 0;
-        items[i].mode     = 0;
-        items[i].mask     = can_hw_filter.filter[i].mask;
-        items[i].hdr_bank = -1;
+        can_hw_filter_t *filter = &can_hw_filter.filter[i];
+
+        if (filter->bank >= 14)
+        {
+            LOG_E("Invalid filter bank %d, skipping", filter->bank);
+            continue;
+        }
+
+        items[i].hdr_bank = filter->bank;
+        items[i].id       = filter->id;
+        items[i].mask     = filter->mask;
+        items[i].mode     = filter->mode ? 1 : 0; // 0=mask, 1=list
+        items[i].ide      = filter->ide ? 1 : 0;  // 0=std, 1=ext
+        items[i].rtr      = filter->rtr ? 1 : 0;  // 0=data, 1=remote
+
+        LOG_D("Filter bank %d: id=0x%08lx mask=0x%08lx mode=%s ide=%s rtr=%s",
+              filter->bank, filter->id, filter->mask,
+              filter->mode ? "LIST" : "MASK",
+              filter->ide ? "EXT" : "STD",
+              filter->rtr ? "REMOTE" : "DATA");
     }
 
     cfg.count = can_hw_filter.count;
     res       = rt_device_control(can_dev, RT_CAN_CMD_SET_FILTER, &cfg);
 
-#if 0
-    // Some drivers might require an explicit start command.
-    // This is driver-specific.
     if (res == RT_EOK)
     {
-        rt_uint32_t cmd_arg = 1;
-
-        res = rt_device_control(can_dev, RT_CAN_CMD_START, &cmd_arg);
+        LOG_I("Hardware filters configured: %d banks", can_hw_filter.count);
     }
-#endif
+    else
+    {
+        LOG_E("Failed to set hardware filters: %d", res);
+    }
 
     return res;
+}
+
+#else
+/* implement filters using at32 hal: 32-bit filters and 16-bit filters */
+/* 16-bit filters gives double the number of filters, but only for standard id's, not extended */
+
+rt_err_t canbus_end_filter(void)
+{
+    can_filter_init_type filter_init;
+
+    // Initialize with default parameters
+    can_filter_default_para_init(&filter_init);
+
+    // Configure each filter bank using direct AT32 HAL
+    for (int i = 0; i < can_hw_filter.count; i++)
+    {
+        can_hw_filter_t *filter = &can_hw_filter.filter[i];
+
+        // Validate bank number
+        if (filter->bank >= 14)
+        {
+            LOG_E("Invalid filter bank %d, skipping", filter->bank);
+            continue;
+        }
+
+        // Configure filter parameters
+        filter_init.filter_activate_enable = TRUE;
+        filter_init.filter_number          = filter->bank;
+        filter_init.filter_mode            = filter->mode ? CAN_FILTER_MODE_ID_LIST : CAN_FILTER_MODE_ID_MASK;
+        filter_init.filter_bit             = filter->scale ? CAN_FILTER_16BIT : CAN_FILTER_32BIT;
+        filter_init.filter_fifo            = CAN_FILTER_FIFO0;
+
+        // Calculate filter ID and mask with proper IDE/RTR bit handling
+        // This matches RT-Thread's bit shifting for compatibility
+        uint32_t filter_id   = 0;
+        uint32_t filter_mask = 0;
+
+        if (filter->ide == CAN_ID_STANDARD)
+        {
+            // Standard ID: shift left by 21 bits for filter register
+            // RT-Thread uses: id << 18 for high16, then additional shifting
+            filter_id   = filter->id << 21;
+            filter_mask = filter->mask << 21;
+
+            // Set IDE bit to 0 (standard) and RTR bit
+            filter_id |= (filter->rtr << 1); // RTR at bit 1
+            // IDE bit is 0 for standard (already 0)
+
+            // Mask the IDE bit to filter by frame type
+            filter_mask |= (1 << 2); // Mask IDE bit
+            filter_mask |= (1 << 1); // Mask RTR bit
+        }
+        else
+        {
+            // Extended ID: shift left by 3 bits for filter register
+            // RT-Thread uses: id << 3
+            filter_id   = filter->id << 3;
+            filter_mask = filter->mask << 3;
+
+            // Set IDE bit to 1 (extended) and RTR bit
+            filter_id |= (1 << 2);           // IDE at bit 2
+            filter_id |= (filter->rtr << 1); // RTR at bit 1
+
+            // Mask the IDE and RTR bits
+            filter_mask |= (1 << 2); // Mask IDE bit
+            filter_mask |= (1 << 1); // Mask RTR bit
+        }
+
+        // Set filter ID and mask based on 16-bit vs 32-bit mode
+        if (filter_init.filter_bit == CAN_FILTER_32BIT)
+        {
+            // 32-bit filter: single ID and mask
+            filter_init.filter_id_high   = (filter_id >> 16) & 0xFFFF;
+            filter_init.filter_id_low    = filter_id & 0xFFFF;
+            filter_init.filter_mask_high = (filter_mask >> 16) & 0xFFFF;
+            filter_init.filter_mask_low  = filter_mask & 0xFFFF;
+        }
+        else
+        {
+            // 16-bit filter: two separate filters in one bank
+            // For 16-bit mode, we configure two 16-bit filters
+            // Filter 1 uses high 16 bits, Filter 2 uses low 16 bits
+            filter_init.filter_id_high   = (filter_id >> 16) & 0xFFFF;
+            filter_init.filter_id_low    = filter_id & 0xFFFF;
+            filter_init.filter_mask_high = (filter_mask >> 16) & 0xFFFF;
+            filter_init.filter_mask_low  = filter_mask & 0xFFFF;
+        }
+
+        // Apply the filter configuration
+        can_filter_init(CAN1, &filter_init);
+
+        LOG_D("Filter bank %d: id=0x%08lx mask=0x%08lx mode=%s scale=%s ide=%s rtr=%s",
+              filter->bank, filter->id, filter->mask,
+              filter->mode ? "LIST" : "MASK",
+              filter->scale ? "16BIT" : "32BIT",
+              filter->ide ? "EXT" : "STD",
+              filter->rtr ? "REMOTE" : "DATA");
+    }
+
+    // Disable any unused filter banks to save power
+    for (uint8_t bank = 0; bank < 14; bank++)
+    {
+        uint8_t bank_used = 0;
+        for (int i = 0; i < can_hw_filter.count; i++)
+        {
+            if (can_hw_filter.filter[i].bank == bank)
+            {
+                bank_used = 1;
+                break;
+            }
+        }
+
+        if (!bank_used)
+        {
+            filter_init.filter_activate_enable = FALSE;
+            filter_init.filter_number          = bank;
+            can_filter_init(CAN1, &filter_init);
+        }
+    }
+
+    LOG_I("Hardware filters configured: %d banks using AT32 HAL", can_hw_filter.count);
+    return RT_EOK;
+}
+
+#endif
+
+/* pass all frames - disable filtering */
+rt_err_t canbus_pass_all(void)
+{
+    /* ID=0, MASK=0, MODE=MASK passes everything */
+    canbus_begin_filter();
+    canbus_set_filter(0, 0x0, 0x0, 0, 0, 0, 0);
+    canbus_end_filter();
+    LOG_I("All frames accepted");
+    return RT_EOK;
+}
+
+/* block all frames - enable filtering but allow nothing */
+rt_err_t canbus_block_all(void)
+{
+    /* ID=0, MASK=0xFFFFFFFF, MODE=MASK blocks everything */
+    canbus_begin_filter();
+    canbus_set_filter(0, 0x0, 0xFFFFFFFF, 0, 0, 0, 0);
+    canbus_end_filter();
+    LOG_I("All frames blocked");
+    return RT_EOK;
 }
 
 rt_err_t canbus_set_mode(int mode)
@@ -160,7 +338,7 @@ static void can_rx_thread(void *param)
     }
 }
 
-#if 1
+#if 0
 /* send test packet */
 static void canbus_send()
 {
@@ -189,7 +367,6 @@ static void canbus_send()
     return;
 }
 
-#endif
 
 /* filter canbus messages in hardware */
 static rt_err_t canbus_set_filter()
@@ -214,6 +391,7 @@ static rt_err_t canbus_set_filter()
     }
     return res;
 }
+#endif
 
 void can1_set_speed(uint32_t speed)
 {
@@ -266,6 +444,7 @@ int canbus_init(void)
 
 INIT_APP_EXPORT(canbus_init);
 
+#if 0
 #ifdef RT_USING_FINSH
 static int canbus_cmd(int argc, char **argv)
 {
@@ -283,6 +462,7 @@ static int canbus_cmd(int argc, char **argv)
 }
 
 MSH_CMD_EXPORT_ALIAS(canbus_cmd, canbus, canbus send and filter);
+#endif
 #endif
 
 #endif
