@@ -1,0 +1,181 @@
+diff --git a/components/drivers/usb/cherryusb/class/msc/usbd_msc.c b/components/drivers/usb/cherryusb/class/msc/usbd_msc.c
+index af0a685bc2..54ed55a4b1 100644
+--- a/components/drivers/usb/cherryusb/class/msc/usbd_msc.c
++++ b/components/drivers/usb/cherryusb/class/msc/usbd_msc.c
+@@ -194,6 +194,29 @@ static void SCSI_SetSenseData(uint8_t busid, uint32_t KCQ)
+     g_usbd_msc[busid].ASQ = (uint8_t)(KCQ);
+ }
+ 
++/**
++ * Weak functions that can be overridden by the application.
++ * Determine if the medium exists, is ready, and writable.
++ */
++
++__WEAK bool msc_media_present(uint8_t lun)
++{
++    (void)lun;
++    return true;
++}
++
++__WEAK bool msc_media_ready(uint8_t lun)
++{
++    (void)lun;
++    return true;
++}
++
++__WEAK bool msc_media_write_protected(uint8_t lun)
++{
++    (void)lun;
++    return false;   /* default: writable */
++}
++
+ /**
+  * @brief SCSI Command list
+  *
+@@ -201,12 +224,27 @@ static void SCSI_SetSenseData(uint8_t busid, uint32_t KCQ)
+ 
+ static bool SCSI_testUnitReady(uint8_t busid, uint8_t **data, uint32_t *len)
+ {
++    // no data phase
+     if (g_usbd_msc[busid].cbw.dDataLength != 0U) {
+         SCSI_SetSenseData(busid, SCSI_KCQIR_INVALIDCOMMAND);
+         return false;
+     }
+-    *data = NULL;
+-    *len = 0;
++
++    if (data) *data = NULL;
++    if (len)  *len  = 0;
++
++    if (!msc_media_present(busid)) {
++        // sdcard not inserted
++        SCSI_SetSenseData(busid, SCSI_KCQNR_MEDIANOTPRESENT);
++        return false;
++    }
++
++    if (!msc_media_ready(busid)) {
++        // sdcard inserted, but still initializing
++        SCSI_SetSenseData(busid, SCSI_KCQNR_BECOMINGREADY);
++        return false;
++    }
++
+     return true;
+ }
+ 
+@@ -243,32 +281,27 @@ static bool SCSI_requestSense(uint8_t busid, uint8_t **data, uint32_t *len)
+         0x00,
+     };
+ 
+-    request_sense[2] = g_usbd_msc[busid].sKey;
+-    request_sense[12] = g_usbd_msc[busid].ASC;
+-    request_sense[13] = g_usbd_msc[busid].ASQ;
+-#if 0
+-    request_sense[ 2] = 0x06;           /* UNIT ATTENTION */
+-    request_sense[12] = 0x28;           /* Additional Sense Code: Not ready to ready transition */
+-    request_sense[13] = 0x00;           /* Additional Sense Code Qualifier */
+-#endif
+-#if 0
+-    request_sense[ 2] = 0x02;           /* NOT READY */
+-    request_sense[12] = 0x3A;           /* Additional Sense Code: Medium not present */
+-    request_sense[13] = 0x00;           /* Additional Sense Code Qualifier */
+-#endif
+-#if 0
+-    request_sense[ 2] = 0x05;         /* ILLEGAL REQUEST */
+-    request_sense[12] = 0x20;         /* Additional Sense Code: Invalid command */
+-    request_sense[13] = 0x00;         /* Additional Sense Code Qualifier */
+-#endif
+-#if 0
+-    request_sense[ 2] = 0x00;         /* NO SENSE */
+-    request_sense[12] = 0x00;         /* Additional Sense Code: No additional code */
+-    request_sense[13] = 0x00;         /* Additional Sense Code Qualifier */
+-#endif
++    // Determine sense code based on media state
++    if (!msc_media_present(busid)) {
++        // sdcard not inserted
++        request_sense[2] = (SCSI_KCQNR_MEDIANOTPRESENT >> 16) & 0xFF;
++        request_sense[12] = (SCSI_KCQNR_MEDIANOTPRESENT >> 8) & 0xFF;
++        request_sense[13] = (SCSI_KCQNR_MEDIANOTPRESENT >> 0) & 0xFF;
++    }
++    else if (!msc_media_ready(busid)) {
++        // sdcard inserted, but still initializing
++        request_sense[2] = (SCSI_KCQNR_BECOMINGREADY >> 16) & 0xFF;
++        request_sense[12] = (SCSI_KCQNR_BECOMINGREADY >> 8) & 0xFF;
++        request_sense[13] = (SCSI_KCQNR_BECOMINGREADY >> 0) & 0xFF;
++    } else {
++        // sdcard present and ready: return last sense recorded
++        request_sense[2] = g_usbd_msc[busid].sKey;
++        request_sense[12] = g_usbd_msc[busid].ASC;
++        request_sense[13] = g_usbd_msc[busid].ASQ;
++    }
+ 
+-    memcpy(*data, (uint8_t *)request_sense, data_len);
+-    *len = data_len;
++    if (data && *data) memcpy(*data, (uint8_t *)request_sense, data_len);
++    if (len) *len = data_len;
+     return true;
+ }
+ 
+@@ -575,6 +608,7 @@ static bool SCSI_read12(uint8_t busid, uint8_t **data, uint32_t *len)
+ static bool SCSI_write10(uint8_t busid, uint8_t **data, uint32_t *len)
+ {
+     uint32_t data_len = 0;
++    uint8_t lun = g_usbd_msc[busid].cbw.bLUN;
+ 
+     (void)data;
+     (void)len;
+@@ -584,6 +618,11 @@ static bool SCSI_write10(uint8_t busid, uint8_t **data, uint32_t *len)
+         return false;
+     }
+ 
++    if (msc_media_write_protected(lun)) {
++        SCSI_SetSenseData(busid, SCSI_KCQWP_COMMANDNOTALLOWED);
++        return false;
++    }
++
+     g_usbd_msc[busid].start_sector = GET_BE32(&g_usbd_msc[busid].cbw.CB[2]); /* Logical Block Address of First Block */
+     g_usbd_msc[busid].nsectors = GET_BE16(&g_usbd_msc[busid].cbw.CB[7]); /* Number of Blocks to transfer */
+ 
+@@ -604,6 +643,7 @@ static bool SCSI_write10(uint8_t busid, uint8_t **data, uint32_t *len)
+ static bool SCSI_write12(uint8_t busid, uint8_t **data, uint32_t *len)
+ {
+     uint32_t data_len = 0;
++    uint8_t lun = g_usbd_msc[busid].cbw.bLUN;
+ 
+     (void)data;
+     (void)len;
+@@ -613,6 +653,11 @@ static bool SCSI_write12(uint8_t busid, uint8_t **data, uint32_t *len)
+         return false;
+     }
+ 
++    if (msc_media_write_protected(lun)) {
++        SCSI_SetSenseData(busid, SCSI_KCQWP_COMMANDNOTALLOWED);
++        return false;
++    }
++
+     g_usbd_msc[busid].start_sector = GET_BE32(&g_usbd_msc[busid].cbw.CB[2]); /* Logical Block Address of First Block */
+     g_usbd_msc[busid].nsectors = GET_BE32(&g_usbd_msc[busid].cbw.CB[6]); /* Number of Blocks to transfer */
+ 
+@@ -962,4 +1007,4 @@ __WEAK int usbd_msc_sector_write(uint8_t busid, uint8_t lun, uint32_t sector, ui
+     (void)length;
+ 
+     return 0;
+-}
+\ No newline at end of file
++}
+diff --git a/components/drivers/usb/cherryusb/class/msc/usbd_msc.h b/components/drivers/usb/cherryusb/class/msc/usbd_msc.h
+index 63a8752d71..f9b3bd3897 100644
+--- a/components/drivers/usb/cherryusb/class/msc/usbd_msc.h
++++ b/components/drivers/usb/cherryusb/class/msc/usbd_msc.h
+@@ -27,6 +27,12 @@ bool usbd_msc_get_popup(uint8_t busid);
+ 
+ void usbd_msc_polling(uint8_t busid);
+ 
++/* Weak functions that can be overridden by the application. */
++
++bool msc_media_present(uint8_t lun);
++bool msc_media_ready(uint8_t lun);
++bool msc_media_write_protected(uint8_t lun);
++
+ #ifdef __cplusplus
+ }
+ #endif

@@ -15,4 +15,6 @@ patch -p1 -d packages/Lua-latest/ <  patches/04_lua.patch
 patch -p1 -d packages/CmBacktrace-latest/ <  patches/05_cm_backtrace.patch
 #patch -p1 -d ../../../ <  patches/06_drv_usart.patch
 patch -p1 -d ../../../ <  patches/07_dev_soft_i2c.patch
+patch -p1 -d ../../../ <  patches/08_usbd_msc.patch
+patch -p1 -d ../../../ <  patches/09-cputime.patch
 #not truncated

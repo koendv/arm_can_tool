@@ -4,7 +4,7 @@
 
 #define MCU_ID1 (0x1FFFF7E8)
 
-uint8_t usb_serial_number[13] = {0};
+uint8_t usb_serial_number[13] = "0FF1CEC0FFEE";
 
 static int get_usb_serial_number()
 {

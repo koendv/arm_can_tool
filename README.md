@@ -389,6 +389,16 @@ Suggested settings depend upon right or left handedness.
 
 Choose preferred settings and select "OK". The system will reboot in the new settings.
 
+## LED
+
+There is a system LED. If the LED is on, the system is executing a task. If the LED is off, the system is idle (or in an interrupt handler, also possible).
+
+The system LED is an RTOS health monitor.
+ - in normal operation, the LED flickers briefly when tasks run, but should be off most of the time.
+ - a constantly lit LED indicates busy-waiting anti-patterns.
+
+In proper RTOS design, threads should sleep when waiting rather than busy-polling. The LED is a programming tool to enforce this discipline.
+
 # Hardware
 
 The hardware has to be good. The software can always be changed later.
