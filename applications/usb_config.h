@@ -14,7 +14,7 @@
 #define DBG_LVL DBG_ERR
 #include <rtdbg.h>
 
-#define CONFIG_USB_DBG_LEVEL USB_DBG_WARNING
+#define CONFIG_USB_DBG_LEVEL   USB_DBG_WARNING
 #define CONFIG_USB_PRINTF(...) LOG_E(__VA_ARGS__)
 
 #define usb_malloc(size) rt_malloc(size)
@@ -219,15 +219,19 @@
 /* (5 * number of control endpoints + 8) + ((largest USB packet used / 4) + 1 for
  * status information) + (2 * number of OUT endpoints) + 1 for Global NAK
  */
-// XXX needs optimizing
+
+/* Endpoint max packet size in 4-byte words */
+
+/* Shared RX FIFO (all OUT endpoints) */
 #define CONFIG_USB_DWC2_RXALL_FIFO_SIZE (1024 / 4)
-/* IN Endpoints Max packet Size / 4 */
-#define CONFIG_USB_DWC2_TX0_FIFO_SIZE (512 / 4)
-#define CONFIG_USB_DWC2_TX1_FIFO_SIZE (512 / 4)
-#define CONFIG_USB_DWC2_TX2_FIFO_SIZE (512 / 4)
-#define CONFIG_USB_DWC2_TX3_FIFO_SIZE (512 / 4)
-#define CONFIG_USB_DWC2_TX4_FIFO_SIZE (512 / 4)
-#define CONFIG_USB_DWC2_TX5_FIFO_SIZE (256 / 4)
+
+/* TX FIFOs (per IN endpoint) */
+#define CONFIG_USB_DWC2_TX0_FIFO_SIZE (64 / 4)   /* EP0 */
+#define CONFIG_USB_DWC2_TX1_FIFO_SIZE (256 / 4)  /* GSUSB IN */
+#define CONFIG_USB_DWC2_TX2_FIFO_SIZE (1024 / 4) /* CDC console IN */
+#define CONFIG_USB_DWC2_TX3_FIFO_SIZE (512 / 4)  /* CDC GDB IN */
+#define CONFIG_USB_DWC2_TX4_FIFO_SIZE (64 / 4)   /* HID DAP IN */
+#define CONFIG_USB_DWC2_TX5_FIFO_SIZE (512 / 4)  /* MSC IN */
 // #define CONFIG_USB_DWC2_TX6_FIFO_SIZE (0 / 4)
 // #define CONFIG_USB_DWC2_TX7_FIFO_SIZE (0 / 4)
 // #define CONFIG_USB_DWC2_TX8_FIFO_SIZE (0 / 4)
