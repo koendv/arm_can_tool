@@ -254,6 +254,8 @@ muif_t muif_list[] = {
     MUIF_U8G2_FONT_STYLE(0, u8g2_font_unifont),
     /* horizontal line (hrule) */
     MUIF_RO("HR", mui_hrule),
+    /* usb mode - reboots in new mode */
+    MUIF_VARIABLE("U0", &settings.mode, mui_u8g2_u8_opt_line_wa_mud_pi),
     /* enable bmd auto attach */
     MUIF_VARIABLE("M0", &settings.attach_enable, mui_u8g2_u8_chkbox_wm_pi),
     /* enable memwatch */

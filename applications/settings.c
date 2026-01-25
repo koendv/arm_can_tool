@@ -22,6 +22,7 @@ static const settings_struct default_settings =
     {
         .version            = SETTINGS_VERSION,
         .language           = LANG_EN,
+        .mode               = MODE_CMSIS_DAP,
         .attach_enable      = false,
         .memwatch_enable    = false,
         .lua_enable         = false,
@@ -115,6 +116,7 @@ void print_settings()
     rt_kprintf("crc               : %d\r\n", settings.crc);
     rt_kprintf("version           : %d\r\n", settings.version);
     rt_kprintf("language          : %d\r\n", settings.language);
+    rt_kprintf("mode              : %d\r\n", settings.mode);
     rt_kprintf("attach_enable     : %d\r\n", settings.attach_enable);
     rt_kprintf("memwatch_enable   : %d\r\n", settings.memwatch_enable);
     rt_kprintf("memwatch_cnt      : %d\r\n", settings.memwatch_cnt);

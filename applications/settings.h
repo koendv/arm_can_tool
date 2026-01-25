@@ -6,18 +6,22 @@
 #include <memwatch.h>
 #include <canbus.h>
 
-#define SETTINGS_VERSION 1
-#define LANG_EN          0
-#define CDC1_SERIAL0     0
-#define CDC1_SERIAL1     1
-#define CDC1_RTT         2
-#define CDC1_CAN         3
+#define SETTINGS_VERSION  1
+#define LANG_EN           0
+#define CDC1_SERIAL0      0
+#define CDC1_SERIAL1      1
+#define CDC1_RTT          2
+#define CDC1_CAN          3
+#define MODE_CMSIS_DAP    0
+#define MODE_GDB_SERVER   1
+#define MODE_MASS_STORAGE 2
 
 typedef struct
 {
     uint32_t             crc;                          /* checksum */
     uint8_t              version;                      /* settings version */
     uint8_t              language;                     /* user interface language */
+    uint8_t              mode;                         /* boot mode */
     bool                 attach_enable;                /* enable bmd attach */
     bool                 memwatch_enable;              /* enable memwatch */
     bool                 lua_enable;                   /* enable lua program */
@@ -43,7 +47,7 @@ typedef struct
     uint8_t              screen_rotation;              /* 0 = 0, 1 = 90, 2 = 180, 3 = 270 */
     bool                 swap_buttons;                 /* swap 'next' and 'previous' buttons */
     memwatch_s           memwatch_table[MEMWATCH_NUM]; /* memwatch settings */
-    uint32_t             memwatch_cnt;                 /* max number of variables being watched */
+    uint8_t              memwatch_cnt;                 /* max number of variables being watched */
     bool                 memwatch_timestamp;           /* whether memwatch prints a timestamp */
 } settings_struct;
 

@@ -52,6 +52,7 @@ MUI_FORM(0)
 MUI_STYLE(0)
 MUI_XY("XF", 0, 15) /* print status line */
 MUI_DATA("GP",
+    MUI_25 "Mode|"
     MUI_10 "Startup|"
     MUI_15 "Target|"
     MUI_20 "Serial|"
@@ -68,6 +69,13 @@ MUI_XYA("GC", 0, 111, 5)
 MUI_XYA("GC", 0, 127, 6)
 
 /* debug mode */
+MUI_FORM(25)
+MUI_STYLE(0)
+MUI_LABEL(0, 15, "MODE")
+MUI_XYAT("U0", 0, 31, 0, "CMSIS-DAP|GDB SERVER|MASS STORAGE")
+MUI_GOTO(0, 127, 99, "OK")
+
+/* services at boot */
 MUI_FORM(10)
 MUI_STYLE(0)
 MUI_LABEL(0, 15, "STARTUP")
