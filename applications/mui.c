@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "pins.h"
-#include "canbus.h"
+#include "bxcan.h"
 #include "serials.h"
 #include "ds3231_util.h"
 
@@ -175,7 +175,7 @@ uint8_t mui_can1_set_speed(mui_t *ui, uint8_t msg)
     uint8_t retval = mui_u8g2_u8_opt_line_wa_mud_pi(ui, msg);
     if (settings.can1_speed > sizeof(can_speeds) / sizeof(can_speeds[0])) settings.can1_speed = 0;
     if ((msg == MUIF_MSG_EVENT_NEXT) || (msg == MUIF_MSG_EVENT_PREV))
-        canbus_set_baudrate(can_speeds[settings.can1_speed]);
+        bxcan_set_speed(can_speeds[settings.can1_speed]);
     return retval;
 }
 

@@ -69,11 +69,7 @@ void store_settings()
     settings.memwatch_timestamp = memwatch_timestamp;
 
     /* copy can bus hardware filter settings *
-    memcpy(&settings.can1_hw_filter, &can_hw_filter, sizeof(can_hw_filter));
-
-    /* apply canbus filter */
-    if (can_hw_filter.count)
-        canbus_end_filter();
+    memcpy(&settings.can1_hw_filter, &bxcan_filter, sizeof(bxcan_filter_t));
 
     /* calculate crc */
     settings.crc = 0;
@@ -97,7 +93,7 @@ void recall_settings()
     memwatch_timestamp = settings.memwatch_timestamp;
 
     /* restore can filter settings */
-    memcpy(&can_hw_filter, &settings.can1_hw_filter, sizeof(can_hw_filter));
+    memcpy(&bxcan_filter, &settings.can1_hw_filter, sizeof(bxcan_filter_t));
 
     /* check crc */
     saved_crc      = settings.crc;
