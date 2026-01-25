@@ -15,6 +15,14 @@ enum
     USB_TX3_FIFO_BYTES = CONFIG_USB_DWC2_TX3_FIFO_SIZE * 4,
     USB_TX4_FIFO_BYTES = CONFIG_USB_DWC2_TX4_FIFO_SIZE * 4,
     USB_TX5_FIFO_BYTES = CONFIG_USB_DWC2_TX5_FIFO_SIZE * 4,
+    USB_FIFO_BYTES =
+        USB_RX_FIFO_BYTES
+        + USB_TX0_FIFO_BYTES
+        + USB_TX1_FIFO_BYTES
+        + USB_TX2_FIFO_BYTES
+        + USB_TX3_FIFO_BYTES
+        + USB_TX4_FIFO_BYTES
+        + USB_TX5_FIFO_BYTES
 };
 
 static int usb_fifo_check(void)
@@ -27,6 +35,7 @@ static int usb_fifo_check(void)
     _Static_assert(USB_TX3_FIFO_BYTES >= 64, "CDC GDB FIFO too small");
     _Static_assert(USB_TX4_FIFO_BYTES >= 64, "HID DAP FIFO too small");
     _Static_assert(USB_TX5_FIFO_BYTES >= 512, "MSC FIFO too small");
+    _Static_assert(USB_FIFO_BYTES <= 4096, "usb ram overflow");
 
     return RT_EOK;
 }
