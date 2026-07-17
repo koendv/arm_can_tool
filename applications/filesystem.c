@@ -11,6 +11,10 @@
 #include <dev_spi_flash_sfud.h>
 #include <fal.h>
 #include "sdcard.h"
+#include "settings.h"
+#include "script_engine.h"
+#include "usb_msc.h"
+#include "usb_device.h"
 
 #if DFS_FILESYSTEMS_MAX < 4
 #error "Please define DFS_FILESYSTEMS_MAX more than 4"
@@ -96,8 +100,25 @@ static int filesystem_mount(void)
     rom_mount();
     flash_mount();
     sdcard_init();
+    switch (settings.mode)
+    {
+    case MODE_MASS_STORAGE:
+        if (sdcard_mounted)
+            usb_msc_device("sd0");     // sd card as mass storage device
+        else
+            usb_msc_device("no_card"); // disk with "no card" file
+        break;
+    case MODE_SCRIPT:
+        // do not wait for usb
+        // run script as soon as filesystem is mounted
+        script_init();
+        break;
+    default:
+        break;
+    }
+    usbd_app_init();
     return RT_EOK;
 }
 
-INIT_APP_EXPORT(filesystem_mount);
+INIT_ENV_EXPORT(filesystem_mount);
 

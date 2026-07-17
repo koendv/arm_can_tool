@@ -1,0 +1,25 @@
+# arm can tool - Black Magic Probe (or compatible)
+# Creates persistent symlinks for GDB, UART, CAN, and Lua script interfaces
+# - ttyBmpGdb   : GDB server interface for debugging
+# - ttyBmpTarg  : Target console for UART output
+# - ttyBmpSlcan : CANBUS interface for SLCAN
+# - ttyBmpLua   : Lua script console
+# - ttyBmpUser  : Lua script user I/O
+# - ttyBmpCon   : rt-thread console
+#
+# Copy to /etc/udev/rules.d/ and reload:
+#   sudo cp 99-arm-can-tool.rules /etc/udev/rules.d/
+#   sudo udevadm control -R
+#   sudo udevadm trigger
+#
+# Note: User must be in 'plugdev' group: sudo usermod -a -G plugdev $USER
+
+ACTION!="add|change|bind", GOTO="arm_can_tool_rules_end"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="GDB SERVER", SYMLINK+="ttyBmpGdb"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="TARGET CONSOLE", SYMLINK+="ttyBmpTarg"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="CANBUS SLCAN", SYMLINK+="ttyBmpSlcan"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="SCRIPT CONSOLE", SYMLINK+="ttyBmpLua"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="SCRIPT USER I/O", SYMLINK+="ttyBmpUser"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="RT-THREAD CONSOLE", SYMLINK+="ttyBmpCon"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="8816", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+LABEL="arm_can_tool_rules_end"

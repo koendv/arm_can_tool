@@ -1,0 +1,12 @@
+# Build-produced, not needed as Docker build context: the Dockerfile
+# clones rt-thread/arm_can_tool/packages fresh from GitHub rather than
+# copying local files, so none of this is ever used, only shipped for free.
+.git
+packages/
+build/
+.sconsign.dblite
+.config.old
+rtthread.bin
+rtthread.elf
+rtthread.map
+rtthread.uf2

@@ -1,7 +1,9 @@
 #ifndef CANBUS_H
 #define CANBUS_H
 
+#include <rtthread.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 /* these are copied from linux headers and source:
  * linux-6.18.2/drivers/net/can.h 
@@ -314,5 +316,20 @@ struct gs_device_bt_const_extended
     __le32 dbrp_max;
     __le32 dbrp_inc;
 } __packed;
+
+/* boot-time config */
+rt_err_t can_init(bool enable);
+
+/* initialize at32 pins for canbus */
+void can_gpio_config(void);
+
+/* initialize at32 canbus controller */
+rt_err_t can_configure_device(void);
+
+/* set bitrate using index i = 0, 1, 2, ... */
+rt_err_t can_set_bitrate_index(uint32_t index);
+
+/* set bitrate using frequency f = 10000, 20000, ... , 800000, 1000000 */
+rt_err_t can_set_bitrate_freq(uint32_t freq);
 
 #endif

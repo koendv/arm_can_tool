@@ -34,7 +34,9 @@
 #include "dap.h"
 
 /*- Definitions -------------------------------------------------------------*/
+#ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x)  ((int)(sizeof(x) / sizeof(0[x])))
+#endif
 
 enum
 {

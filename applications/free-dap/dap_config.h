@@ -20,11 +20,7 @@ extern void platform_init(void);
 #define DAP_CONFIG_DEFAULT_PORT        DAP_PORT_SWD
 #define DAP_CONFIG_DEFAULT_CLOCK       1000000 // Hz
 
-#ifdef CONFIG_USB_HS
 #define DAP_CONFIG_PACKET_SIZE         512
-#else
-#define DAP_CONFIG_PACKET_SIZE         64
-#endif
 #define DAP_CONFIG_PACKET_COUNT        2
 
 #define DAP_CONFIG_JTAG_DEV_COUNT      8

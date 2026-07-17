@@ -81,6 +81,10 @@ SECTIONS
 
         *(.data)
         *(.data.*)
+        _sramfunc = . ;
+        *(.ramfunc)
+        *(.ramfunc.*)
+        _eramfunc = . ;
         *(.gnu.linkonce.d*)
 
         PROVIDE(__dtors_start__ = .);

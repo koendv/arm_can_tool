@@ -26,4 +26,15 @@ uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8);
 
 rt_err_t mui_refresh();
 
+/*
+ * Send navigation messages to the mui input mailbox.
+ * Used by the mui_console shell command to drive the menu remotely.
+ */
+
+rt_err_t mui_send_next(void);   /* j - next field / scroll down  */
+rt_err_t mui_send_prev(void);   /* k - prev field / scroll up    */
+rt_err_t mui_send_inc(void);    /* l - increment value           */
+rt_err_t mui_send_dec(void);    /* h - decrement value           */
+rt_err_t mui_send_select(void); /* Enter - select / activate     */
+
 #endif

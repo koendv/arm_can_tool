@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Root>
     <WorkBenchVersion>
-        <Version>V1.2.00</Version>
+        <Version>V1.2.03</Version>
     </WorkBenchVersion>
     <MCUInfo>
         <MCUSerials>AT32F405</MCUSerials>
@@ -32,6 +32,11 @@
             <ParametersSub name="RSAW" value="CAN_RSAW_1TQ"/>
             <ParametersSub name="Filter_0_Enable" value="FALSE"/>
         </Parameters>
+        <Interrupts>
+            <InterruptsSub name="Interrupt_TM0TCF" value="TRUE"/>
+            <InterruptsSub name="Interrupt_RF0MN" value="TRUE"/>
+            <InterruptsSub name="Interrupt_BOF" value="TRUE"/>
+        </Interrupts>
     </CAN1>
     <CRC>
         <Mode>
@@ -250,10 +255,10 @@
         <DMA1_Channel6_IRQHandler>0;0;0;0;0</DMA1_Channel6_IRQHandler>
         <DMA1_Channel7_IRQHandler>0;0;0;0;0</DMA1_Channel7_IRQHandler>
         <ADC1_IRQHandler>0;0;0;0;0</ADC1_IRQHandler>
-        <CAN1_TX_IRQHandler>0;0;0;0;0</CAN1_TX_IRQHandler>
-        <CAN1_RX0_IRQHandler>0;0;0;0;0</CAN1_RX0_IRQHandler>
+        <CAN1_TX_IRQHandler>1;0;0;0;0</CAN1_TX_IRQHandler>
+        <CAN1_RX0_IRQHandler>1;0;0;0;0</CAN1_RX0_IRQHandler>
         <CAN1_RX1_IRQHandler>0;0;0;0;0</CAN1_RX1_IRQHandler>
-        <CAN1_SE_IRQHandler>0;0;0;0;0</CAN1_SE_IRQHandler>
+        <CAN1_SE_IRQHandler>1;0;0;0;0</CAN1_SE_IRQHandler>
         <EXINT9_5_IRQHandler>0;0;0;0;0</EXINT9_5_IRQHandler>
         <TMR1_BRK_TMR9_IRQHandler>0;0;0;0;0</TMR1_BRK_TMR9_IRQHandler>
         <TMR1_OVF_TMR10_IRQHandler>0;0;0;0;0</TMR1_OVF_TMR10_IRQHandler>
@@ -282,6 +287,7 @@
         <FPU_IRQHandler>0;0;0;0;0</FPU_IRQHandler>
         <UART7_IRQHandler>0;0;0;0;0</UART7_IRQHandler>
         <QSPI1_IRQHandler>0;0;0;0;0</QSPI1_IRQHandler>
+        <DMAMUX_IRQHandler>0;0;0;0;0</DMAMUX_IRQHandler>
     </NVIC>
     <GPIO>
         <Signal SignalName="EXINT13" PinName="PC13">
@@ -462,6 +468,7 @@
         <ProjectLocation>/home/koen/src/rt-thread/bsp/at32/arm_can_tool/AT32_Work_Bench</ProjectLocation>
         <ToolchainIDE>Makefile</ToolchainIDE>
         <ARMCompiler>0</ARMCompiler>
+        <BackupCode>true</BackupCode>
         <KeepUserCode>true</KeepUserCode>
         <NotUsedPinAnalog>false</NotUsedPinAnalog>
         <CodeSplitIP>true</CodeSplitIP>

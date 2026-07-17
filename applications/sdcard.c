@@ -1,18 +1,17 @@
-#include <stdbool.h>
 #include <rtdevice.h>
+#define DBG_TAG "SD"
+#define DBG_LVL DBG_INFO
+#include <rtdbg.h>
+
 #include <drv_spi.h>
 #include <dev_spi_msd.h>
 #include <dfs_fs.h>
+#include <stdbool.h>
 #include "board.h"
 #include "pins.h"
 #include "settings.h"
 #include "ulog_file.h"
 #include "sdcard.h"
-
-#define DBG_TAG "SD"
-//#define DBG_LVL DBG_ERR
-#define DBG_LVL DBG_INFO
-#include <rtdbg.h>
 
 #define SD_DEVICE         "sd0"
 #define SD_DIR            "/sdcard"
@@ -74,11 +73,14 @@ static void sdcard_mount()
             return;
         }
 
-        err = dfs_mount(SD_DEVICE, SD_DIR, "elm", 0, 0);
-        if (err != RT_EOK)
+        if (settings.mode != MODE_MASS_STORAGE)
         {
-            LOG_E("sd card mount fail");
-            return;
+            err = dfs_mount(SD_DEVICE, SD_DIR, "elm", 0, 0);
+            if (err != RT_EOK)
+            {
+                LOG_E("sd card mount fail");
+                return;
+            }
         }
 
         sdcard_mounted = true;
@@ -91,7 +93,10 @@ static void sdcard_mount()
         {
             LOG_I("sdcard unmount");
 
-            dfs_unmount(SD_DIR);               // unmount
+            if (settings.mode != MODE_MASS_STORAGE)
+            {
+                dfs_unmount(SD_DIR);           // unmount
+            }
             rt_pin_write(SD_CS_PIN, PIN_HIGH); // sdcard chip select off
             rt_thread_mdelay(10);
             rt_pin_write(SD_ON_PIN, PIN_LOW);  // sdcard power off

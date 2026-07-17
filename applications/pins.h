@@ -6,8 +6,7 @@
 #define DISP_CS_PIN          GET_PIN(D, 2)
 #define DISP_DC_PIN          GET_PIN(F, 7)
 #define DISP_RST_PIN         GET_PIN(C, 12)
-//#define LED0_PIN             GET_PIN(C, 2)
-#define LED0_PIN             GET_PIN(B, 1) // not connected
+#define LED0_PIN             GET_PIN(C, 2)
 #define SD_CS_PIN            GET_PIN(A, 11)
 #define SD_DETECT_PIN        GET_PIN(C, 9)
 #define SD_ON_PIN            GET_PIN(C, 8)

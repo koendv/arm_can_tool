@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="840.5"
+   height="585.25"
+   viewBox="19.75 85 840.5 585.25"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg">
+  <title>TARGET + INA228 + ARM CAN TOOL wiring diagram (high-side power monitoring + SWD)</title>
+  <desc>TARGET left, Adafruit INA228 middle, ARM CAN TOOL right. INA228 wired for high-side sensing. ARM CAN TOOL exposes two connectors: an I2C connector to INA228, and an ARM/SWD connector wired directly to TARGET, bypassing INA228, so ground forms a star at ARM CAN TOOL rather than a loop.</desc>
+  <defs>
+    <style>
+      text { font-family: sans-serif; fill: #1a1a1a; }
+      .th  { font-size: 14px; font-weight: 600; }
+      .ts  { font-size: 12px; font-weight: 400; }
+      .box-purple { fill: #EEEDFE; stroke: #534AB7; }
+      .box-teal   { fill: #E1F5EE; stroke: #0F6E56; }
+      .box-coral  { fill: #FAECE7; stroke: #993C1D; }
+      .t-purple   { fill: #3C3489; }
+      .t-teal     { fill: #085041; }
+      .t-coral    { fill: #712B13; }
+      .t-body     { fill: #2c2c2a; }
+    </style>
+  </defs>
+
+  <!-- ═══ External VCC supply net (feeds the shunt, high-side) ═══ -->
+  <circle cx="280" cy="128" r="3.5" fill="none" stroke="#c0663a" stroke-width="1.5" />
+  <text class="ts t-body" x="280" y="114" text-anchor="middle">VCC</text>
+  <line x1="280" y1="131.5" x2="280" y2="220" stroke="#c0663a" stroke-width="1.2" />
+  <circle cx="280" cy="190" r="2.5" fill="#c0663a" />
+  <circle cx="280" cy="220" r="2.5" fill="#c0663a" />
+
+  <!-- ═══ TARGET  x=40..180  y=200..480 ═══ -->
+  <rect x="40" y="200" width="140" height="280" rx="10" ry="10" stroke-width="0.5" class="box-purple" />
+  <text class="th t-purple" x="110" y="222" text-anchor="middle" dominant-baseline="central">TARGET</text>
+  <!-- power pin (from INA228) -->
+  <text class="ts t-body" x="176" y="250" text-anchor="end">VCC</text>
+  <line x1="180" y1="250" x2="184" y2="250" stroke="#1a1a1a" stroke-width="1" />
+  <!-- divider -->
+  <line x1="44" y1="340" x2="176" y2="340" stroke="#b0aead" stroke-width="0.75" stroke-dasharray="3,2" />
+  <!-- SWD pins (direct to ARM CAN TOOL, bypassing INA228) -->
+  <text class="ts t-body" x="176" y="400" text-anchor="end">SWDIO</text>
+  <text class="ts t-body" x="176" y="430" text-anchor="end">SWCLK</text>
+  <text class="ts t-body" x="176" y="460" text-anchor="end">GND</text>
+  <line x1="180" y1="400" x2="184" y2="400" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="180" y1="430" x2="184" y2="430" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="180" y1="460" x2="184" y2="460" stroke="#1a1a1a" stroke-width="1" />
+
+  <!-- ═══ INA228  x=340..510  y=150..335 ═══ -->
+  <rect x="340" y="150" width="170" height="185" rx="10" ry="10" stroke-width="0.5" class="box-coral" />
+  <text class="th t-coral" x="425" y="163" text-anchor="middle" dominant-baseline="central">INA228</text>
+  <!-- left pins: VIN+, VBUS, VIN- (facing TARGET / external VCC) -->
+  <text class="ts t-body" x="344" y="190" text-anchor="start">VIN+</text>
+  <text class="ts t-body" x="344" y="220" text-anchor="start">VBUS</text>
+  <text class="ts t-body" x="344" y="250" text-anchor="start">VIN-</text>
+  <line x1="336" y1="190" x2="340" y2="190" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="336" y1="220" x2="340" y2="220" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="336" y1="250" x2="340" y2="250" stroke="#1a1a1a" stroke-width="1" />
+  <!-- right pins: VIN, GND, SDA, SCL, ALRT (facing ARM CAN TOOL) -->
+  <text class="ts t-body" x="506" y="190" text-anchor="end">VIN</text>
+  <text class="ts t-body" x="506" y="220" text-anchor="end">GND</text>
+  <text class="ts t-body" x="506" y="250" text-anchor="end">SDA</text>
+  <text class="ts t-body" x="506" y="280" text-anchor="end">SCL</text>
+  <text class="ts t-body" x="506" y="310" text-anchor="end">ALRT</text>
+  <line x1="510" y1="190" x2="514" y2="190" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="510" y1="220" x2="514" y2="220" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="510" y1="250" x2="514" y2="250" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="510" y1="280" x2="514" y2="280" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="510" y1="310" x2="514" y2="310" stroke="#1a1a1a" stroke-width="1" />
+
+  <!-- ═══ ARM CAN TOOL  x=670..840  y=115..480 ═══ -->
+  <rect x="670" y="115" width="170" height="365" rx="10" ry="10" stroke-width="0.5" class="box-teal" />
+  <text class="th t-teal" x="755" y="130" text-anchor="middle" dominant-baseline="central">ARM CAN TOOL</text>
+  <text class="ts t-teal" x="755" y="160" text-anchor="middle" dominant-baseline="central" font-size="9" font-style="italic">— I2C —</text>
+  <text class="ts t-body" x="674" y="190" text-anchor="start">3.3V</text>
+  <text class="ts t-body" x="674" y="220" text-anchor="start">GND</text>
+  <text class="ts t-body" x="674" y="250" text-anchor="start">SDA1</text>
+  <text class="ts t-body" x="674" y="280" text-anchor="start">SCL1</text>
+  <text class="ts t-body" x="674" y="310" text-anchor="start">SDA3 / TRIGGER</text>
+  <line x1="666" y1="190" x2="670" y2="190" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="666" y1="220" x2="670" y2="220" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="666" y1="250" x2="670" y2="250" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="666" y1="280" x2="670" y2="280" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="666" y1="310" x2="670" y2="310" stroke="#1a1a1a" stroke-width="1" />
+  <!-- divider -->
+  <line x1="674" y1="340" x2="836" y2="340" stroke="#b0aead" stroke-width="0.75" stroke-dasharray="3,2" />
+  <text class="ts t-teal" x="755" y="370" text-anchor="middle" dominant-baseline="central" font-size="9" font-style="italic">— ARM —</text>
+  <text class="ts t-body" x="674" y="400" text-anchor="start">SWDIO</text>
+  <text class="ts t-body" x="674" y="430" text-anchor="start">SWCLK</text>
+  <text class="ts t-body" x="674" y="460" text-anchor="start">GND</text>
+  <line x1="666" y1="400" x2="670" y2="400" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="666" y1="430" x2="670" y2="430" stroke="#1a1a1a" stroke-width="1" />
+  <line x1="666" y1="460" x2="670" y2="460" stroke="#1a1a1a" stroke-width="1" />
+
+  <!-- ═══ VCC bus → INA228 VIN+ / VBUS ═══ -->
+  <line x1="280" y1="190" x2="336" y2="190" stroke="#c0663a" stroke-width="1.2" />
+  <polygon points="330,190 322,186 322,194" fill="#c0663a" />
+  <line x1="280" y1="220" x2="336" y2="220" stroke="#c0663a" stroke-width="1.2" />
+  <polygon points="330,220 322,216 322,224" fill="#c0663a" />
+
+  <!-- ═══ TARGET ↔ INA228: power path only (no ground link here) ═══ -->
+  <line x1="184" y1="250" x2="336" y2="250" stroke="#c0663a" stroke-width="1.2" />
+  <polygon points="192,250 200,246 200,254" fill="#c0663a" />
+
+  <!-- ═══ INA228 ↔ ARM CAN TOOL: I2C connector ═══ -->
+  <line x1="514" y1="190" x2="666" y2="190" stroke="#1d9e75" stroke-width="1.2" />
+  <polygon points="522,190 530,186 530,194" fill="#1d9e75" />
+  <line x1="514" y1="220" x2="666" y2="220" stroke="#888780" stroke-width="1.2" />
+  <line x1="514" y1="250" x2="666" y2="250" stroke="#4a90b8" stroke-width="1.2" />
+  <polygon points="522,250 530,246 530,254" fill="#4a90b8" />
+  <polygon points="658,250 650,246 650,254" fill="#4a90b8" />
+  <line x1="514" y1="280" x2="666" y2="280" stroke="#4a90b8" stroke-width="1.2" />
+  <polygon points="522,280 530,276 530,284" fill="#4a90b8" />
+  <line x1="514" y1="310" x2="666" y2="310" stroke="#9b59b6" stroke-width="1.2" />
+  <polygon points="658,310 650,306 650,314" fill="#9b59b6" />
+
+  <!-- ═══ TARGET ↔ ARM CAN TOOL: ARM/SWD connector, bypassing INA228 ═══ -->
+  <line x1="184" y1="400" x2="666" y2="400" stroke="#7f77dd" stroke-width="1.2" />
+  <polygon points="192,400 200,396 200,404" fill="#7f77dd" />
+  <polygon points="658,400 650,396 650,404" fill="#7f77dd" />
+  <line x1="184" y1="430" x2="666" y2="430" stroke="#7f77dd" stroke-width="1.2" />
+  <polygon points="192,430 200,426 200,434" fill="#7f77dd" />
+  <line x1="184" y1="460" x2="666" y2="460" stroke="#888780" stroke-width="1.2" />
+
+  <!-- ═══ Legend ═══ -->
+  <rect x="40" y="560" width="800" height="90" rx="6" fill="none" stroke="#b0aead" stroke-width="0.5" stroke-dasharray="4, 2" ry="6" />
+  <text class="th t-body" x="52" y="580" dominant-baseline="central">Legend</text>
+  <line x1="52" y1="600" x2="76" y2="600" stroke="#c0663a" stroke-width="1.5" />
+  <text class="ts t-body" x="80" y="604">Power path (measured)</text>
+  <line x1="282" y1="600" x2="306" y2="600" stroke="#1d9e75" stroke-width="1.5" />
+  <text class="ts t-body" x="310" y="604">Logic supply (3.3V / VIN)</text>
+  <line x1="552" y1="600" x2="576" y2="600" stroke="#4a90b8" stroke-width="1.5" />
+  <text class="ts t-body" x="580" y="604">I2C (SDA / SCL)</text>
+  <line x1="52" y1="628" x2="76" y2="628" stroke="#7f77dd" stroke-width="1.5" />
+  <text class="ts t-body" x="80" y="632">SWD (SWDIO / SWCLK)</text>
+  <line x1="282" y1="628" x2="306" y2="628" stroke="#9b59b6" stroke-width="1.5" />
+  <text class="ts t-body" x="310" y="632">ALRT / interrupt</text>
+  <line x1="552" y1="628" x2="576" y2="628" stroke="#888780" stroke-width="1.5" />
+  <text class="ts t-body" x="580" y="632">GND</text>
+</svg>

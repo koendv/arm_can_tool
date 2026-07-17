@@ -1,7 +1,11 @@
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
 
-void logger(char *buf, uint32_t buflen);
+/* log string */
+void logger(const char *buf, const uint32_t buflen);
+
+/* write buffer to file */
+void logger_flush(void);
 
 #endif
 

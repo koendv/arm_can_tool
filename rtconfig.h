@@ -107,10 +107,13 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart6"
+#define RT_USING_CONSOLE_OUTPUT_CTL
 #define RT_VER_NUM 0x50300
 #define RT_BACKTRACE_LEVEL_MAX_NR 32
 /* end of RT-Thread Kernel */
 #define RT_USING_HW_ATOMIC
+#define ARCH_USING_HW_ATOMIC_8
+#define ARCH_USING_HW_ATOMIC_16
 #define RT_USING_CPU_FFS
 #define ARCH_ARM
 #define ARCH_ARM_CORTEX_M
@@ -127,7 +130,7 @@
 #define FINSH_USING_MSH
 #define FINSH_THREAD_NAME "tshell"
 #define FINSH_THREAD_PRIORITY 20
-#define FINSH_THREAD_STACK_SIZE 4096
+#define FINSH_THREAD_STACK_SIZE 2048
 #define FINSH_USING_HISTORY
 #define FINSH_HISTORY_LINES 5
 #define FINSH_USING_SYMTAB
@@ -171,6 +174,8 @@
 #define FAL_PART_HAS_TABLE_CFG
 #define FAL_USING_SFUD_PORT
 #define FAL_USING_NOR_FLASH_DEV_NAME "norflash0"
+#define FAL_DEV_NAME_MAX 24
+#define FAL_DEV_BLK_MAX 6
 
 /* Device Drivers */
 
@@ -180,15 +185,8 @@
 #define RT_USING_SERIAL_V2
 #define RT_SERIAL_BUF_STRATEGY_OVERWRITE
 #define RT_SERIAL_USING_DMA
-#define RT_USING_CAN
-#define RT_CAN_USING_HDR
-#define RT_CANMSG_BOX_SZ 16
-#define RT_CANSND_BOX_NUM 1
-#define RT_CANSND_MSG_TIMEOUT 100
-#define RT_CAN_NB_TX_FIFO_SIZE 256
-#define RT_USING_CPUTIME
-#define RT_USING_CPUTIME_CORTEXM
-#define CPUTIME_TIMER_FREQ 0
+#define RT_USING_ADC
+#define RT_USING_ADC_V1
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
 #define RT_USING_SOFT_I2C
@@ -204,7 +202,6 @@
 #define RT_SOFT_I2C3_BUS_NAME "i2c3"
 #define RT_SOFT_I2C3_TIMING_DELAY 10
 #define RT_SOFT_I2C3_TIMING_TIMEOUT 10
-#define RT_USING_ADC
 #define RT_USING_MTD_NOR
 #define RT_USING_RTC
 #define RT_USING_SPI
@@ -216,12 +213,14 @@
 #define RT_SFUD_SPI_MAX_HZ 50000000
 #define RT_USING_WDT
 #define RT_USING_PIN
-#define RT_USING_HWTIMER
 #define RT_USING_CHERRYUSB
 #define RT_CHERRYUSB_DEVICE
 #define RT_CHERRYUSB_DEVICE_SPEED_HS
 #define RT_CHERRYUSB_DEVICE_DWC2_AT
 #define RT_CHERRYUSB_DEVICE_CDC_ACM
+#define RT_CHERRYUSB_DEVICE_HID
+#define RT_CHERRYUSB_DEVICE_MSC
+#define RT_CHERRYUSB_DEVICE_CDC_ACM_CHARDEV
 #define CONFIG_USBDEV_REQUEST_BUFFER_LEN 512
 #define CONFIG_USBDEV_MSC_MAX_BUFSIZE 512
 #define RT_CHERRYUSB_DEVICE_TEMPLATE_NONE
@@ -263,6 +262,9 @@
 
 /* Utilities */
 
+#define RT_USING_RYM
+#define YMODEM_USING_CRC_TABLE
+#define YMODEM_USING_FILE_TRANSFER
 #define RT_USING_ULOG
 #define ULOG_OUTPUT_LVL_D
 #define ULOG_OUTPUT_LVL 7
@@ -340,9 +342,6 @@
 /* XML: Extensible Markup Language */
 
 /* end of XML: Extensible Markup Language */
-#define PKG_USING_LUA
-#define PKG_USING_LUA_LATEST_VERSION
-#define LUA_USING_PORTING_V534
 /* end of language packages */
 
 /* multimedia packages */
@@ -368,18 +367,17 @@
 
 /* tools packages */
 
-#define PKG_USING_BLACKMAGIC
-#define BLACKMAGIC_ENABLE_GPIO
-#define BLACKMAGIC_ENABLE_RTT
-#define BLACKMAGIC_ENABLE_DEBUG
-#define PKG_USING_BLACKMAGIC_LATEST_VERSION
-#define BLACKMAGIC_VERSION "latest"
 #define PKG_USING_CMBACKTRACE
 #define PKG_CMBACKTRACE_PLATFORM_M4
 #define PKG_CMBACKTRACE_DUMP_STACK
 #define PKG_CMBACKTRACE_PRINT_ENGLISH
 #define PKG_USING_CMBACKTRACE_LATEST_VERSION
 #define PKG_CMBACKTRACE_VER_NUM 0x99999
+#define PKG_USING_BLACKMAGIC
+#define BLACKMAGIC_ENABLE_RTT
+#define BLACKMAGIC_ENABLE_DEBUG
+#define PKG_USING_BLACKMAGIC_LATEST_VERSION
+#define BLACKMAGIC_VERSION "latest"
 /* end of tools packages */
 
 /* system packages */
@@ -408,6 +406,7 @@
 #define LFS_READ_SIZE 256
 #define LFS_PROG_SIZE 256
 #define LFS_BLOCK_SIZE 4096
+#define LFS_NO_DEBUG
 #define LFS_CACHE_SIZE 256
 #define LFS_BLOCK_CYCLES -1
 #define LFS_THREADSAFE
@@ -431,6 +430,10 @@
 
 /* end of Kendryte SDK */
 
+/* MM32 HAL & SDK Drivers */
+
+/* end of MM32 HAL & SDK Drivers */
+
 /* WCH HAL & SDK Drivers */
 
 /* end of WCH HAL & SDK Drivers */
@@ -450,6 +453,30 @@
 /* NXP HAL & SDK Drivers */
 
 /* end of NXP HAL & SDK Drivers */
+
+/* NUVOTON Drivers */
+
+/* end of NUVOTON Drivers */
+
+/* GD32 Drivers */
+
+/* end of GD32 Drivers */
+
+/* HPMicro SDK */
+
+/* end of HPMicro SDK */
+
+/* FT32 HAL & SDK Drivers */
+
+/* end of FT32 HAL & SDK Drivers */
+
+/* NOVOSNS Drivers */
+
+/* end of NOVOSNS Drivers */
+
+/* N32 Drivers */
+
+/* end of N32 Drivers */
 /* end of HAL & SDK Drivers */
 
 /* sensors drivers */
@@ -552,24 +579,19 @@
 #define BSP_UART2_TX_USING_DMA
 #define BSP_UART2_RX_BUFSIZE 256
 #define BSP_UART2_TX_BUFSIZE 128
-#define BSP_UART2_DMA_PING_BUFSIZE 64
+#define BSP_UART2_DMA_PING_BUFSIZE 128
 #define BSP_USING_UART3
 #define BSP_UART3_RX_USING_DMA
 #define BSP_UART3_TX_USING_DMA
 #define BSP_UART3_RX_BUFSIZE 256
 #define BSP_UART3_TX_BUFSIZE 256
-#define BSP_UART3_DMA_PING_BUFSIZE 64
+#define BSP_UART3_DMA_PING_BUFSIZE 128
 #define BSP_USING_UART6
 #define BSP_UART6_RX_USING_DMA
 #define BSP_UART6_TX_USING_DMA
 #define BSP_UART6_RX_BUFSIZE 256
 #define BSP_UART6_TX_BUFSIZE 256
-#define BSP_UART6_DMA_PING_BUFSIZE 64
-#define BSP_USING_UART7
-#define BSP_UART7_RX_USING_DMA
-#define BSP_UART7_RX_BUFSIZE 4096
-#define BSP_UART7_TX_BUFSIZE 0
-#define BSP_UART7_DMA_PING_BUFSIZE 1024
+#define BSP_UART6_DMA_PING_BUFSIZE 128
 #define BSP_USING_HWTIMER
 #define BSP_USING_HWTMR3
 #define BSP_USING_SPI
@@ -578,8 +600,6 @@
 #define BSP_SPI2_RX_USING_DMA
 #define BSP_USING_ADC
 #define BSP_USING_ADC1
-#define BSP_USING_CAN
-#define BSP_USING_CAN1
 /* end of On-chip Peripheral Drivers */
 /* end of Hardware Drivers Config */
 

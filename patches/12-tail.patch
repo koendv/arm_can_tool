@@ -1,0 +1,264 @@
+diff --git a/components/finsh/msh_file.c b/components/finsh/msh_file.c
+index efcabee225..cb922f7b9f 100644
+--- a/components/finsh/msh_file.c
++++ b/components/finsh/msh_file.c
+@@ -17,6 +17,7 @@
+ #include "msh.h"
+ #include <dfs_file.h>
+ #include <unistd.h>
++#include <limits.h>
+ #include <fcntl.h>
+ #ifdef RT_USING_DFS_V2
+ #include <dfs_mnt.h>
+@@ -739,6 +740,132 @@ static int cmd_echo(int argc, char **argv)
+ }
+ MSH_CMD_EXPORT_ALIAS(cmd_echo, echo, echo string to file);
+ 
++#define TAIL_BLKSIZE_MAX 512
++
++/* print file from current position to EOF */
++static void tail_dump(int fd, rt_uint32_t blk_size)
++{
++    rt_uint8_t buf[TAIL_BLKSIZE_MAX];
++    rt_device_t console;
++    int len;
++
++    console = rt_console_get_device();
++
++    while ((len = read(fd, buf, blk_size)) > 0)
++    {
++        rt_device_write(console, 0, buf, (rt_size_t)len);
++    }
++}
++
++/* find n-th line from the end */
++static rt_uint32_t tail_offset_last_n_lines(int fd, rt_uint32_t size, rt_uint32_t blk_size, rt_uint32_t num_lines)
++{
++    rt_uint8_t buf[TAIL_BLKSIZE_MAX];
++    rt_uint32_t pos;
++    rt_uint32_t count = 0;
++    rt_uint32_t effective_size = size;
++    char last_char;
++
++    if (num_lines == 0 || size == 0)
++    {
++        return size;
++    }
++
++    lseek(fd, (int)(size - 1), SEEK_SET);
++    if (read(fd, &last_char, 1) == 1 && last_char == '\n')
++    {
++        effective_size = size - 1;
++    }
++
++    pos = effective_size;
++    while (pos > 0)
++    {
++        rt_uint32_t chunk = (pos >= blk_size) ? blk_size : pos;
++        int i;
++
++        pos -= chunk;
++        lseek(fd, (int)pos, SEEK_SET);
++        read(fd, buf, chunk);
++
++        for (i = (int)chunk - 1; i >= 0; i--)
++        {
++            if (buf[i] == '\n')
++            {
++                count++;
++                if (count == num_lines)
++                {
++                    return pos + (rt_uint32_t)i + 1;
++                }
++            }
++        }
++    }
++
++    /* fewer than num_lines lines in the whole file */
++    return 0;
++}
++
++/* find n-th line from the beginning */
++static rt_uint32_t tail_offset_from_line(int fd, rt_uint32_t size, rt_uint32_t blk_size, rt_uint32_t start_line)
++{
++    rt_uint8_t buf[TAIL_BLKSIZE_MAX];
++    rt_uint32_t pos = 0;
++    rt_uint32_t count = 0;
++    rt_uint32_t target;
++
++    if (start_line <= 1)
++    {
++        return 0;
++    }
++    target = start_line - 1; /* newlines to skip before the target line starts */
++
++    while (pos < size)
++    {
++        rt_uint32_t remaining = size - pos;
++        rt_uint32_t chunk = (remaining >= blk_size) ? blk_size : remaining;
++        rt_uint32_t i;
++
++        lseek(fd, (int)pos, SEEK_SET);
++        read(fd, buf, chunk);
++
++        for (i = 0; i < chunk; i++)
++        {
++            if (buf[i] == '\n')
++            {
++                count++;
++                if (count == target)
++                {
++                    return pos + i + 1;
++                }
++            }
++        }
++        pos += chunk;
++    }
++
++    return size; /* file has fewer than start_line lines */
++}
++
++/* parse string as number, return false if error */
++static rt_bool_t tail_parse_num(const char *s, rt_uint32_t *out)
++{
++    char *endptr;
++    long value;
++
++    if (s == RT_NULL || *s == '\0')
++    {
++        return RT_FALSE;
++    }
++
++    value = strtol(s, &endptr, 10);
++
++    if (endptr == s || *endptr != '\0' || value < 0 || value == LONG_MAX)
++    {
++        return RT_FALSE;
++    }
++
++    *out = (rt_uint32_t)value;
++    return RT_TRUE;
++}
++
+ /**
+  * @brief  Print the last part of a file (tail command).
+  *
+@@ -754,13 +881,12 @@ MSH_CMD_EXPORT_ALIAS(cmd_echo, echo, echo string to file);
+ static int cmd_tail(int argc, char **argv)
+ {
+     int fd;
+-    char c = RT_NULL;
+     char *file_name = RT_NULL;
+-    rt_uint32_t total_lines = 0;
+-    rt_uint32_t target_line = 0;
+-    rt_uint32_t current_line = 0;
+-    rt_uint32_t required_lines = 0;
+-    rt_uint32_t start_line = 0;
++    rt_uint32_t num = 10; /* default: 10 lines from tail */
++    rt_bool_t has_plus = RT_FALSE; /* RT_TRUE: "-n +NUM" syntax was used */
++    struct stat st;
++    rt_uint32_t blk_size;
++    rt_uint32_t start_offset = 0;
+ 
+     if (argc < 2)
+     {
+@@ -769,7 +895,6 @@ static int cmd_tail(int argc, char **argv)
+     }
+     else if (argc == 2)
+     {
+-        required_lines = 10; /* default: 10 lines from tail */
+         file_name = argv[1];
+     }
+     else if (rt_strcmp(argv[1], "-n") == 0)
+@@ -786,13 +911,14 @@ static int cmd_tail(int argc, char **argv)
+         }
+ 
+         /* Check for explicit start line syntax (e.g., +100) */
+-        if (argv[2][0] != '+')
++        if (argv[2][0] == '+')
+         {
+-            required_lines = atoi(argv[2]);
++            has_plus = RT_TRUE;
+         }
+-        else
++        if (!tail_parse_num(has_plus ? &argv[2][1] : argv[2], &num)) /* eg: +100, skip '+' to get 100 */
+         {
+-            start_line = atoi(&argv[2][1]); /* eg: +100, skip '+' to get 100 */
++            rt_kprintf("Error: invalid number '%s'\n", argv[2]);
++            return -1;
+         }
+         file_name = argv[3];
+     }
+@@ -809,57 +935,31 @@ static int cmd_tail(int argc, char **argv)
+         return -1;
+     }
+ 
+-    while ((read(fd, &c, sizeof(char))) > 0)
++    if (fstat(fd, &st) != 0)
+     {
+-        if(total_lines == 0)
+-        {
+-            total_lines++;
+-        }
+-        if (c == '\n')
+-        {
+-            total_lines++;
+-        }
++        rt_kprintf("Failed to stat file\n");
++        close(fd);
++        return -1;
+     }
+ 
+-    rt_kprintf("\nTotal Number of lines:%ld\n", total_lines);
+-
+-    if (start_line != 0)
++    /* Use the filesystem's reported I/O block size where sane, else 512. */
++    blk_size = st.st_blksize;
++    if (blk_size == 0 || blk_size > TAIL_BLKSIZE_MAX)
+     {
+-        if (total_lines >= start_line)
+-        {
+-            required_lines = total_lines - start_line + 1;
+-        }
+-        else
+-        {
+-            rt_kprintf("\nError:Required lines are more than total number of lines\n");
+-            close(fd);
+-            return -1;
+-        }
++        blk_size = TAIL_BLKSIZE_MAX;
+     }
+ 
+-    if (required_lines > total_lines)
++    if (has_plus) /* -n +NUM, including +0: whole file, handled by tail_offset_from_line */
+     {
+-        rt_kprintf("\nError:Required lines are more than total number of lines\n");
+-        close(fd);
+-        return -1;
++        start_offset = tail_offset_from_line(fd, (rt_uint32_t)st.st_size, blk_size, num);
+     }
+-    rt_kprintf("Required Number of lines:%ld\n", required_lines);
+-
+-    target_line = total_lines - required_lines;
+-    lseek(fd, 0, SEEK_SET); /* back to head */
+-
+-    while ((read(fd, &c, sizeof(char))) > 0)
++    else /* -n NUM, or default (10) */
+     {
+-        if (current_line >= target_line)
+-        {
+-            rt_kprintf("%c", c);
+-        }
+-        if (c == '\n')
+-        {
+-            current_line++;
+-        }
++        start_offset = tail_offset_last_n_lines(fd, (rt_uint32_t)st.st_size, blk_size, num);
+     }
+-    rt_kprintf("\n");
++
++    lseek(fd, (int)start_offset, SEEK_SET);
++    tail_dump(fd, blk_size);
+ 
+     close(fd);
+     return 0;

@@ -1,0 +1,340 @@
+diff -urN ORIG/lua-5.5.0/src/lauxlib.h lua-5.5.0/src/lauxlib.h
+--- ORIG/lua-5.5.0/src/lauxlib.h	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/lauxlib.h	2026-04-06 07:16:55.025244135 +0200
+@@ -14,6 +14,7 @@
+ 
+ #include "luaconf.h"
+ #include "lua.h"
++#include "rotable.h"
+ 
+ 
+ /* global table */
+diff -urN ORIG/lua-5.5.0/src/lbaselib.c lua-5.5.0/src/lbaselib.c
+--- ORIG/lua-5.5.0/src/lbaselib.c	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/lbaselib.c	2026-04-08 17:35:50.724005793 +0200
+@@ -557,3 +557,67 @@
+   return 1;
+ }
+ 
++
++/*
++** _VERSION as a function (rotable cannot hold string constants)
++*/
++static int luaB_version(lua_State *L)
++{
++  lua_pushliteral(L, LUA_VERSION);
++  return 1;
++}
++
++int lua_print (lua_State *L) {
++  return luaB_print(L);
++}
++
++/*
++** Base library as rotable.
++** _G self-reference is not registered; scripts cannot iterate globals
++** via _G but can still read/write globals normally via __index/__newindex.
++** _VERSION is exposed as a zero-argument function: _VERSION() -> string.
++*/
++static const rotable_Reg base_lib[] = {
++  { "assert",         luaB_assert,         0 },
++  { "collectgarbage", luaB_collectgarbage, 0 },
++  { "dofile",         luaB_dofile,         0 },
++  { "error",          luaB_error,          0 },
++  { "getmetatable",   luaB_getmetatable,   0 },
++  { "ipairs",         luaB_ipairs,         0 },
++  { "load",           luaB_load,           0 },
++  { "loadfile",       luaB_loadfile,       0 },
++  { "next",           luaB_next,           0 },
++  { "pairs",          luaB_pairs,          0 },
++  { "pcall",          luaB_pcall,          0 },
++  { "print",          luaB_print,          0 },
++  { "warn",           luaB_warn,           0 },
++  { "rawequal",       luaB_rawequal,       0 },
++  { "rawget",         luaB_rawget,         0 },
++  { "rawlen",         luaB_rawlen,         0 },
++  { "rawset",         luaB_rawset,         0 },
++  { "select",         luaB_select,         0 },
++  { "setmetatable",   luaB_setmetatable,   0 },
++  { "tonumber",       luaB_tonumber,       0 },
++  { "tostring",       luaB_tostring,       0 },
++  { "type",           luaB_type,           0 },
++  { "xpcall",         luaB_xpcall,         0 },
++  { "_VERSION",       luaB_version,        0 },
++  { NULL, NULL, 0 }
++};
++
++LUAMOD_API int luaopen_base_rotable(lua_State *L)
++{
++  /* register rotable as _BASE in _G */
++  rotable_newlib(L, base_lib);
++  lua_setglobal(L, "_BASE");
++
++  /* set _G metatable so global lookups fall through to _BASE */
++  lua_pushglobaltable(L);              /* _G */
++  lua_newtable(L);                     /* metatable */
++  lua_getglobal(L, "_BASE");           /* _BASE rotable */
++  lua_setfield(L, -2, "__index");      /* mt.__index = _BASE */
++  lua_setmetatable(L, -2);             /* setmetatable(_G, mt) */
++  lua_pop(L, 1);                       /* pop _G */
++
++  return 0;
++}
+diff -urN ORIG/lua-5.5.0/src/lcorolib.c lua-5.5.0/src/lcorolib.c
+--- ORIG/lua-5.5.0/src/lcorolib.c	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/lcorolib.c	2026-04-08 17:37:17.226211148 +0200
+@@ -223,3 +223,24 @@
+   return 1;
+ }
+ 
++/*
++** Open coroutine library as rotable
++*/
++static const rotable_Reg coroutine_lib[] = {
++    { "create",      luaB_cocreate,  0 },
++    { "resume",      luaB_coresume,  0 },
++    { "running",     luaB_corunning, 0 },
++    { "status",      luaB_costatus,  0 },
++    { "wrap",        luaB_cowrap,    0 },
++    { "yield",       luaB_yield,     0 },
++    { "isyieldable", luaB_yieldable, 0 },
++    { "close",       luaB_close,     0 },
++    { NULL, NULL, 0 }
++};
++
++LUAMOD_API int luaopen_coroutine_rotable(lua_State *L)
++{
++    rotable_newlib(L, coroutine_lib);
++    lua_setglobal(L, LUA_COLIBNAME);
++    return 0;
++}
+diff -urN ORIG/lua-5.5.0/src/lmathlib.c lua-5.5.0/src/lmathlib.c
+--- ORIG/lua-5.5.0/src/lmathlib.c	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/lmathlib.c	2026-04-08 17:36:32.909169219 +0200
+@@ -555,6 +555,8 @@
+   Rand64 s[4];
+ } RanState;
+ 
++static RanState math_ranstate;  /* file-scope state; no upvalue needed */
++
+ 
+ /*
+ ** Project the random integer 'ran' into the interval [0, n].
+@@ -582,7 +584,7 @@
+ static int math_random (lua_State *L) {
+   lua_Integer low, up;
+   lua_Unsigned p;
+-  RanState *state = (RanState *)lua_touserdata(L, lua_upvalueindex(1));
++  RanState *state = &math_ranstate;
+   Rand64 rv = nextrand(state->s);  /* next pseudo-random value */
+   switch (lua_gettop(L)) {  /* check number of arguments */
+     case 0: {  /* no arguments */
+@@ -629,7 +631,7 @@
+ 
+ 
+ static int math_randomseed (lua_State *L) {
+-  RanState *state = (RanState *)lua_touserdata(L, lua_upvalueindex(1));
++  RanState *state = &math_ranstate;
+   lua_Unsigned n1, n2;
+   if (lua_isnone(L, 1)) {
+     n1 = luaL_makeseed(L);  /* "random" seed */
+@@ -763,3 +765,61 @@
+   return 1;
+ }
+ 
++/* float constants as functions */
++
++static int math_pi(lua_State *L)
++{
++  lua_pushnumber(L, (lua_Number)PI);
++  return 1;
++}
++
++static int math_huge(lua_State *L)
++{
++  lua_pushnumber(L, (lua_Number)HUGE_VAL);
++  return 1;
++}
++
++/*
++** Open math library as rotable
++*/
++
++static const rotable_Reg math_lib[] = {
++    { "abs",        math_abs,   0 },
++    { "acos",       math_acos,  0 },
++    { "asin",       math_asin,  0 },
++    { "atan",       math_atan,  0 },
++    { "ceil",       math_ceil,  0 },
++    { "cos",        math_cos,   0 },
++    { "deg",        math_deg,   0 },
++    { "exp",        math_exp,   0 },
++    { "floor",      math_floor, 0 },
++    { "fmod",       math_fmod,  0 },
++    { "huge",       math_huge,  0 },
++    { "log",        math_log,   0 },
++    { "max",        math_max,   0 },
++    { "maxinteger", NULL, LUA_MAXINTEGER },
++    { "min",        math_min,   0 },
++    { "mininteger", NULL, LUA_MININTEGER },
++    { "modf",       math_modf,  0 },
++    { "pi",         math_pi,    0 },
++    { "rad",        math_rad,   0 },
++    { "sin",        math_sin,   0 },
++    { "sqrt",       math_sqrt,  0 },
++    { "tan",        math_tan,   0 },
++    { "tointeger",  math_toint, 0 },
++    { "type",       math_type,  0 },
++    { "ult",        math_ult,   0 },
++    { "random",     math_random,     0 },
++    { "randomseed", math_randomseed, 0 },
++    { NULL, NULL, 0 }
++};
++
++LUAMOD_API int luaopen_math_rotable(lua_State *L)
++{
++    setseed(L, math_ranstate.s, luaL_makeseed(L), 0);
++    lua_pop(L, 2);  /* remove pushed seeds */
++    rotable_newlib(L, math_lib);
++    lua_setglobal(L, LUA_MATHLIBNAME);
++    return 0;
++}
++
+diff -urN ORIG/lua-5.5.0/src/lstrlib.c lua-5.5.0/src/lstrlib.c
+--- ORIG/lua-5.5.0/src/lstrlib.c	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/lstrlib.c	2026-04-08 17:36:47.116701057 +0200
+@@ -1892,3 +1892,36 @@
+   return 1;
+ }
+ 
++/*
++** Open string library as rotable
++** LUA_NOCVTS2N must be defined in luaconf.h.
++** No string metatable: use string.method(s) not s:method().
++*/
++static const rotable_Reg string_lib[] = {
++    { "byte",       str_byte,      0 },
++    { "char",       str_char,      0 },
++    { "dump",       str_dump,      0 },
++    { "find",       str_find,      0 },
++    { "format",     str_format,    0 },
++    { "gmatch",     gmatch,        0 },
++    { "gsub",       str_gsub,      0 },
++    { "len",        str_len,       0 },
++    { "lower",      str_lower,     0 },
++    { "match",      str_match,     0 },
++    { "pack",       str_pack,      0 },
++    { "packsize",   str_packsize,  0 },
++    { "rep",        str_rep,       0 },
++    { "reverse",    str_reverse,   0 },
++    { "sub",        str_sub,       0 },
++    { "unpack",     str_unpack,    0 },
++    { "upper",      str_upper,     0 },
++    { NULL, NULL, 0 }
++};
++
++LUAMOD_API int luaopen_string_rotable(lua_State *L)
++{
++    rotable_newlib(L, string_lib);
++    lua_setglobal(L, LUA_STRLIBNAME);
++    return 0;
++}
++
+diff -urN ORIG/lua-5.5.0/src/ltablib.c lua-5.5.0/src/ltablib.c
+--- ORIG/lua-5.5.0/src/ltablib.c	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/ltablib.c	2026-04-08 17:37:04.376235385 +0200
+@@ -424,3 +424,26 @@
+   return 1;
+ }
+ 
++/*
++** Open table library as rotable
++*/
++
++static const rotable_Reg table_lib[] = {
++    { "concat",  tconcat,  0 },
++    { "create",  tcreate,  0 },
++    { "insert",  tinsert,  0 },
++    { "move",    tmove,    0 },
++    { "pack",    tpack,    0 },
++    { "remove",  tremove,  0 },
++    { "sort",    sort,     0 },
++    { "unpack",  tunpack,  0 },
++    { NULL, NULL, 0 }
++};
++
++LUAMOD_API int luaopen_table_rotable(lua_State *L)
++{
++    rotable_newlib(L, table_lib);
++    lua_setglobal(L, LUA_TABLIBNAME);
++    return 0;
++}
++
+diff -urN ORIG/lua-5.5.0/src/luaconf.h lua-5.5.0/src/luaconf.h
+--- ORIG/lua-5.5.0/src/luaconf.h	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/luaconf.h	2026-04-08 08:18:32.585190782 +0200
+@@ -28,6 +28,7 @@
+ ** ===================================================================
+ */
+ 
++#include <luaconf_platform.h>
+ 
+ /*
+ ** {====================================================================
+diff -urN ORIG/lua-5.5.0/src/lutf8lib.c lua-5.5.0/src/lutf8lib.c
+--- ORIG/lua-5.5.0/src/lutf8lib.c	2025-12-13 20:16:59.000000000 +0100
++++ lua-5.5.0/src/lutf8lib.c	2026-04-08 17:37:27.501882863 +0200
+@@ -289,3 +289,32 @@
+   return 1;
+ }
+ 
++/* string constant as function */
++
++static int utfcharpattern(lua_State *L)
++{
++  lua_pushlstring(L, UTF8PATT, sizeof(UTF8PATT) / sizeof(char) - 1);
++  return 1;
++}
++
++/*
++** Open utf8 library as rotable
++** utf8.charpattern as function utf8.charpattern()
++*/
++
++static const rotable_Reg utf8_lib[] = {
++    { "char",        utfchar,        0 },
++    { "charpattern", utfcharpattern, 0 },
++    { "codepoint",   codepoint,      0 },
++    { "codes",       iter_codes,     0 },
++    { "len",         utflen,         0 },
++    { "offset",      byteoffset,     0 },
++    { NULL, NULL, 0 }
++};
++
++LUAMOD_API int luaopen_utf8_rotable(lua_State *L)
++{
++    rotable_newlib(L, utf8_lib);
++    lua_setglobal(L, LUA_UTF8LIBNAME);
++    return 0;
++}
+diff -urN ORIG/lua-5.5.0/src/SConscript lua-5.5.0/src/SConscript
+--- ORIG/lua-5.5.0/src/SConscript	1970-01-01 01:00:00.000000000 +0100
++++ lua-5.5.0/src/SConscript	2026-04-08 14:58:22.156155567 +0200
+@@ -0,0 +1,17 @@
++from building import *
++import os
++
++cwd = GetCurrentDir()
++src = Glob('*.c')
++CPPPATH = [cwd]
++
++SrcRemove(src, ['lua.c', 'luac.c', 'ltests.c'])
++
++group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
++
++list = os.listdir(cwd)
++for item in list:
++    if os.path.isfile(os.path.join(cwd, item, 'SConscript')):
++        group = group + SConscript(os.path.join(item, 'SConscript'))
++
++Return('group')

@@ -7,6 +7,9 @@
 #include <rthw.h>
 #include <rtthread.h>
 #include <rtdevice.h>
+#define DBG_TAG "MULTI"
+#define DBG_LVL DBG_ERR
+#include <rtdbg.h>
 #include <u8x8.h>
 #include <u8g2_port.h>
 #include <mui.h>
@@ -19,6 +22,7 @@
 #define MIN_AUTO_REPEAT_TICK (RT_TICK_PER_SECOND / 20)
 #define ACCELERATION         3
 #define IDLE_WAIT_TICK       (RT_TICK_PER_SECOND)
+#define MUI_MAX_MSG          4
 
 /* arrays of buttons and their messages */
 
@@ -114,7 +118,7 @@ static void button_auto_repeat_thread(void *ptr)
 static int multi_direction_switch()
 {
     /* mailbox for messages to mui */
-    mui_msg_mb = rt_mb_create("mui_msg", 4, RT_IPC_FLAG_FIFO);
+    mui_msg_mb = rt_mb_create("mui_msg", MUI_MAX_MSG, RT_IPC_FLAG_FIFO);
 
     /* button debounce timer. 20ms one-shot */
     debounce_tim = rt_timer_create("debounce",
@@ -197,5 +201,74 @@ rt_err_t mui_refresh()
     return rt_mb_send(mui_msg_mb, U8X8_MSG_DISPLAY_REFRESH);
 }
 
+rt_err_t mui_send_next(void)
+{
+    return rt_mb_send(mui_msg_mb, U8X8_MSG_GPIO_MENU_NEXT);
+}
+
+rt_err_t mui_send_prev(void)
+{
+    return rt_mb_send(mui_msg_mb, U8X8_MSG_GPIO_MENU_PREV);
+}
+
+rt_err_t mui_send_inc(void)
+{
+    return rt_mb_send(mui_msg_mb, U8X8_MSG_GPIO_MENU_UP);
+}
+
+rt_err_t mui_send_dec(void)
+{
+    return rt_mb_send(mui_msg_mb, U8X8_MSG_GPIO_MENU_DOWN);
+}
+
+rt_err_t mui_send_select(void)
+{
+    return rt_mb_send(mui_msg_mb, U8X8_MSG_GPIO_MENU_SELECT);
+}
+
 INIT_COMPONENT_EXPORT(multi_direction_switch);
+
+/* MSH command: mui next|prev|inc|dec|select [...]
+ * Sends one or more navigation messages to the mui input mailbox.
+ * Arguments are processed left to right; on the first unrecognised
+ * argument a usage line is printed and processing stops.
+ * Prefix matching is used: "n", "ne", "nex", "next" all match "next".
+ */
+
+static void mui_usage(void)
+{
+    rt_kprintf("usage: mui next|prev|inc|dec|select [...]\n");
+}
+
+static int mui_cmd(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
+        mui_usage();
+        return 0;
+    }
+
+    for (int i = 1; i < argc; i++)
+    {
+        size_t len = strlen(argv[i]);
+        if (strncmp(argv[i], "next", len) == 0)
+            mui_send_next();
+        else if (strncmp(argv[i], "prev", len) == 0)
+            mui_send_prev();
+        else if (strncmp(argv[i], "select", len) == 0)
+            mui_send_select();
+        else if (strncmp(argv[i], "inc", len) == 0)
+            mui_send_inc();
+        else if (strncmp(argv[i], "dec", len) == 0)
+            mui_send_dec();
+        else
+        {
+            mui_usage();
+            return -1;
+        }
+    }
+    return 0;
+}
+
+MSH_CMD_EXPORT_ALIAS(mui_cmd, mui, navigate menu);
 

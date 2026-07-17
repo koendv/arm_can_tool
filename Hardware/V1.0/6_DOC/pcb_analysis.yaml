@@ -1,0 +1,6741 @@
+metadata:
+  component_count: 174
+  net_count: 136
+  verbosity_level: 5
+  verbosity_description: 'EXHAUSTIVE: + All original BOM fields'
+  generation_timestamp: '2026-04-23T06:47:56.703190'
+  generator: EasyEDA Parser v1.0
+  data_sources:
+    bom: 'Bill of Materials: Component specifications, values, manufacturers'
+    pickplace: 'Pick & Place: Physical coordinates, rotation, layer for assembly'
+    netlist: 'Netlist: Electrical pin-to-pin connectivity'
+    schematic: 'Schematic PDF: SCH_Schematic1_2026-04-18.pdf, 3 pages'
+  project:
+    name: arm_can_tool
+    author: koendv
+    license: CC0 PUBLIC DOMAIN
+    version: '1.0'
+    schematic_part_number: JLCPCB-002
+    schematic_size: A3
+    schematic_pages: 3
+    schematic_create_date: '2026-01-16'
+    schematic_update_date: '2026-04-17'
+    page_titles:
+      P1: PROCESSOR AND POWER
+      P2: I2C AND SPI
+      P3: TARGET AND CAN
+  pcb_fab:
+    vendor: JLCPCB
+    stackup: JLC04161H-7628
+    layers: 4
+    controlled_impedance: true
+    impedance_targets:
+      usb_differential_pair: 90_ohm_differential
+      single_ended_50ohm: 13_mil_trace
+      usb_trace_spacing: 8_mil_space
+      usb_trace_width: 10_mil
+  design_checklist:
+  - item: No silkscreen in CAN bus isolation barrier
+    status: required
+  - item: DS3231 RTC interrupt on MCU EXTI pin (PC13)
+    status: verified
+  - item: Target T_SWO/TRACESWO on USART RX
+    status: verify_in_firmware
+  - item: SD card length and impedance matching
+    status: layout_action_required
+  - item: USB differential pair length matching and 90-ohm impedance
+    status: layout_action_required
+  - item: Transmission lines routed over ground plane
+    status: layout_action_required
+  - item: No solder paste on middle pad of battery holder BT1 (C964818)
+    status: assembly_note
+  - item: Order number on PCB - specify position
+    status: fab_action_required
+  mechanical:
+    shell_component_side: SLA resin 9600 white
+    shell_display_side: SLA resin 8100 transparent
+    fasteners: 4x nylon M3 10mm screws and nuts
+    mounting_holes: M1 M2 M3 M4 (3.2mm)
+  emc_notes:
+  - C52 (2.2nF 400VAC Y-capacitor across isolation barrier) DNP by default, EMC debugging
+    only
+  - L1 ACT1210-510-2P-TL00 is a dual-winding common-mode choke on CAN_HI/CAN_LO
+  - L2 GZ1608D601TF is a ferrite bead on CAN_5V_IN supply
+  coordinate_system:
+    units: millimeters (mm)
+    origin: Bottom-left corner of PCB (standard PCB manufacturing coordinates)
+    x_axis: Horizontal, increasing to the right
+    y_axis: Vertical, increasing upward
+    rotation: Degrees, counter-clockwise positive (0° = component oriented as in datasheet)
+    placement_reference: Coordinates are from the component center (Mid X, Mid Y)
+    estimated_board_size: 65.4mm × 103.1mm
+    component_extent: &id001
+      min_x_mm: 1.7
+      max_x_mm: 57.0
+      min_y_mm: 3.9
+      max_y_mm: 97.0
+      width_mm: 55.4
+      height_mm: 93.1
+  layer_codes:
+    T: Top layer (components on top side of PCB)
+    B: Bottom layer (components on bottom side)
+  interpretation_notes:
+  - Component types (R=resistor, C=capacitor, L=inductor, U=IC, etc.) are inferred
+    from designator prefixes
+  - Placement coordinates show physical layout - components near each other are functionally
+    related
+  - Net connections show electrical connectivity - components on same net are electrically
+    connected
+  - Rotation 0° means component oriented as shown in datasheet, 90° means rotated
+    90° counter-clockwise
+  - This data comes from EasyEDA Pro exports and preserves all original information
+  board_dimensions:
+    width_mm: 65.4
+    height_mm: 103.1
+    estimated_board_size: 65.4mm × 103.1mm
+    component_extent: *id001
+    note: Dimensions estimated from component placement with 5mm margin
+components:
+- designator: BT1
+  type: battery
+  value: MY-1220-03
+  footprint: BAT-SMD_MY-1220-03
+  comment: MY-1220-03
+  manufacturer: MYOUNG(美阳)
+  manufacturer_part: MY-1220-03
+  supplier_part: C964818
+  placement:
+    x_mm: 5.08
+    y_mm: 59.69
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': VBAT
+    '2': VBAT
+    '3': GND
+  bom_data:
+    No.: '1'
+    Designator: BT1
+    Quantity: '1'
+    Manufacturer: MYOUNG(美阳)
+    Manufacturer Part: MY-1220-03
+    Comment: MY-1220-03
+    Footprint: BAT-SMD_MY-1220-03
+    Mounting Style: SMT
+    Supplier Part: C964818
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20201218/C964818_B03812FB908E34364C1125E65C8EBE5C.pdf
+  schematic_page: P1
+  function_block: RTC backup battery
+  schematic_notes:
+  - CR1220 coin cell; powers VBAT rail when main supply is absent
+  - 'Assembly: no solder paste on middle pad of holder C964818'
+- designator: C1
+  type: capacitor
+  value: 100nF
+  footprint: C0603
+  comment: 100nF
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: CC0603KRX7R9BB104
+  supplier_part: C14663
+  placement:
+    x_mm: 12.065
+    y_mm: 85.725
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': CAN_GND
+    '2': CAN_5V_OUT
+  bom_data:
+    No.: '2'
+    Designator: C1,C7,C15,C18
+    Quantity: '4'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: CC0603KRX7R9BB104
+    Comment: 100nF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C14663
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180910/C282072_33301C7F631E79921B82A8DAC6BCC5B3.pdf
+  schematic_page: P3
+  function_block: CAN transceiver VCC decoupling (3.3V side)
+  schematic_notes:
+  - 100nF decoupling for U3 VCC pin (3.3V domain)
+- designator: C2
+  type: capacitor
+  value: 10uF
+  footprint: C0603
+  comment: 10uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A106MA8NRNC
+  supplier_part: C96446
+  placement:
+    x_mm: 12.065
+    y_mm: 87.63
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': CAN_GND
+    '2': CAN_5V_OUT
+  bom_data:
+    No.: '3'
+    Designator: C2,C10
+    Quantity: '2'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A106MA8NRNC
+    Comment: 10uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C96446
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: CAN transceiver VCC bulk decoupling (3.3V side)
+  schematic_notes:
+  - 10uF bulk cap for U3 VCC (3.3V domain)
+- designator: C3
+  type: capacitor
+  value: 1uF
+  footprint: C0603
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A105KB8NNNC
+  supplier_part: C15849
+  placement:
+    x_mm: 19.304
+    y_mm: 85.725
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': CAN_GND
+    '2': CAN_5V_IN
+  bom_data:
+    No.: '4'
+    Designator: C3,C12
+    Quantity: '2'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A105KB8NNNC
+    Comment: 1uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C15849
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: CAN transceiver VISO decoupling
+  schematic_notes:
+  - 1uF decoupling for U3 isolated VISO supply (CAN side)
+- designator: C4
+  type: capacitor
+  value: 4.7uF
+  footprint: C0603
+  comment: 4.7uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A475KO8NNNC
+  supplier_part: C19666
+  placement:
+    x_mm: 43.81
+    y_mm: 82.677
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VSD
+  bom_data:
+    No.: '5'
+    Designator: C4,C8
+    Quantity: '2'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A475KO8NNNC
+    Comment: 4.7uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C19666
+    Datasheet: https://item.szlcsc.com/datasheet/CL10A475KO8NNNC/20375.html
+  schematic_page: P2
+  function_block: SD card VSD bulk decoupling
+  schematic_notes:
+  - 4.7uF bulk decoupling on VSD rail for SD card power switch U2
+- designator: C5
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 42.037
+    y_mm: 79.629
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VSD
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: SD card VSD decoupling
+  schematic_notes:
+  - 100nF decoupling on VSD rail
+- designator: C6
+  type: capacitor
+  value: 22uF
+  footprint: C0603
+  comment: 22uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A226MQ8NRNC
+  supplier_part: C59461
+  placement:
+    x_mm: 50.8
+    y_mm: 77.343
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '7'
+    Designator: C6
+    Quantity: '1'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A226MQ8NRNC
+    Comment: 22uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C59461
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: 3.3V bulk decoupling (CPU)
+  schematic_notes:
+  - 22uF bulk cap on 3.3V rail near MCU U12
+- designator: C7
+  type: capacitor
+  value: 100nF
+  footprint: C0603
+  comment: 100nF
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: CC0603KRX7R9BB104
+  supplier_part: C14663
+  placement:
+    x_mm: 12.065
+    y_mm: 70.739
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 5V
+  bom_data:
+    No.: '2'
+    Designator: C1,C7,C15,C18
+    Quantity: '4'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: CC0603KRX7R9BB104
+    Comment: 100nF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C14663
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180910/C282072_33301C7F631E79921B82A8DAC6BCC5B3.pdf
+  schematic_page: P3
+  function_block: CAN transceiver 5V decoupling
+  schematic_notes:
+  - 100nF decoupling for U3 VCC 5V supply
+- designator: C8
+  type: capacitor
+  value: 4.7uF
+  footprint: C0603
+  comment: 4.7uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A475KO8NNNC
+  supplier_part: C19666
+  placement:
+    x_mm: 50.8
+    y_mm: 73.533
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 5V
+  bom_data:
+    No.: '5'
+    Designator: C4,C8
+    Quantity: '2'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A475KO8NNNC
+    Comment: 4.7uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C19666
+    Datasheet: https://item.szlcsc.com/datasheet/CL10A475KO8NNNC/20375.html
+  schematic_page: P1
+  function_block: USB VBUS bulk decoupling
+  schematic_notes:
+  - 4.7uF bulk decoupling on 5V/VBUS rail near USB-C connector
+- designator: C9
+  type: capacitor
+  value: 22pF
+  footprint: C0402
+  comment: 22pF
+  manufacturer: FH(风华)
+  manufacturer_part: 0402CG220J500NT
+  supplier_part: C1555
+  placement:
+    x_mm: 54.991
+    y_mm: 71.501
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VFB
+    '2': 3.3V
+  bom_data:
+    No.: '8'
+    Designator: C9
+    Quantity: '1'
+    Manufacturer: FH(风华)
+    Manufacturer Part: 0402CG220J500NT
+    Comment: 22pF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1555
+  schematic_page: P1
+  function_block: Buck converter VFB feed-forward capacitor
+  schematic_notes:
+  - 22pF feed-forward cap across upper feedback resistor R10 for TLV62569 U4
+  - Improves phase margin of 3.3V buck converter loop
+- designator: C10
+  type: capacitor
+  value: 10uF
+  footprint: C0603
+  comment: 10uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A106MA8NRNC
+  supplier_part: C96446
+  placement:
+    x_mm: 12.065
+    y_mm: 68.834
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 5V
+  bom_data:
+    No.: '3'
+    Designator: C2,C10
+    Quantity: '2'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A106MA8NRNC
+    Comment: 10uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C96446
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: CAN transceiver VISO bulk decoupling
+  schematic_notes:
+  - 10uF bulk cap on U3 isolated VISO rail (CAN side)
+- designator: C11
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 18.796
+    y_mm: 68.199
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: 3.3V decoupling (I2C/SPI area)
+  schematic_notes:
+  - 1uF local 3.3V decoupling near I2C/SPI peripherals
+- designator: C12
+  type: capacitor
+  value: 1uF
+  footprint: C0603
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL10A105KB8NNNC
+  supplier_part: C15849
+  placement:
+    x_mm: 19.685
+    y_mm: 70.739
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '4'
+    Designator: C3,C12
+    Quantity: '2'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL10A105KB8NNNC
+    Comment: 1uF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C15849
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: CAN transceiver VISO decoupling
+  schematic_notes:
+  - 1uF decoupling on U3 isolated VISO supply
+- designator: C13
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 18.796
+    y_mm: 66.675
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: RTC 3.3V decoupling
+  schematic_notes:
+  - 100nF decoupling for RTC IC U5
+- designator: C14
+  type: capacitor
+  value: 2.2uF
+  footprint: C0805
+  comment: 2.2uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL21A225KBQNNNE
+  supplier_part: C377773
+  placement:
+    x_mm: 26.543
+    y_mm: 62.738
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VCOMH
+  bom_data:
+    No.: '10'
+    Designator: C14
+    Quantity: '1'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL21A225KBQNNNE
+    Comment: 2.2uF
+    Footprint: C0805
+    Mounting Style: SMT
+    Supplier Part: C377773
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: Display VCOMH storage capacitor
+  schematic_notes:
+  - 2.2uF VCOMH cap for OLED display via FPC1
+  - 50V rated for 12V supply domain
+- designator: C15
+  type: capacitor
+  value: 100nF
+  footprint: C0603
+  comment: 100nF
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: CC0603KRX7R9BB104
+  supplier_part: C14663
+  placement:
+    x_mm: 27.051
+    y_mm: 65.151
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 12V
+  bom_data:
+    No.: '2'
+    Designator: C1,C7,C15,C18
+    Quantity: '4'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: CC0603KRX7R9BB104
+    Comment: 100nF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C14663
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180910/C282072_33301C7F631E79921B82A8DAC6BCC5B3.pdf
+  schematic_page: P2
+  function_block: 12V boost output decoupling
+  schematic_notes:
+  - 100nF output decoupling for 12V boost U7; 50V rated
+- designator: C16
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 30.226
+    y_mm: 63.754
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: 12V domain decoupling
+  schematic_notes:
+  - 100nF decoupling on 12V rail near display FPC1
+- designator: C17
+  type: capacitor
+  value: 4.7uF
+  footprint: C0402
+  comment: 4.7uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A475MP5NRNC
+  supplier_part: C23733
+  placement:
+    x_mm: 30.226
+    y_mm: 62.103
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '11'
+    Designator: C17,C20,C29
+    Quantity: '3'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A475MP5NRNC
+    Comment: 4.7uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C23733
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: 12V domain bulk decoupling
+  schematic_notes:
+  - 4.7uF bulk decoupling on 12V rail near display FPC1
+- designator: C18
+  type: capacitor
+  value: 100nF
+  footprint: C0603
+  comment: 100nF
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: CC0603KRX7R9BB104
+  supplier_part: C14663
+  placement:
+    x_mm: 32.766
+    y_mm: 64.516
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 12V
+  bom_data:
+    No.: '2'
+    Designator: C1,C7,C15,C18
+    Quantity: '4'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: CC0603KRX7R9BB104
+    Comment: 100nF
+    Footprint: C0603
+    Mounting Style: SMT
+    Supplier Part: C14663
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180910/C282072_33301C7F631E79921B82A8DAC6BCC5B3.pdf
+  schematic_page: P2
+  function_block: 12V boost output decoupling
+  schematic_notes:
+  - 100nF output decoupling for U7 12V boost; 50V rated
+- designator: C19
+  type: capacitor
+  value: 10uF
+  footprint: C0805
+  comment: 10uF
+  manufacturer: muRata(村田)
+  manufacturer_part: GRM21BR61H106KE43L
+  supplier_part: C440198
+  placement:
+    x_mm: 53.467
+    y_mm: 65.913
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 12V
+  bom_data:
+    No.: '12'
+    Designator: C19
+    Quantity: '1'
+    Manufacturer: muRata(村田)
+    Manufacturer Part: GRM21BR61H106KE43L
+    Comment: 10uF
+    Footprint: C0805
+    Mounting Style: SMT
+    Supplier Part: C440198
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230811/95AAE0C9AF55EDC31B7A4D8B733F534E.pdf
+  schematic_page: P2
+  function_block: 12V boost output bulk capacitor
+  schematic_notes:
+  - 10uF bulk output cap for 12V boost U7; 50V rated (Murata)
+- designator: C20
+  type: capacitor
+  value: 4.7uF
+  footprint: C0402
+  comment: 4.7uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A475MP5NRNC
+  supplier_part: C23733
+  placement:
+    x_mm: 51.562
+    y_mm: 62.23
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 5V
+  bom_data:
+    No.: '11'
+    Designator: C17,C20,C29
+    Quantity: '3'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A475MP5NRNC
+    Comment: 4.7uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C23733
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: 5V decoupling (boost converter input)
+  schematic_notes:
+  - 4.7uF input decoupling for 12V boost U7, on 5V rail
+- designator: C21
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 17.526
+    y_mm: 56.769
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VBAT
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: VBAT decoupling
+  schematic_notes:
+  - 1uF decoupling on VBAT rail for RTC backup battery BT1
+- designator: C22
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 45.085
+    y_mm: 57.404
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO decoupling (target interface)
+  schematic_notes:
+  - 100nF decoupling on VIO rail for target voltage domain
+- designator: C23
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 20.066
+    y_mm: 50.927
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: EEPROM 3.3V decoupling
+  schematic_notes:
+  - 100nF decoupling for EEPROM U9
+- designator: C24
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 29.286
+    y_mm: 52.832
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: QSPI flash 3.3V decoupling
+  schematic_notes:
+  - 100nF decoupling for QSPI flash U8
+- designator: C25
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 48.387
+    y_mm: 49.53
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VBUS
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: USB VBUS decoupling
+  schematic_notes:
+  - 1uF decoupling on VBUS rail; 25V rated
+- designator: C26
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 7.874
+    y_mm: 45.974
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: 3.3V decoupling (SPI flash area)
+  schematic_notes:
+  - 1uF local decoupling near SPI flash U6
+- designator: C27
+  type: capacitor
+  value: 18pF
+  footprint: C0402
+  comment: 18pF
+  manufacturer: FH(风华)
+  manufacturer_part: 0402CG180J500NT
+  supplier_part: C1549
+  placement:
+    x_mm: 18.161
+    y_mm: 46.228
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': OSC32_OUT
+  bom_data:
+    No.: '13'
+    Designator: C27,C28
+    Quantity: '2'
+    Manufacturer: FH(风华)
+    Manufacturer Part: 0402CG180J500NT
+    Comment: 18pF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1549
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200305/C486355_26A10D38EF8C2A5C37091D0039909270.pdf
+  schematic_page: P1
+  function_block: RTC crystal load capacitor (OSC32_OUT)
+  schematic_notes:
+  - 18pF load cap for 32.768kHz crystal X1, OSC32_OUT pin
+- designator: C28
+  type: capacitor
+  value: 18pF
+  footprint: C0402
+  comment: 18pF
+  manufacturer: FH(风华)
+  manufacturer_part: 0402CG180J500NT
+  supplier_part: C1549
+  placement:
+    x_mm: 21.463
+    y_mm: 46.228
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': OSC32_IN
+  bom_data:
+    No.: '13'
+    Designator: C27,C28
+    Quantity: '2'
+    Manufacturer: FH(风华)
+    Manufacturer Part: 0402CG180J500NT
+    Comment: 18pF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1549
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200305/C486355_26A10D38EF8C2A5C37091D0039909270.pdf
+  schematic_page: P1
+  function_block: RTC crystal load capacitor (OSC32_IN)
+  schematic_notes:
+  - 18pF load cap for 32.768kHz crystal X1, OSC32_IN pin
+- designator: C29
+  type: capacitor
+  value: 4.7uF
+  footprint: C0402
+  comment: 4.7uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A475MP5NRNC
+  supplier_part: C23733
+  placement:
+    x_mm: 27.051
+    y_mm: 45.974
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '11'
+    Designator: C17,C20,C29
+    Quantity: '3'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A475MP5NRNC
+    Comment: 4.7uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C23733
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: 3.3V bulk decoupling (CPU)
+  schematic_notes:
+  - 4.7uF bulk decoupling on 3.3V rail near MCU
+- designator: C30
+  type: capacitor
+  value: 15pF
+  footprint: C0402
+  comment: 15pF
+  manufacturer: FH(风华)
+  manufacturer_part: 0402CG150J500NT
+  supplier_part: C1548
+  placement:
+    x_mm: 19.05
+    y_mm: 40.894
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': OSC_IN
+    '2': GND
+  bom_data:
+    No.: '14'
+    Designator: C30,C33
+    Quantity: '2'
+    Manufacturer: FH(风华)
+    Manufacturer Part: 0402CG150J500NT
+    Comment: 15pF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1548
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200305/C486355_26A10D38EF8C2A5C37091D0039909270.pdf
+  schematic_page: P1
+  function_block: HSE crystal load capacitor (OSC_IN)
+  schematic_notes:
+  - 15pF load cap for 12MHz crystal X2, OSC_IN pin
+  - 15pF chosen to target 12pF crystal spec with PCB stray capacitance
+- designator: C31
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 24.257
+    y_mm: 41.91
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: 3.3V decoupling (CPU)
+  schematic_notes:
+  - 100nF decoupling on 3.3V rail near MCU U12
+- designator: C32
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 27.051
+    y_mm: 44.323
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: BOOT0 noise filter
+  schematic_notes:
+  - 100nF noise filter on BOOT0 net
+- designator: C33
+  type: capacitor
+  value: 15pF
+  footprint: C0402
+  comment: 15pF
+  manufacturer: FH(风华)
+  manufacturer_part: 0402CG150J500NT
+  supplier_part: C1548
+  placement:
+    x_mm: 16.256
+    y_mm: 38.1
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': OSC_OUT
+  bom_data:
+    No.: '14'
+    Designator: C30,C33
+    Quantity: '2'
+    Manufacturer: FH(风华)
+    Manufacturer Part: 0402CG150J500NT
+    Comment: 15pF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1548
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200305/C486355_26A10D38EF8C2A5C37091D0039909270.pdf
+  schematic_page: P1
+  function_block: HSE crystal load capacitor (OSC_OUT)
+  schematic_notes:
+  - 15pF load cap for 12MHz crystal X2, OSC_OUT pin
+  - 15pF chosen to target 12pF crystal spec with PCB stray capacitance
+- designator: C34
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 18.796
+    y_mm: 33.401
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V_ANA
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: MCU VDDA decoupling
+  schematic_notes:
+  - 1uF decoupling on VDDA (analog supply) for MCU U12
+- designator: C35
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 20.955
+    y_mm: 34.163
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': RST
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: NRST noise filter
+  schematic_notes:
+  - 100nF filter cap on NRST/RST line for noise immunity
+- designator: C36
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 23.876
+    y_mm: 36.195
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V_ANA
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: MCU VDDA decoupling
+  schematic_notes:
+  - 100nF additional decoupling on MCU analog supply VDDA
+- designator: C37
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 37.338
+    y_mm: 36.576
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P1
+  function_block: 3.3V decoupling (CPU)
+  schematic_notes:
+  - 100nF decoupling on 3.3V rail near MCU U12
+- designator: C38
+  type: capacitor
+  value: 4.7nF
+  footprint: C0402
+  comment: 4.7nF
+  manufacturer: FH(风华)
+  manufacturer_part: 0402B472K500NT
+  supplier_part: C1538
+  placement:
+    x_mm: 48.641
+    y_mm: 30.861
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': $1N254540
+  bom_data:
+    No.: '15'
+    Designator: C38
+    Quantity: '1'
+    Manufacturer: FH(风华)
+    Manufacturer Part: 0402B472K500NT
+    Comment: 4.7nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1538
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200305/C486355_26A10D38EF8C2A5C37091D0039909270.pdf
+  schematic_page: P1
+  function_block: USB-C shell filter capacitor
+  schematic_notes:
+  - 4.7nF filter cap on USB-C connector shell/case pin to GND
+- designator: C39
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 28.067
+    y_mm: 22.987
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $2N788708
+    '2': GND
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: SW_NEXT debounce capacitor
+  schematic_notes:
+  - 1uF debounce cap for SW_NEXT; RC with R29 22k gives ~20ms time constant
+  - Signal passes through U14 74HC14 Schmitt inverter for clean edge
+- designator: C40
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 30.988
+    y_mm: 22.987
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $2N788818
+    '2': GND
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: SW_SELECT debounce capacitor
+  schematic_notes:
+  - 1uF debounce cap for SW_SELECT; RC with R30 22k = ~20ms
+- designator: C41
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 33.909
+    y_mm: 22.987
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $2N788938
+    '2': GND
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: SW_PREV debounce capacitor
+  schematic_notes:
+  - 1uF debounce cap for SW_PREV; RC with R31 22k = ~20ms
+- designator: C42
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 12.7
+    y_mm: 19.177
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO decoupling (target interface)
+  schematic_notes:
+  - 100nF decoupling on VIO rail near level translator U13
+- designator: C43
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 21.336
+    y_mm: 16.129
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO decoupling (target interface)
+  schematic_notes:
+  - 100nF decoupling on VIO rail near level translator U13
+- designator: C44
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 23.368
+    y_mm: 18.669
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO decoupling (spare)
+  schematic_notes:
+  - 100nF decoupling on VIO rail; spare/unassigned area
+- designator: C45
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 25.654
+    y_mm: 18.542
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P2
+  function_block: IREF decoupling
+  schematic_notes:
+  - 100nF decoupling on IREF node for OLED current reference resistor R14
+- designator: C46
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 39.624
+    y_mm: 19.177
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO decoupling (target interface)
+  schematic_notes:
+  - 100nF decoupling on VIO rail near level translator U15
+- designator: C47
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 47.879
+    y_mm: 16.891
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: 3.3V decoupling (target section)
+  schematic_notes:
+  - 100nF decoupling on 3.3V rail in target interface section
+- designator: C48
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 8.509
+    y_mm: 13.843
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': ADC_VIO
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: ADC_VIO decoupling
+  schematic_notes:
+  - 100nF decoupling on ADC_VIO net used to sense target VIO voltage
+- designator: C49
+  type: capacitor
+  value: 1uF
+  footprint: C0402
+  comment: 1uF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05A105KA5NQNC
+  supplier_part: C52923
+  placement:
+    x_mm: 19.304
+    y_mm: 11.43
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VIO
+  bom_data:
+    No.: '9'
+    Designator: C11,C21,C25,C26,C34,C39,C40,C41,C49
+    Quantity: '9'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05A105KA5NQNC
+    Comment: 1uF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C52923
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO bulk decoupling
+  schematic_notes:
+  - 1uF bulk decoupling on VIO rail for target power domain
+- designator: C50
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 21.082
+    y_mm: 11.43
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: 3.3V decoupling (target section)
+  schematic_notes:
+  - 100nF decoupling on 3.3V rail in target section
+- designator: C51
+  type: capacitor
+  value: 100nF
+  footprint: C0402
+  comment: 100nF
+  manufacturer: SAMSUNG(三星)
+  manufacturer_part: CL05B104KO5NNNC
+  supplier_part: C1525
+  placement:
+    x_mm: 46.482
+    y_mm: 11.43
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': GND
+  bom_data:
+    No.: '6'
+    Designator: C5,C13,C16,C22,C23,C24,C31,C32,C35,C36,C37,C42,C43,C44,C45,C46,C47,C48,C50,C51
+    Quantity: '20'
+    Manufacturer: SAMSUNG(三星)
+    Manufacturer Part: CL05B104KO5NNNC
+    Comment: 100nF
+    Footprint: C0402
+    Mounting Style: SMT
+    Supplier Part: C1525
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20160218/1457707763339.pdf
+  schematic_page: P3
+  function_block: VIO decoupling (target interface)
+  schematic_notes:
+  - 100nF decoupling on VIO rail near level translator U15
+- designator: C52
+  type: capacitor
+  value: ''
+  placement:
+    x_mm: 15.875
+    y_mm: 78.232
+    rotation_deg: 90.0
+    layer: B
+  pins:
+    '1': GND
+    '2': CAN_GND
+  schematic_page: P3
+  function_block: CAN isolation barrier Y-capacitor
+  schematic_notes:
+  - DNP (do not populate) by default
+  - 'Bridges isolation barrier: GND to CAN_GND'
+  - Populate only for EMC conducted-emission debugging
+  - May introduce safety/leakage issues depending on application
+  - 2.2nF 400VAC rated
+  alternate_parts:
+  - supplier_part: C2685703
+    manufacturer_part: TMY1102M
+    value: 1nF 400VAC
+    note: Alternate Y-cap value
+  - supplier_part: C2685704
+    manufacturer_part: TMY1222M
+    value: 2.2nF 400VAC
+    note: Same value alternate source
+- designator: CN1
+  type: connector
+  value: SM06B-GHS-TB(LF)(SN)
+  footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+  comment: SM06B-GHS-TB(LF)(SN)
+  manufacturer: JST
+  manufacturer_part: SM06B-GHS-TB(LF)(SN)
+  supplier_part: C133065
+  placement:
+    x_mm: 17.12
+    y_mm: 97.028
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': CAN_GND
+    '2': CAN_LO
+    '3': CAN_HI
+    '4': CAN_LO
+    '5': CAN_HI
+    '6': CAN_GND
+    '7': CAN_GND
+    '8': CAN_GND
+  bom_data:
+    No.: '16'
+    Designator: CN1,CN2,CN3,CN4,CN5
+    Quantity: '5'
+    Manufacturer: JST
+    Manufacturer Part: SM06B-GHS-TB(LF)(SN)
+    Comment: SM06B-GHS-TB(LF)(SN)
+    Footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+    Mounting Style: SMT
+    Supplier Part: C133065
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180323/112205B2CF875947C9562BFC7B01FA26.pdf
+  schematic_page: P3
+  function_block: CAN bus output connector
+  schematic_notes:
+  - 'Isolated CAN side: CAN_HI, CAN_LO, CAN_GND, CAN_5V_OUT, CAN_5V_IN'
+  - Maintain creepage and clearance across isolation barrier
+  - No silkscreen in isolation barrier area
+  alternate_parts:
+  - supplier_part: C225129
+    manufacturer_part: A1257WR-S-6P
+    manufacturer: CJT(长江)
+    note: CJT alternate
+  - supplier_part: C51940119
+    manufacturer_part: XY-SM06B-GHS-TB
+    manufacturer: XYECONN(辛译)
+    note: XYECONN alternate
+- designator: CN2
+  type: connector
+  value: SM06B-GHS-TB(LF)(SN)
+  footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+  comment: SM06B-GHS-TB(LF)(SN)
+  manufacturer: JST
+  manufacturer_part: SM06B-GHS-TB(LF)(SN)
+  supplier_part: C133065
+  placement:
+    x_mm: 3.429
+    y_mm: 43.434
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 3.3V
+    '3': I2C1_SDA
+    '4': I2C1_SCL
+    '5': I2C3_SDA
+    '6': I2C3_SCL
+    '7': GND
+    '8': GND
+  bom_data:
+    No.: '16'
+    Designator: CN1,CN2,CN3,CN4,CN5
+    Quantity: '5'
+    Manufacturer: JST
+    Manufacturer Part: SM06B-GHS-TB(LF)(SN)
+    Comment: SM06B-GHS-TB(LF)(SN)
+    Footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+    Mounting Style: SMT
+    Supplier Part: C133065
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180323/112205B2CF875947C9562BFC7B01FA26.pdf
+  schematic_page: P2
+  function_block: I2C expansion connector
+  schematic_notes:
+  - Exposes I2C1 (SDA/SCL) and I2C3 (SDA/SCL) plus 3.3V and GND
+  - For external I2C sensors or peripherals
+  alternate_parts:
+  - supplier_part: C225129
+    manufacturer_part: A1257WR-S-6P
+    manufacturer: CJT(长江)
+    note: CJT alternate
+  - supplier_part: C51940119
+    manufacturer_part: XY-SM06B-GHS-TB
+    manufacturer: XYECONN(辛译)
+    note: XYECONN alternate
+- designator: CN3
+  type: connector
+  value: SM06B-GHS-TB(LF)(SN)
+  footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+  comment: SM06B-GHS-TB(LF)(SN)
+  manufacturer: JST
+  manufacturer_part: SM06B-GHS-TB(LF)(SN)
+  supplier_part: C133065
+  placement:
+    x_mm: 56.591
+    y_mm: 20.32
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': CONSOLE_TXD
+    '3': CONSOLE_RXD
+    '4': SYS_SWDIO
+    '5': SYS_SWCLK
+    '6': GND
+    '7': GND
+    '8': GND
+  bom_data:
+    No.: '16'
+    Designator: CN1,CN2,CN3,CN4,CN5
+    Quantity: '5'
+    Manufacturer: JST
+    Manufacturer Part: SM06B-GHS-TB(LF)(SN)
+    Comment: SM06B-GHS-TB(LF)(SN)
+    Footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+    Mounting Style: SMT
+    Supplier Part: C133065
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180323/112205B2CF875947C9562BFC7B01FA26.pdf
+  schematic_page: P1
+  function_block: System SWD and console UART connector
+  schematic_notes:
+  - Debug header for the AT32F405 MCU itself (not the target)
+  - 'Signals: SYS_SWDIO, SYS_SWCLK, CONSOLE_TXD, CONSOLE_RXD, 3.3V, GND'
+  alternate_parts:
+  - supplier_part: C225129
+    manufacturer_part: A1257WR-S-6P
+    manufacturer: CJT(长江)
+    note: CJT alternate
+  - supplier_part: C51940119
+    manufacturer_part: XY-SM06B-GHS-TB
+    manufacturer: XYECONN(辛译)
+    note: XYECONN alternate
+- designator: CN4
+  type: connector
+  value: SM06B-GHS-TB(LF)(SN)
+  footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+  comment: SM06B-GHS-TB(LF)(SN)
+  manufacturer: JST
+  manufacturer_part: SM06B-GHS-TB(LF)(SN)
+  supplier_part: C133065
+  placement:
+    x_mm: 16.764
+    y_mm: 3.937
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': T_TXD
+    '3': T_RXD
+    '4': T_SWDIO
+    '5': T_SWCLK
+    '6': GND
+    '7': GND
+    '8': GND
+  bom_data:
+    No.: '16'
+    Designator: CN1,CN2,CN3,CN4,CN5
+    Quantity: '5'
+    Manufacturer: JST
+    Manufacturer Part: SM06B-GHS-TB(LF)(SN)
+    Comment: SM06B-GHS-TB(LF)(SN)
+    Footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+    Mounting Style: SMT
+    Supplier Part: C133065
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180323/112205B2CF875947C9562BFC7B01FA26.pdf
+  schematic_page: P3
+  function_block: Target SWD and UART connector
+  schematic_notes:
+  - Primary debug output to target device
+  - 'Signals: VIO, T_SWDIO, T_SWCLK, T_TXD, T_RXD, GND'
+  - Level-shifted by U13 SN74AVC4T774 to target VIO voltage
+  alternate_parts:
+  - supplier_part: C225129
+    manufacturer_part: A1257WR-S-6P
+    manufacturer: CJT(长江)
+    note: CJT alternate
+  - supplier_part: C51940119
+    manufacturer_part: XY-SM06B-GHS-TB
+    manufacturer: XYECONN(辛译)
+    note: XYECONN alternate
+- designator: CN5
+  type: connector
+  value: SM06B-GHS-TB(LF)(SN)
+  footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+  comment: SM06B-GHS-TB(LF)(SN)
+  manufacturer: JST
+  manufacturer_part: SM06B-GHS-TB(LF)(SN)
+  supplier_part: C133065
+  placement:
+    x_mm: 44.196
+    y_mm: 3.937
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': T_AUX_TXD
+    '3': T_AUX_RXD
+    '4': T_SWO
+    '5': T_RST
+    '6': GND
+    '7': GND
+    '8': GND
+  bom_data:
+    No.: '16'
+    Designator: CN1,CN2,CN3,CN4,CN5
+    Quantity: '5'
+    Manufacturer: JST
+    Manufacturer Part: SM06B-GHS-TB(LF)(SN)
+    Comment: SM06B-GHS-TB(LF)(SN)
+    Footprint: CONN-TH_SM06B-GHS-TB-LF-SN
+    Mounting Style: SMT
+    Supplier Part: C133065
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180323/112205B2CF875947C9562BFC7B01FA26.pdf
+  schematic_page: P3
+  function_block: Target AUX, SWO and RST connector
+  schematic_notes:
+  - 'Auxiliary target connector: T_AUX_TXD, T_AUX_RXD, T_SWO, T_RST, VIO, GND'
+  - T_SWO routed to USART RX for SWO/TraceSWO capture
+  - T_RST driven by MOSFET Q1 open-drain circuit
+  - Level-shifted by U15 SN74AVC4T774 to target VIO voltage
+  alternate_parts:
+  - supplier_part: C225129
+    manufacturer_part: A1257WR-S-6P
+    manufacturer: CJT(长江)
+    note: CJT alternate
+  - supplier_part: C51940119
+    manufacturer_part: XY-SM06B-GHS-TB
+    manufacturer: XYECONN(辛译)
+    note: XYECONN alternate
+- designator: D1
+  type: diode
+  value: ESDCAN03-2BWY
+  footprint: SOT-323-3_L2.0-W1.3-P1.30-LS2.1-BR
+  comment: ESDCAN03-2BWY
+  manufacturer: ST(意法半导体)
+  manufacturer_part: ESDCAN03-2BWY
+  supplier_part: C1973833
+  placement:
+    x_mm: 15.875
+    y_mm: 91.948
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': CAN_LO
+    '2': CAN_HI
+    '3': CAN_GND
+  bom_data:
+    No.: '17'
+    Designator: D1
+    Quantity: '1'
+    Manufacturer: ST(意法半导体)
+    Manufacturer Part: ESDCAN03-2BWY
+    Comment: ESDCAN03-2BWY
+    Footprint: SOT-323-3_L2.0-W1.3-P1.30-LS2.1-BR
+    Mounting Style: SMT
+    Supplier Part: C1973833
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20210601/EE22EC2D769ED57BA217B6DB28AAC84F.pdf
+  schematic_page: P3
+  function_block: CAN bus ESD protection
+  schematic_notes:
+  - 'ST ESDCAN03-2BWY: bidirectional dual-rail TVS on CAN_HI and CAN_LO'
+  - Clamps CAN bus transients; low capacitance for signal integrity
+- designator: D2
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 40.005
+    y_mm: 76.2
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SD_CS
+    '2': GND
+    '3': GND
+    '4': GND
+    '5': SPI2_MOSI
+    '6': SPI2_MOSI
+    '7': GND
+    '8': GND
+    '9': GND
+    '10': SD_CS
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P2
+  function_block: SD card SPI ESD protection
+  schematic_notes:
+  - H5VU25U 10-pin dual-rail ESD array on SD_CS and SPI2_MOSI
+- designator: D3
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 44.811
+    y_mm: 78.232
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SPI2_CLK
+    '2': GND
+    '3': GND
+    '4': SPI2_MISO
+    '5': SD_DETECT
+    '6': SD_DETECT
+    '7': SPI2_MISO
+    '8': GND
+    '9': GND
+    '10': SPI2_CLK
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P2
+  function_block: SD card SPI ESD protection
+  schematic_notes:
+  - H5VU25U ESD array on SPI2_CLK, SPI2_MISO, SD_DETECT
+- designator: D4
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 8.382
+    y_mm: 42.164
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': I2C1_SDA
+    '2': I2C1_SCL
+    '3': GND
+    '4': I2C3_SDA
+    '5': I2C3_SCL
+    '6': I2C3_SCL
+    '7': I2C3_SDA
+    '8': GND
+    '9': I2C1_SCL
+    '10': I2C1_SDA
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P2
+  function_block: I2C connector ESD protection
+  schematic_notes:
+  - H5VU25U ESD array on I2C1_SCL, I2C1_SDA, I2C3_SCL, I2C3_SDA at CN2
+- designator: D5
+  type: diode
+  value: SMF5.0A
+  footprint: SOD-123FL_L2.7-W1.8-LS3.8-RD
+  comment: SMF5.0A
+  manufacturer: R+O(宏嘉诚)
+  manufacturer_part: SMF5.0A
+  supplier_part: C19077497
+  placement:
+    x_mm: 49.784
+    y_mm: 42.164
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': HS_VBUS
+    '2': GND
+  bom_data:
+    No.: '19'
+    Designator: D5
+    Quantity: '1'
+    Manufacturer: R+O(宏嘉诚)
+    Manufacturer Part: SMF5.0A
+    Comment: SMF5.0A
+    Footprint: SOD-123FL_L2.7-W1.8-LS3.8-RD
+    Mounting Style: SMT
+    Supplier Part: C19077497
+    Datasheet: https://item.szlcsc.com/datasheet/SMF5.0A/20275582.html
+  schematic_page: P1
+  function_block: USB VBUS TVS clamp
+  schematic_notes:
+  - SMF5.0A unidirectional TVS on HS_VBUS upstream of polyfuse U11
+  - Clamps VBUS transients to protect USB circuitry
+- designator: D6
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 5.588
+    y_mm: 32.766
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': BOOT0
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P1
+  function_block: BOOT0 ESD protection
+  schematic_notes:
+  - H5VL10B low-capacitance diode on BOOT0 line
+- designator: D7
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 45.72
+    y_mm: 34.95
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': HS_DP
+    '2': HS_DM
+    '3': GND
+    '4': GND
+    '5': GND
+    '6': GND
+    '7': GND
+    '8': GND
+    '9': HS_DM
+    '10': HS_DP
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P1
+  function_block: USB HS data lines ESD protection
+  schematic_notes:
+  - H5VU25U ESD array on HS_DP and HS_DM USB high-speed data lines
+  - Low capacitance critical for USB-HS signal integrity
+- designator: D8
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 5.588
+    y_mm: 23.749
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': RST
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P1
+  function_block: NRST ESD protection
+  schematic_notes:
+  - H5VL10B diode on MCU NRST/RST line
+- designator: D9
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 51.562
+    y_mm: 20.32
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': SYS_SWCLK
+    '2': SYS_SWDIO
+    '3': GND
+    '4': CONSOLE_RXD
+    '5': CONSOLE_TXD
+    '6': CONSOLE_TXD
+    '7': CONSOLE_RXD
+    '8': GND
+    '9': SYS_SWDIO
+    '10': SYS_SWCLK
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P1
+  function_block: System SWD ESD protection
+  schematic_notes:
+  - H5VU25U ESD array on SYS_SWCLK and SYS_SWDIO at CN3
+- designator: D10
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 10.414
+    y_mm: 13.716
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': ADC_VIO
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P3
+  function_block: ADC_VIO ESD protection
+  schematic_notes:
+  - H5VL10B diode on ADC_VIO target voltage sense line
+- designator: D11
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 13.31
+    y_mm: 8.941
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VIO
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P3
+  function_block: VIO rail ESD protection
+  schematic_notes:
+  - H5VL10B diode on VIO rail near target interface
+- designator: D12
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 16.764
+    y_mm: 8.89
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': T_SWCLK
+    '2': T_SWDIO
+    '3': GND
+    '4': T_RXD
+    '5': T_TXD
+    '6': T_TXD
+    '7': T_RXD
+    '8': GND
+    '9': T_SWDIO
+    '10': T_SWCLK
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P3
+  function_block: Target SWD connector ESD protection
+  schematic_notes:
+  - H5VU25U ESD array on T_SWCLK, T_SWDIO, T_RXD, T_TXD at CN4
+- designator: D13
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 27.813
+    y_mm: 9.525
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': SW_NEXT
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P2
+  function_block: SW_NEXT clamp diode
+  schematic_notes:
+  - H5VL10B diode on SW_NEXT encoder signal line
+- designator: D14
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 30.353
+    y_mm: 9.525
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': SW_SELECT
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P2
+  function_block: SW_SELECT clamp diode
+  schematic_notes:
+  - H5VL10B diode on SW_SELECT encoder signal line
+- designator: D15
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 32.893
+    y_mm: 9.525
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': SW_PREV
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P2
+  function_block: SW_PREV clamp diode
+  schematic_notes:
+  - H5VL10B diode on SW_PREV encoder signal line
+- designator: D16
+  type: diode
+  value: H5VL10B
+  footprint: SOD-882_L1.0-W0.6-BI
+  comment: H5VL10B
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VL10B
+  supplier_part: C7420372
+  placement:
+    x_mm: 40.767
+    y_mm: 8.89
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VIO
+  bom_data:
+    No.: '20'
+    Designator: D6,D8,D10,D11,D13,D14,D15,D16
+    Quantity: '8'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VL10B
+    Comment: H5VL10B
+    Footprint: SOD-882_L1.0-W0.6-BI
+    Mounting Style: SMT
+    Supplier Part: C7420372
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/5024ECFEAD3C9801B07A8DBB967AB462.pdf
+  schematic_page: P3
+  function_block: VIO rail ESD protection (AUX)
+  schematic_notes:
+  - H5VL10B diode on VIO rail near AUX target interface
+- designator: D17
+  type: diode
+  value: H5VU25U
+  footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+  comment: H5VU25U
+  manufacturer: 宏迦橙
+  manufacturer_part: H5VU25U
+  supplier_part: C7420374
+  placement:
+    x_mm: 44.196
+    y_mm: 8.89
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': T_RST
+    '2': T_SWO
+    '3': GND
+    '4': T_AUX_RXD
+    '5': T_AUX_TXD
+    '6': T_AUX_TXD
+    '7': T_AUX_RXD
+    '8': GND
+    '9': T_SWO
+    '10': T_RST
+  bom_data:
+    No.: '18'
+    Designator: D2,D3,D4,D7,D9,D12,D17
+    Quantity: '7'
+    Manufacturer: 宏迦橙
+    Manufacturer Part: H5VU25U
+    Comment: H5VU25U
+    Footprint: DFN2510-10_L2.5-W1.0-P0.50-BL
+    Mounting Style: SMT
+    Supplier Part: C7420374
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20230630/91FD1DB17AB88B6832D3039FAE61FF10.pdf
+  schematic_page: P3
+  function_block: Target AUX connector ESD protection
+  schematic_notes:
+  - H5VU25U ESD array on T_AUX_TXD, T_AUX_RXD, T_SWO, T_RST at CN5
+- designator: FPC1
+  type: unknown
+  value: AFC07-S12ECA-00
+  footprint: FPC-SMD_12P-P0.50_AFC07-S12ECA-00
+  comment: AFC07-S12ECA-00
+  manufacturer: JS(钜硕电子)
+  manufacturer_part: AFC07-S12ECA-00
+  supplier_part: C262585
+  placement:
+    x_mm: 30.48
+    y_mm: 68.633
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': 12V
+    '3': SPI2_MOSI
+    '4': SPI2_CLK
+    '5': DISP_DC
+    '6': DISP_RST
+    '7': DISP_CS
+    '8': IREF
+    '9': 3.3V
+    '10': VCOMH
+    '11': 12V
+    '12': GND
+    '13': GND
+    '14': GND
+  bom_data:
+    No.: '21'
+    Designator: FPC1
+    Quantity: '1'
+    Manufacturer: JS(钜硕电子)
+    Manufacturer Part: AFC07-S12ECA-00
+    Comment: AFC07-S12ECA-00
+    Footprint: FPC-SMD_12P-P0.50_AFC07-S12ECA-00
+    Mounting Style: SMT
+    Supplier Part: C262585
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20190726/C11082_A2E7B12387019CE4314BB5199EE0FDF4.pdf
+  schematic_page: P2
+  function_block: OLED display FPC connector
+  schematic_notes:
+  - 'AFC07-S12ECA-00: 12-pin FPC for OLED display'
+  - Carries SPI2_CLK, SPI2_MOSI, DISP_CS, DISP_DC, DISP_RST, 3.3V, 12V, VCOMH, IREF,
+    GND
+  - 'Display: ZJY150-2828KSWKG03 (28x28mm OLED)'
+  - 12V for OLED charge pump supplied by boost converter U7
+- designator: L1
+  type: inductor
+  value: ACT1210-510-2P-TL00
+  footprint: FILTER-SMD_4P-L3.2-W2.5-BL_ACT1210
+  comment: ACT1210-510-2P-TL00
+  manufacturer: TDK
+  manufacturer_part: ACT1210-510-2P-TL00
+  supplier_part: C95572
+  placement:
+    x_mm: 15.875
+    y_mm: 87.376
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $3N53774
+    '2': $3N53786
+    '3': CAN_LO
+    '4': CAN_HI
+  bom_data:
+    No.: '22'
+    Designator: L1
+    Quantity: '1'
+    Manufacturer: TDK
+    Manufacturer Part: ACT1210-510-2P-TL00
+    Comment: ACT1210-510-2P-TL00
+    Footprint: FILTER-SMD_4P-L3.2-W2.5-BL_ACT1210
+    Mounting Style: SMT
+    Supplier Part: C95572
+    Datasheet: https://item.szlcsc.com/datasheet/ACT1210-510-2P-TL00/96776.html
+  schematic_page: P3
+  function_block: CAN bus common-mode choke
+  schematic_notes:
+  - 'ACT1210-510-2P-TL00: dual-winding common-mode choke on CAN_HI and CAN_LO'
+  - 510 ohm impedance at 100MHz; suppresses common-mode EMI on CAN bus
+  - 'For CAN-FD upgrade: replace with a CAN-FD rated choke (flat differential-mode
+    impedance to 20-50MHz)'
+- designator: L2
+  type: inductor
+  value: GZ1608D601TF
+  footprint: L0603
+  comment: GZ1608D601TF
+  manufacturer: Sunlord(顺络)
+  manufacturer_part: GZ1608D601TF
+  supplier_part: C1002
+  placement:
+    x_mm: 19.304
+    y_mm: 87.63
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': CAN_5V_OUT
+    '2': CAN_5V_IN
+  bom_data:
+    No.: '23'
+    Designator: L2
+    Quantity: '1'
+    Manufacturer: Sunlord(顺络)
+    Manufacturer Part: GZ1608D601TF
+    Comment: GZ1608D601TF
+    Footprint: L0603
+    Mounting Style: SMT
+    Supplier Part: C1002
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20241120/893429B990C3BA07384E734821D2F218.pdf
+  schematic_page: P3
+  function_block: CAN isolated supply ferrite bead
+  schematic_notes:
+  - GZ1608D601TF ferrite bead on CAN_5V_IN to U3 isolated supply pin
+  - Reduces switching noise coupling into isolated CAN domain
+- designator: L3
+  type: inductor
+  value: 1uH
+  footprint: IND-SMD_L2.5-W2.0-A
+  comment: 1uH
+  manufacturer: TDK
+  manufacturer_part: TFM252012ALM-1R0MTAA
+  supplier_part: C433057
+  placement:
+    x_mm: 53.594
+    y_mm: 80.391
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': VSW
+    '2': 3.3V
+  bom_data:
+    No.: '24'
+    Designator: L3
+    Quantity: '1'
+    Manufacturer: TDK
+    Manufacturer Part: TFM252012ALM-1R0MTAA
+    Comment: 1uH
+    Footprint: IND-SMD_L2.5-W2.0-A
+    Mounting Style: SMT
+    Supplier Part: C433057
+  schematic_page: P1
+  function_block: 3.3V buck converter output inductor
+  schematic_notes:
+  - 1uH output inductor for TLV62569 3.3V buck converter U4
+  - 'Schematic specifies: I_sat >= 1.2A, DCR <= 200 mohm'
+- designator: L4
+  type: inductor
+  value: 10uH
+  footprint: IND-SMD_L4.1-W4.1_FTC404020S
+  comment: 10uH
+  manufacturer: cjiang(长江微电)
+  manufacturer_part: FTC404020S100MGCA
+  supplier_part: C39676074
+  placement:
+    x_mm: 54.61
+    y_mm: 58.166
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 5V
+    '2': $2N576115
+  bom_data:
+    No.: '25'
+    Designator: L4
+    Quantity: '1'
+    Manufacturer: cjiang(长江微电)
+    Manufacturer Part: FTC404020S100MGCA
+    Comment: 10uH
+    Footprint: IND-SMD_L4.1-W4.1_FTC404020S
+    Mounting Style: SMT
+    Supplier Part: C39676074
+    Datasheet: https://item.szlcsc.com/datasheet/FTC404020S100MGCA/41398075.html
+  schematic_page: P2
+  function_block: 12V boost converter output inductor
+  schematic_notes:
+  - 10uH output inductor for TLV61046 12V boost converter U7
+- designator: L5
+  type: inductor
+  value: 10uH
+  footprint: L0603
+  comment: 10uH
+  manufacturer: Sunlord(顺络)
+  manufacturer_part: SDFL1608S100KTF
+  supplier_part: C1035
+  placement:
+    x_mm: 16.51
+    y_mm: 33.528
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': 3.3V_ANA
+  bom_data:
+    No.: '26'
+    Designator: L5
+    Quantity: '1'
+    Manufacturer: Sunlord(顺络)
+    Manufacturer Part: SDFL1608S100KTF
+    Comment: 10uH
+    Footprint: L0603
+    Mounting Style: SMT
+    Supplier Part: C1035
+  schematic_page: P1
+  function_block: 3.3V analog supply filter inductor
+  schematic_notes:
+  - 10uH inductor forming LC filter between 3.3V digital and 3.3V_ANA
+  - 3.3V_ANA supplies MCU VDDA for ADC noise isolation
+- designator: LED1
+  type: led
+  value: LTST-S270KGKT
+  footprint: LED-SMD_L1.7-W0.6-RD
+  comment: LTST-S270KGKT
+  manufacturer: LITEON(光宝)
+  manufacturer_part: LTST-S270KGKT
+  supplier_part: C125113
+  placement:
+    x_mm: 1.651
+    y_mm: 13.97
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': $1N206167
+    '2': 3.3V
+  bom_data:
+    No.: '27'
+    Designator: LED1
+    Quantity: '1'
+    Manufacturer: LITEON(光宝)
+    Manufacturer Part: LTST-S270KGKT
+    Comment: LTST-S270KGKT
+    Footprint: LED-SMD_L1.7-W0.6-RD
+    Mounting Style: SMT
+    Supplier Part: C125113
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180104/C125113_15150602232371230485.pdf
+  schematic_page: P1
+  function_block: Status LED
+  schematic_notes:
+  - 'LTST-S270KGKT: green side-emitting LED'
+  - Driven by MCU pin PC6 (LED0 net) via R38 150 ohm current limiter
+  - Side-emitting for panel-mount visibility through enclosure
+  alternate_parts:
+  - supplier_part: C2286
+    manufacturer_part: KT-0603R
+    note: JLCPCB basic library alternate; different colour and emission angle
+- designator: M1
+  type: mechanical
+  value: ''
+  placement:
+    x_mm: 5.0
+    y_mm: 95.508
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': CAN_GND
+  schematic_page: P1
+  function_block: Mounting hole 3.2mm
+  schematic_notes:
+  - M3 clearance hole for enclosure fastener
+- designator: M2
+  type: mechanical
+  value: ''
+  placement:
+    x_mm: 55.0
+    y_mm: 95.508
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+  schematic_page: P1
+  function_block: Mounting hole 3.2mm
+  schematic_notes:
+  - M3 clearance hole for enclosure fastener
+- designator: M3
+  type: mechanical
+  value: ''
+  placement:
+    x_mm: 5.0
+    y_mm: 5.508
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+  schematic_page: P1
+  function_block: Mounting hole 3.2mm
+  schematic_notes:
+  - M3 clearance hole for enclosure fastener
+- designator: M4
+  type: mechanical
+  value: ''
+  placement:
+    x_mm: 55.0
+    y_mm: 5.508
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+  schematic_page: P1
+  function_block: Mounting hole 3.2mm
+  schematic_notes:
+  - M3 clearance hole for enclosure fastener
+- designator: OLED1
+  type: unknown
+  value: ZJY150-2828KSWKG03
+  footprint: OLED-ZJY150-2828KSWKG03
+  comment: ZJY150-2828KSWKG03
+  manufacturer: Zhengzhou Zhongjingyuan(中景园)
+  manufacturer_part: ZJY150-2828KSWKG03
+  supplier_part: https://item.taobao.com/item.htm?id=756962244579
+  placement:
+    x_mm: 30.48
+    y_mm: 40.538
+    rotation_deg: 0.0
+    layer: B
+  bom_data:
+    No.: '28'
+    Designator: OLED1
+    Quantity: '1'
+    Manufacturer: Zhengzhou Zhongjingyuan(中景园)
+    Manufacturer Part: ZJY150-2828KSWKG03
+    Comment: ZJY150-2828KSWKG03
+    Footprint: OLED-ZJY150-2828KSWKG03
+    Mounting Style: SMT
+    Supplier Part: https://item.taobao.com/item.htm?id=756962244579
+  schematic_page: P2
+  function_block: OLED display module
+  schematic_notes:
+  - 'ZJY150-2828KSWKG03: 28x28mm OLED display'
+  - DNS (do not solder) - user installs with double-sided adhesive tape and FPC connector
+  - Connected via FPC1 connector
+  - 12V charge pump supply from U7 boost converter
+- designator: Q1
+  type: transistor
+  value: AO3400A
+  footprint: SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR
+  comment: AO3400A
+  manufacturer: AOS
+  manufacturer_part: AO3400A
+  supplier_part: C20917
+  placement:
+    x_mm: 51.562
+    y_mm: 12.446
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': $3N5450
+    '2': GND
+    '3': T_RST
+  bom_data:
+    No.: '29'
+    Designator: Q1
+    Quantity: '1'
+    Manufacturer: AOS
+    Manufacturer Part: AO3400A
+    Comment: AO3400A
+    Footprint: SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR
+    Mounting Style: SMT
+    Supplier Part: C20917
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20140107/1457706668533.pdf
+  schematic_page: P3
+  function_block: Target reset open-drain driver
+  schematic_notes:
+  - AO3400A N-channel MOSFET for open-drain target reset output (T_RST)
+  - Gate driven by MCU T_RST_OUT via R26 33 ohm series resistor
+  - R37 100k pull-up to VIO holds T_RST high (inactive) when not driven
+  - R46 10k pull-down on gate ensures MOSFET off when MCU is tristated
+  - Allows MCU to both assert and sense T_RST bidirectionally
+- designator: R1
+  type: resistor
+  value: 33Ω
+  footprint: R0402
+  comment: 33Ω
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF330JTCE
+  supplier_part: C25105
+  placement:
+    x_mm: 46.228
+    y_mm: 82.677
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': SPI2_MISO
+    '2': $2N508660
+  bom_data:
+    No.: '30'
+    Designator: R1,R5,R13,R19,R26
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF330JTCE
+    Comment: 33Ω
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25105
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SD card MISO series termination
+  schematic_notes:
+  - 33 ohm series termination on SPI2_MISO from SD card U1
+- designator: R2
+  type: resistor
+  value: 47kΩ
+  footprint: R0402
+  comment: 47kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4702TCE
+  supplier_part: C25792
+  placement:
+    x_mm: 47.371
+    y_mm: 78.232
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': SD_ON
+  bom_data:
+    No.: '31'
+    Designator: R2,R3,R6,R7,R8,R41
+    Quantity: '6'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4702TCE
+    Comment: 47kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25792
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SD_ON pull-down
+  schematic_notes:
+  - 47k pull-down on SD_ON; SD card unpowered at startup until MCU enables it
+- designator: R3
+  type: resistor
+  value: 47kΩ
+  footprint: R0402
+  comment: 47kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4702TCE
+  supplier_part: C25792
+  placement:
+    x_mm: 46.609
+    y_mm: 73.914
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': SD_DETECT
+    '2': 3.3V
+  bom_data:
+    No.: '31'
+    Designator: R2,R3,R6,R7,R8,R41
+    Quantity: '6'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4702TCE
+    Comment: 47kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25792
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SD_DETECT pull-up
+  schematic_notes:
+  - 47k pull-up on SD_DETECT card-detect signal
+- designator: R4
+  type: resistor
+  value: 33kΩ
+  footprint: R0402
+  comment: 33kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF3302TCE
+  supplier_part: C25779
+  placement:
+    x_mm: 57.023
+    y_mm: 74.803
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': GND
+    '2': VFB
+  bom_data:
+    No.: '32'
+    Designator: R4
+    Quantity: '1'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF3302TCE
+    Comment: 33kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25779
+  schematic_page: P1
+  function_block: Buck converter feedback divider lower resistor
+  schematic_notes:
+  - 33k lower resistor of VFB divider for TLV62569 U4
+  - 'With R10=150k: Vout = 0.6V * (1 + 150k/33k) = 3.33V'
+- designator: R5
+  type: resistor
+  value: 33Ω
+  footprint: R0402
+  comment: 33Ω
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF330JTCE
+  supplier_part: C25105
+  placement:
+    x_mm: 16.078
+    y_mm: 70.866
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': CAN_RX
+    '2': CAN_RX_INT
+  bom_data:
+    No.: '30'
+    Designator: R1,R5,R13,R19,R26
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF330JTCE
+    Comment: 33Ω
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25105
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: CAN_RX series termination
+  schematic_notes:
+  - 33 ohm series resistor on CAN_RX from U3 transceiver to MCU
+- designator: R6
+  type: resistor
+  value: 47kΩ
+  footprint: R0402
+  comment: 47kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4702TCE
+  supplier_part: C25792
+  placement:
+    x_mm: 39.37
+    y_mm: 71.882
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SD_CS
+    '2': 3.3V
+  bom_data:
+    No.: '31'
+    Designator: R2,R3,R6,R7,R8,R41
+    Quantity: '6'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4702TCE
+    Comment: 47kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25792
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SD_CS pull-up
+  schematic_notes:
+  - 47k pull-up on SD_CS; keeps SD card deselected at startup
+- designator: R7
+  type: resistor
+  value: 47kΩ
+  footprint: R0402
+  comment: 47kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4702TCE
+  supplier_part: C25792
+  placement:
+    x_mm: 41.402
+    y_mm: 73.914
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SPI2_MOSI
+    '2': 3.3V
+  bom_data:
+    No.: '31'
+    Designator: R2,R3,R6,R7,R8,R41
+    Quantity: '6'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4702TCE
+    Comment: 47kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25792
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SPI2_MOSI pull-up
+  schematic_notes:
+  - 47k pull-up on SPI2_MOSI
+- designator: R8
+  type: resistor
+  value: 47kΩ
+  footprint: R0402
+  comment: 47kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4702TCE
+  supplier_part: C25792
+  placement:
+    x_mm: 45.72
+    y_mm: 75.946
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SPI2_MISO
+    '2': 3.3V
+  bom_data:
+    No.: '31'
+    Designator: R2,R3,R6,R7,R8,R41
+    Quantity: '6'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4702TCE
+    Comment: 47kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25792
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SPI2_MISO pull-up
+  schematic_notes:
+  - 47k pull-up on SPI2_MISO
+- designator: R9
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 46.609
+    y_mm: 71.882
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': FLASH_CS
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P2
+  function_block: SPI flash CS pull-up
+  schematic_notes:
+  - 10k pull-up on FLASH_CS; keeps SPI flash U6 deselected at startup
+- designator: R10
+  type: resistor
+  value: 150kΩ
+  footprint: R0402
+  comment: 150kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1503TCE
+  supplier_part: C25755
+  placement:
+    x_mm: 57.023
+    y_mm: 71.501
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VFB
+    '2': 3.3V
+  bom_data:
+    No.: '34'
+    Designator: R10
+    Quantity: '1'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1503TCE
+    Comment: 150kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25755
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P1
+  function_block: Buck converter feedback divider upper resistor
+  schematic_notes:
+  - 150k upper resistor of VFB divider for TLV62569 U4
+  - C9 22pF in parallel for feed-forward phase compensation
+- designator: R11
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 16.51
+    y_mm: 67.183
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': IRQ_I2C
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P2
+  function_block: IRQ_I2C pull-up
+  schematic_notes:
+  - 10k pull-up on IRQ_I2C interrupt output from RTC U5
+- designator: R12
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 21.082
+    y_mm: 67.056
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': RTC
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P2
+  function_block: RTC frequency output pull-up
+  schematic_notes:
+  - 10k pull-up on RTC FREQ/INT output from U5
+- designator: R13
+  type: resistor
+  value: 33Ω
+  footprint: R0402
+  comment: 33Ω
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF330JTCE
+  supplier_part: C25105
+  placement:
+    x_mm: 44.958
+    y_mm: 69.85
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': SPI2_MISO
+    '2': $2N741099
+  bom_data:
+    No.: '30'
+    Designator: R1,R5,R13,R19,R26
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF330JTCE
+    Comment: 33Ω
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25105
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SPI flash MISO series termination
+  schematic_notes:
+  - 33 ohm series termination on SPI2_MISO from SPI flash U6
+- designator: R14
+  type: resistor
+  value: 910kΩ
+  footprint: R0402
+  comment: 910kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF9103TCE
+  supplier_part: C25800
+  placement:
+    x_mm: 30.48
+    y_mm: 65.405
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': IREF
+  bom_data:
+    No.: '35'
+    Designator: R14
+    Quantity: '1'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF9103TCE
+    Comment: 910kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25800
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: OLED IREF current reference resistor
+  schematic_notes:
+  - 910k resistor from IREF pin of FPC1 to GND
+  - Sets display current reference for OLED driver
+  alternate_parts:
+  - supplier_part: C25800
+    manufacturer_part: 0402 910k 1%
+    note: 'Primary: 1% tolerance'
+  - supplier_part: C11866
+    manufacturer_part: 0402 910k 5%
+    note: 'Alternate: 5% tolerance'
+- designator: R15
+  type: resistor
+  value: 4.7kΩ
+  footprint: R0402
+  comment: 4.7kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4701TCE
+  supplier_part: C25900
+  placement:
+    x_mm: 21.209
+    y_mm: 56.769
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': I2C1_SCL
+  bom_data:
+    No.: '36'
+    Designator: R15,R17,R20,R21,R40
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4701TCE
+    Comment: 4.7kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25900
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: I2C1_SCL pull-up
+  schematic_notes:
+  - 4.7k pull-up on I2C1_SCL bus
+- designator: R16
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 13.335
+    y_mm: 51.308
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': CAN_TX
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P3
+  function_block: CAN_TX pull-up
+  schematic_notes:
+  - 10k pull-up on CAN_TX; keeps CAN bus recessive at startup
+- designator: R17
+  type: resistor
+  value: 4.7kΩ
+  footprint: R0402
+  comment: 4.7kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4701TCE
+  supplier_part: C25900
+  placement:
+    x_mm: 17.018
+    y_mm: 50.927
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': I2C1_SDA
+  bom_data:
+    No.: '36'
+    Designator: R15,R17,R20,R21,R40
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4701TCE
+    Comment: 4.7kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25900
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: I2C1_SDA pull-up
+  schematic_notes:
+  - 4.7k pull-up on I2C1_SDA bus
+- designator: R18
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 37.287
+    y_mm: 52.832
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': QSPI1_CS
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P1
+  function_block: QSPI1_CS pull-up
+  schematic_notes:
+  - 10k pull-up on QSPI1_CS; keeps QSPI flash U8 deselected at startup
+- designator: R19
+  type: resistor
+  value: 33Ω
+  footprint: R0402
+  comment: 33Ω
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF330JTCE
+  supplier_part: C25105
+  placement:
+    x_mm: 26.035
+    y_mm: 47.498
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $1N200184
+    '2': CAN_TX
+  bom_data:
+    No.: '30'
+    Designator: R1,R5,R13,R19,R26
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF330JTCE
+    Comment: 33Ω
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25105
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P1
+  function_block: CAN_TX series termination
+  schematic_notes:
+  - 33 ohm series resistor on CAN_TX from MCU to CAN transceiver U3
+- designator: R20
+  type: resistor
+  value: 4.7kΩ
+  footprint: R0402
+  comment: 4.7kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4701TCE
+  supplier_part: C25900
+  placement:
+    x_mm: 8.382
+    y_mm: 39.624
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': I2C3_SCL
+  bom_data:
+    No.: '36'
+    Designator: R15,R17,R20,R21,R40
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4701TCE
+    Comment: 4.7kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25900
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: I2C3_SCL pull-up
+  schematic_notes:
+  - 4.7k pull-up on I2C3_SCL bus
+- designator: R21
+  type: resistor
+  value: 4.7kΩ
+  footprint: R0402
+  comment: 4.7kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4701TCE
+  supplier_part: C25900
+  placement:
+    x_mm: 9.906
+    y_mm: 37.973
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': I2C3_SDA
+  bom_data:
+    No.: '36'
+    Designator: R15,R17,R20,R21,R40
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4701TCE
+    Comment: 4.7kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25900
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: I2C3_SDA pull-up
+  schematic_notes:
+  - 4.7k pull-up on I2C3_SDA bus
+- designator: R22
+  type: resistor
+  value: 5.1kΩ
+  footprint: R0402
+  comment: 5.1kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF5101TCE
+  supplier_part: C25905
+  placement:
+    x_mm: 48.641
+    y_mm: 36.957
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $1N254528
+    '2': GND
+  bom_data:
+    No.: '37'
+    Designator: R22,R25
+    Quantity: '2'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF5101TCE
+    Comment: 5.1kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25905
+  schematic_page: P1
+  function_block: USB-C CC2 pull-down
+  schematic_notes:
+  - 5.1k pull-down on CC2 (USB-C pin B5) for USB sink current advertisement
+  - Required for USB-C power delivery negotiation
+- designator: R23
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 7.493
+    y_mm: 32.639
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': BOOT0
+    '2': GND
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P1
+  function_block: BOOT0 pull-down
+  schematic_notes:
+  - 10k pull-down on BOOT0; holds MCU in normal boot mode at power-up
+- designator: R24
+  type: resistor
+  value: 12kΩ
+  footprint: R0402
+  comment: 12kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1202TCE
+  supplier_part: C25752
+  placement:
+    x_mm: 36.678
+    y_mm: 34.341
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': HS_R
+    '2': GND
+  bom_data:
+    No.: '38'
+    Designator: R24
+    Quantity: '1'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1202TCE
+    Comment: 12kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25752
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P1
+  function_block: USB HS PHY termination resistor
+  schematic_notes:
+  - 12k 1% precision resistor on HS_R pin for AT32 USB high-speed PHY
+  - 1% tolerance required for USB HS eye diagram compliance
+- designator: R25
+  type: resistor
+  value: 5.1kΩ
+  footprint: R0402
+  comment: 5.1kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF5101TCE
+  supplier_part: C25905
+  placement:
+    x_mm: 48.641
+    y_mm: 33.934
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': $1N254529
+  bom_data:
+    No.: '37'
+    Designator: R22,R25
+    Quantity: '2'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF5101TCE
+    Comment: 5.1kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25905
+  schematic_page: P1
+  function_block: USB-C CC1 pull-down
+  schematic_notes:
+  - 5.1k pull-down on CC1 (USB-C pin A5) for USB sink detection
+- designator: R26
+  type: resistor
+  value: 33Ω
+  footprint: R0402
+  comment: 33Ω
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF330JTCE
+  supplier_part: C25105
+  placement:
+    x_mm: 36.957
+    y_mm: 30.861
+    rotation_deg: 315.0
+    layer: T
+  pins:
+    '1': T_RST_OUT
+    '2': $3N5450
+  bom_data:
+    No.: '30'
+    Designator: R1,R5,R13,R19,R26
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF330JTCE
+    Comment: 33Ω
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25105
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target reset MOSFET gate series resistor
+  schematic_notes:
+  - 33 ohm series resistor between MCU T_RST_OUT and Q1 gate
+- designator: R27
+  type: resistor
+  value: 1MΩ
+  footprint: R0402
+  comment: 1MΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1004TCE
+  supplier_part: C26083
+  placement:
+    x_mm: 48.768
+    y_mm: 29.21
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': $1N254540
+  bom_data:
+    No.: '39'
+    Designator: R27
+    Quantity: '1'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1004TCE
+    Comment: 1MΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C26083
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P1
+  function_block: USB-C shield resistor
+  schematic_notes:
+  - 1M resistor from USB-C connector shell pin to GND
+  - Provides ESD discharge path while limiting leakage current
+- designator: R28
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 21.336
+    y_mm: 19.177
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $3N4349
+    '2': VIO
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target interface VIO pull-up
+  schematic_notes:
+  - 100k pull-up on U13 level-translator B-side output to VIO
+- designator: R29
+  type: resistor
+  value: 22kΩ
+  footprint: R0402
+  comment: 22kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF2202TCE
+  supplier_part: C25768
+  placement:
+    x_mm: 28.448
+    y_mm: 21.336
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $2N788718
+    '2': $2N788708
+  bom_data:
+    No.: '41'
+    Designator: R29,R30,R31
+    Quantity: '3'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF2202TCE
+    Comment: 22kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25768
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SW_NEXT debounce resistor
+  schematic_notes:
+  - 22k series resistor forming RC debounce with C39 1uF for SW_NEXT
+- designator: R30
+  type: resistor
+  value: 22kΩ
+  footprint: R0402
+  comment: 22kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF2202TCE
+  supplier_part: C25768
+  placement:
+    x_mm: 30.988
+    y_mm: 21.336
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $2N788825
+    '2': $2N788818
+  bom_data:
+    No.: '41'
+    Designator: R29,R30,R31
+    Quantity: '3'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF2202TCE
+    Comment: 22kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25768
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SW_SELECT debounce resistor
+  schematic_notes:
+  - 22k series resistor forming RC debounce with C40 1uF for SW_SELECT
+- designator: R31
+  type: resistor
+  value: 22kΩ
+  footprint: R0402
+  comment: 22kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF2202TCE
+  supplier_part: C25768
+  placement:
+    x_mm: 33.528
+    y_mm: 21.336
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $2N788929
+    '2': $2N788938
+  bom_data:
+    No.: '41'
+    Designator: R29,R30,R31
+    Quantity: '3'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF2202TCE
+    Comment: 22kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25768
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P2
+  function_block: SW_PREV debounce resistor
+  schematic_notes:
+  - 22k series resistor forming RC debounce with C41 1uF for SW_PREV
+- designator: R32
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 12.7
+    y_mm: 17.653
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $3N4347
+    '2': VIO
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target interface VIO pull-up
+  schematic_notes:
+  - 100k pull-up on U13 level-translator B-side output to VIO
+- designator: R33
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 12.7
+    y_mm: 16.129
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $3N4348
+    '2': VIO
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target interface VIO pull-up
+  schematic_notes:
+  - 100k pull-up on U13 level-translator B-side output to VIO
+- designator: R34
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 21.336
+    y_mm: 17.653
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $3N4350
+    '2': VIO
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target interface VIO pull-up
+  schematic_notes:
+  - 100k pull-up on U13 level-translator B-side output to VIO
+- designator: R35
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 39.624
+    y_mm: 16.129
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $3N5228
+    '2': VIO
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target AUX interface VIO pull-up
+  schematic_notes:
+  - 100k pull-up on U15 level-translator B-side output to VIO
+- designator: R36
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 39.624
+    y_mm: 17.653
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $3N5229
+    '2': VIO
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target AUX interface VIO pull-up
+  schematic_notes:
+  - 100k pull-up on U15 level-translator B-side output to VIO
+- designator: R37
+  type: resistor
+  value: 100kΩ
+  footprint: R0402
+  comment: 100kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1003TCE
+  supplier_part: C25741
+  placement:
+    x_mm: 49.911
+    y_mm: 16.891
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': $3N5450
+  bom_data:
+    No.: '40'
+    Designator: R28,R32,R33,R34,R35,R36,R37
+    Quantity: '7'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1003TCE
+    Comment: 100kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25741
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target RST pull-up to VIO
+  schematic_notes:
+  - 100k pull-up from T_RST to VIO
+  - Holds target reset line high (inactive) when Q1 is off
+- designator: R38
+  type: resistor
+  value: 150Ω
+  footprint: R0402
+  comment: 150Ω
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1500TCE
+  supplier_part: C25082
+  placement:
+    x_mm: 4.699
+    y_mm: 13.589
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': LED0
+    '2': $1N206167
+  bom_data:
+    No.: '42'
+    Designator: R38
+    Quantity: '1'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1500TCE
+    Comment: 150Ω
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25082
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P1
+  function_block: LED current limiter
+  schematic_notes:
+  - 150 ohm current limiter for status LED LED1; driven by MCU LED0 net
+- designator: R39
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 10.414
+    y_mm: 11.43
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': GND
+    '2': ADC_VIO
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P3
+  function_block: ADC_VIO voltage divider pull-down
+  schematic_notes:
+  - 10k resistor in ADC_VIO sense divider
+  - MCU ADC reads VIO to determine target voltage for level translator direction control
+- designator: R40
+  type: resistor
+  value: 4.7kΩ
+  footprint: R0402
+  comment: 4.7kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4701TCE
+  supplier_part: C25900
+  placement:
+    x_mm: 11.938
+    y_mm: 11.43
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': ADC_VIO
+    '2': VIO
+  bom_data:
+    No.: '36'
+    Designator: R15,R17,R20,R21,R40
+    Quantity: '5'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4701TCE
+    Comment: 4.7kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25900
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: ADC_VIO voltage divider
+  schematic_notes:
+  - 4.7k resistor in ADC_VIO sense divider to VIO
+- designator: R41
+  type: resistor
+  value: 47kΩ
+  footprint: R0402
+  comment: 47kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF4702TCE
+  supplier_part: C25792
+  placement:
+    x_mm: 24.638
+    y_mm: 9.779
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': GND
+    '2': T_POWER_ON
+  bom_data:
+    No.: '31'
+    Designator: R2,R3,R6,R7,R8,R41
+    Quantity: '6'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF4702TCE
+    Comment: 47kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25792
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf
+  schematic_page: P3
+  function_block: Target power switch pull-down
+  schematic_notes:
+  - 47k pull-down on T_POWER_ON; target power off at startup
+- designator: R42
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 27.94
+    y_mm: 11.176
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SW_NEXT
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P2
+  function_block: SW_NEXT pull-up
+  schematic_notes:
+  - 10k pull-up on SW_NEXT encoder signal to 3.3V
+- designator: R43
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 30.48
+    y_mm: 11.176
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SW_SELECT
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P2
+  function_block: SW_SELECT pull-up
+  schematic_notes:
+  - 10k pull-up on SW_SELECT encoder signal to 3.3V
+- designator: R44
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 33.02
+    y_mm: 11.176
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SW_PREV
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P2
+  function_block: SW_PREV pull-up
+  schematic_notes:
+  - 10k pull-up on SW_PREV encoder signal to 3.3V
+- designator: R45
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 41.402
+    y_mm: 11.43
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': T_OE
+    '2': 3.3V
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P3
+  function_block: T_OE pull-up
+  schematic_notes:
+  - 10k pull-up on T_OE to 3.3V
+  - Holds level translators U13 and U15 enabled (OE# active low) at startup
+- designator: R46
+  type: resistor
+  value: 10kΩ
+  footprint: R0402
+  comment: 10kΩ
+  manufacturer: UNI-ROYAL(厚声)
+  manufacturer_part: 0402WGF1002TCE
+  supplier_part: C25744
+  placement:
+    x_mm: 48.514
+    y_mm: 11.43
+    rotation_deg: 270.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': T_RST
+  bom_data:
+    No.: '33'
+    Designator: R9,R11,R12,R16,R18,R23,R39,R42,R43,R44,R45,R46
+    Quantity: '12'
+    Manufacturer: UNI-ROYAL(厚声)
+    Manufacturer Part: 0402WGF1002TCE
+    Comment: 10kΩ
+    Footprint: R0402
+    Mounting Style: SMT
+    Supplier Part: C25744
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20200306/C422600_1E6D84923E4A46A82E41ADD87F860B5C.pdf,https://item.szlcsc.com/datasheet/0402WGF1002TCE/26487.html
+  schematic_page: P3
+  function_block: Target reset MOSFET gate pull-down
+  schematic_notes:
+  - 10k pull-down on Q1 gate
+  - Ensures MOSFET Q1 is off when MCU T_RST_OUT is tristated
+- designator: RN1
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 30.432
+    y_mm: 44.577
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': I2C1_SCL
+    '2': QSPI1_IO0
+    '3': QSPI1_SCK
+    '4': QSPI1_IO3
+    '5': QSPI_IO3
+    '6': QSPI_SCK
+    '7': QSPI_IO0
+    '8': I2C1_SCL
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P1
+  function_block: QSPI and I2C series termination array
+  schematic_notes:
+  - 33 ohm 8-element array; terminates I2C1_SCL, QSPI1_IO0/3, QSPI_IO0/3, QSPI_SCK
+- designator: RN2
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 34.163
+    y_mm: 45.212
+    rotation_deg: 135.0
+    layer: T
+  pins:
+    '1': GND
+    '2': QSPI_IO2
+    '3': QSPI_IO1
+    '4': QSPI_CS
+    '5': QSPI1_CS
+    '6': QSPI1_IO1
+    '7': QSPI1_IO2
+    '8': GND
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P1
+  function_block: QSPI series termination array
+  schematic_notes:
+  - 33 ohm 8-element array; terminates QSPI_IO1/2/CS and QSPI1_IO1/2/CS
+- designator: RN3
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 37.338
+    y_mm: 39.05
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': $1N200203
+    '2': $1N200201
+    '3': $1N200200
+    '4': $1N200169
+    '5': SD_CS
+    '6': SPI2_MOSI
+    '7': SPI2_CLK
+    '8': FLASH_CS
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P2
+  function_block: SPI and SD card series termination array
+  schematic_notes:
+  - 33 ohm 8-element array; terminates SD_CS, SPI2_MOSI, SPI2_CLK, FLASH_CS
+- designator: RN4
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 24.257
+    y_mm: 30.226
+    rotation_deg: 315.0
+    layer: T
+  pins:
+    '1': PA0
+    '2': PA1
+    '3': SERIAL_TXD
+    '4': SERIAL_RXD
+    '5': $3N4411
+    '6': $3N4412
+    '7': $3N4413
+    '8': $3N4414
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P3
+  function_block: MCU GPIO and UART series termination array
+  schematic_notes:
+  - 33 ohm 8-element array; terminates PA0, PA1, SERIAL_TXD, SERIAL_RXD
+- designator: RN5
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 27.686
+    y_mm: 30.861
+    rotation_deg: 315.0
+    layer: T
+  pins:
+    '1': PA4
+    '2': PA5
+    '3': PA6
+    '4': PA7
+    '5': $3N4403
+    '6': $3N4404
+    '7': $3N4405
+    '8': $3N4406
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P3
+  function_block: MCU GPIO series termination array
+  schematic_notes:
+  - 33 ohm 8-element array; terminates PA4, PA5, PA6, PA7
+- designator: RN6
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 42.799
+    y_mm: 24.13
+    rotation_deg: 225.0
+    layer: T
+  pins:
+    '1': $3N86563
+    '2': $3N86568
+    '3': $3N86573
+    '4': $3N86578
+    '5': AUX_TXD
+    '6': AUX_RXD
+    '7': AUX_SWO
+    '8': T_RST_IN
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P3
+  function_block: AUX target interface series termination array
+  schematic_notes:
+  - 33 ohm 8-element array; terminates AUX_TXD, AUX_RXD, AUX_SWO, T_RST_IN
+- designator: RN7
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 16.764
+    y_mm: 11.43
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $3N4348
+    '2': $3N4347
+    '3': $3N4349
+    '4': $3N4350
+    '5': T_SWCLK
+    '6': T_SWDIO
+    '7': T_RXD
+    '8': T_TXD
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P3
+  function_block: Target SWD/UART series termination array (CN4 side)
+  schematic_notes:
+  - 33 ohm 8-element array; terminates T_SWCLK, T_SWDIO, T_RXD, T_TXD on CN4 side
+- designator: RN8
+  type: resistor_array
+  value: 33Ω
+  footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+  comment: 33Ω
+  manufacturer: YAGEO(国巨)
+  manufacturer_part: YC124-FR-0733RL
+  supplier_part: C136851
+  placement:
+    x_mm: 44.196
+    y_mm: 11.43
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': $3N5227
+    '2': $3N5228
+    '3': $3N5229
+    '4': $3N5230
+    '5': T_RST
+    '6': T_SWO
+    '7': T_AUX_RXD
+    '8': T_AUX_TXD
+  bom_data:
+    No.: '43'
+    Designator: RN1,RN2,RN3,RN4,RN5,RN6,RN7,RN8
+    Quantity: '8'
+    Manufacturer: YAGEO(国巨)
+    Manufacturer Part: YC124-FR-0733RL
+    Comment: 33Ω
+    Footprint: RES-ARRAY-SMD_0402-8P-L2.0-W1.0-BL
+    Mounting Style: SMT
+    Supplier Part: C136851
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180730/C256814_200CCA6CC84D78D7E49AE6680727F338.pdf
+  schematic_page: P3
+  function_block: Target AUX series termination array (CN5 side)
+  schematic_notes:
+  - 33 ohm 8-element array; terminates T_RST, T_SWO, T_AUX_RXD, T_AUX_TXD on CN5 side
+- designator: SW1
+  type: switch
+  value: TS24CA
+  footprint: SW-SMD_TS24CA
+  comment: TS24CA
+  manufacturer: SHOU HAN(首韩)
+  manufacturer_part: TS24CA
+  supplier_part: C393942
+  placement:
+    x_mm: 1.93
+    y_mm: 31.369
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '3': 3.3V
+    '4': BOOT0
+  bom_data:
+    No.: '44'
+    Designator: SW1,SW2
+    Quantity: '2'
+    Manufacturer: SHOU HAN(首韩)
+    Manufacturer Part: TS24CA
+    Comment: TS24CA
+    Footprint: SW-SMD_TS24CA
+    Mounting Style: SMT
+    Supplier Part: C393942
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20190521/C393942_591A9E318887EFA4274D34029981AD99.pdf
+  schematic_page: P1
+  function_block: BOOT0 button
+  schematic_notes:
+  - Pulls BOOT0 high to 3.3V when pressed; enters MCU DFU/bootloader mode
+  - Hold SW1 during reset (SW2) to enter DFU mode
+- designator: SW2
+  type: switch
+  value: TS24CA
+  footprint: SW-SMD_TS24CA
+  comment: TS24CA
+  manufacturer: SHOU HAN(首韩)
+  manufacturer_part: TS24CA
+  supplier_part: C393942
+  placement:
+    x_mm: 1.93
+    y_mm: 22.352
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '3': GND
+    '4': RST
+  bom_data:
+    No.: '44'
+    Designator: SW1,SW2
+    Quantity: '2'
+    Manufacturer: SHOU HAN(首韩)
+    Manufacturer Part: TS24CA
+    Comment: TS24CA
+    Footprint: SW-SMD_TS24CA
+    Mounting Style: SMT
+    Supplier Part: C393942
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20190521/C393942_591A9E318887EFA4274D34029981AD99.pdf
+  schematic_page: P1
+  function_block: System reset button
+  schematic_notes:
+  - Pulls NRST/RST low to GND when pressed; resets MCU U12
+- designator: SW3
+  type: switch
+  value: SLLB510100
+  footprint: SW-SMD_SLLB510100
+  comment: SLLB510100
+  manufacturer: ALPSALPINE(阿尔卑斯阿尔派)
+  manufacturer_part: SLLB510100
+  supplier_part: C125039
+  placement:
+    x_mm: 30.48
+    y_mm: 4.826
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': SW_PREV
+    '2': SW_NEXT
+    '4': GND
+    '5': GND
+    '6': GND
+    '7': GND
+    T: SW_SELECT
+    C: GND
+  bom_data:
+    No.: '45'
+    Designator: SW3
+    Quantity: '1'
+    Manufacturer: ALPSALPINE(阿尔卑斯阿尔派)
+    Manufacturer Part: SLLB510100
+    Comment: SLLB510100
+    Footprint: SW-SMD_SLLB510100
+    Mounting Style: SMT
+    Supplier Part: C125039
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20170810/C125039_1502335339150879899.pdf
+  schematic_page: P2
+  function_block: Multi-directional encoder switch
+  schematic_notes:
+  - 'Alps SLLB510100: 3-way (prev/select/next) encoder for user navigation'
+  - SW_PREV, SW_SELECT, SW_NEXT debounced by RC + 74HC14 Schmitt (U14)
+  - Outputs IRQ_PREV, IRQ_SELECT, IRQ_NEXT to MCU interrupt pins
+- designator: TP1
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 38.461
+    y_mm: 26.796
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': PB1
+  schematic_page: P3
+  function_block: Test point PB1
+  schematic_notes:
+  - MCU pin PB1 test point; spare GPIO
+- designator: TP2
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 48.133
+    y_mm: 94.615
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': GND
+  schematic_page: P1
+  function_block: Test point GND
+  schematic_notes:
+  - Ground reference test point; bottom layer
+- designator: TP3
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 6.35
+    y_mm: 86.741
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': CAN_GND
+  schematic_page: P3
+  function_block: Test point CAN_GND
+  schematic_notes:
+  - CAN isolated ground test point; bottom layer
+- designator: TP4
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 18.984
+    y_mm: 86.74
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': CAN_5V_IN
+  schematic_page: P3
+  function_block: Test point CAN_5V_IN
+  schematic_notes:
+  - CAN isolated 5V input test point; bottom layer
+- designator: TP5
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 45.466
+    y_mm: 87.63
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': VSD
+  schematic_page: P2
+  function_block: Test point VSD
+  schematic_notes:
+  - SD card supply voltage test point; bottom layer
+- designator: TP6
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 50.8
+    y_mm: 82.803
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': 3.3V
+  schematic_page: P1
+  function_block: Test point 3.3V
+  schematic_notes:
+  - Main 3.3V rail test point; bottom layer
+- designator: TP7
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 20.701
+    y_mm: 64.516
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': RTC
+  schematic_page: P2
+  function_block: Test point RTC
+  schematic_notes:
+  - RTC frequency output test point; bottom layer
+- designator: TP8
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 52.324
+    y_mm: 65.659
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': 12V
+  schematic_page: P2
+  function_block: Test point 12V
+  schematic_notes:
+  - 12V boost output test point; bottom layer
+- designator: TP9
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 50.165
+    y_mm: 56.896
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': 5V
+  schematic_page: P1
+  function_block: Test point 5V
+  schematic_notes:
+  - 5V rail test point; bottom layer
+- designator: TP10
+  type: test_point
+  value: ''
+  placement:
+    x_mm: 30.226
+    y_mm: 8.763
+    rotation_deg: 270.0
+    layer: B
+  pins:
+    '1': VIO
+  schematic_page: P3
+  function_block: Test point VIO
+  schematic_notes:
+  - Target VIO rail test point; bottom layer
+- designator: U1
+  type: ic
+  value: TF-115Y-ACP9
+  footprint: SIM-SMD_TF-115Y-BCP9
+  comment: TF-115Y-ACP9
+  manufacturer: XUNPU(讯普)
+  manufacturer_part: TF-115Y-ACP9
+  supplier_part: C5454948
+  placement:
+    x_mm: 41.656
+    y_mm: 90.678
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '2': SD_CS
+    '3': SPI2_MOSI
+    '4': VSD
+    '5': SPI2_CLK
+    '6': GND
+    '7': $2N508660
+    '10': GND
+    '11': GND
+    '12': GND
+    '13': GND
+    Cd: SD_DETECT
+  bom_data:
+    No.: '46'
+    Designator: U1
+    Quantity: '1'
+    Manufacturer: XUNPU(讯普)
+    Manufacturer Part: TF-115Y-ACP9
+    Comment: TF-115Y-ACP9
+    Footprint: SIM-SMD_TF-115Y-BCP9
+    Mounting Style: SMT
+    Supplier Part: C5454948
+    Datasheet: https://item.szlcsc.com/datasheet/TF-115Y-ACP9/6364645.html
+  schematic_page: P2
+  function_block: MicroSD card connector
+  schematic_notes:
+  - 'TF-115Y-ACP9: microSD slot with card-detect (SD_DETECT)'
+  - 'SPI mode: SD_CS, SPI2_CLK, SPI2_MOSI, SPI2_MISO'
+  - Power-gated via U2 TPS22929D load switch on VSD rail
+  - Gold-plated contacts
+- designator: U2
+  type: ic
+  value: TPS22929DDBVR
+  footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+  comment: TPS22929DDBVR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: TPS22929DDBVR
+  supplier_part: C415177
+  placement:
+    x_mm: 52.959
+    y_mm: 85.217
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': VSD
+    '2': GND
+    '3': SD_ON
+    '4': 3.3V
+    '5': GND
+    '6': 3.3V
+  bom_data:
+    No.: '47'
+    Designator: U2,U10,U16
+    Quantity: '3'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: TPS22929DDBVR
+    Comment: TPS22929DDBVR
+    Footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+    Mounting Style: SMT
+    Supplier Part: C415177
+    Datasheet: https://www.ti.com/cn/lit/gpn/tps22929d
+  schematic_page: P2
+  function_block: SD card power switch
+  schematic_notes:
+  - TPS22929D load switch; gates 3.3V to VSD rail for SD card U1
+  - Controlled by MCU SD_ON signal
+  - Allows SD card power-cycling for error recovery
+- designator: U3
+  type: ic
+  value: CA-IS2062VW
+  footprint: CA-IS305XW
+  comment: CA-IS2062VW
+  manufacturer: Chipanalog(川土微)
+  manufacturer_part: CA-IS2062VW
+  supplier_part: C5271191
+  placement:
+    x_mm: 15.875
+    y_mm: 78.232
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 5V
+    '2': GND
+    '3': CAN_TX
+    '5': CAN_RX_INT
+    '7': 3.3V
+    '8': GND
+    '9': CAN_GND
+    '10': CAN_GND
+    '11': CAN_5V_IN
+    '12': $3N53786
+    '13': $3N53774
+    '15': CAN_GND
+    '16': CAN_5V_OUT
+  bom_data:
+    No.: '48'
+    Designator: U3
+    Quantity: '1'
+    Manufacturer: Chipanalog(川土微)
+    Manufacturer Part: CA-IS2062VW
+    Comment: CA-IS2062VW
+    Footprint: CA-IS305XW
+    Mounting Style: SMT
+    Supplier Part: C5271191
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20240126/A4F7156900B0DEB7A0F3B90F6549B2FA.pdf
+  schematic_page: P3
+  function_block: Isolated CAN transceiver
+  schematic_notes:
+  - 'CA-IS2062VW: isolated CAN transceiver with integrated DC-DC converter'
+  - Galvanic isolation between GND (3.3V/5V side) and CAN_GND (CAN side)
+  - CAN_TX from MCU via R19 33 ohm; CAN_RX to MCU via R5 33 ohm
+  - Supports classic CAN up to 1 Mbit/s only
+  - 'For CAN-FD upgrade: replace with a CAN-FD rated isolated transceiver'
+  - Maintain creepage and clearance in PCB layout isolation barrier
+  - No silkscreen in isolation barrier area
+  alternate_parts:
+  - supplier_part: C5338808
+    manufacturer_part: CA-IS3062VW
+    manufacturer: Chipanalog(川土微)
+    note: Higher reinforced isolation voltage; still classic CAN only, not CAN-FD
+- designator: U4
+  type: ic
+  value: TLV62569DBVR
+  footprint: SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BR
+  comment: TLV62569DBVR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: TLV62569DBVR
+  supplier_part: C141836
+  placement:
+    x_mm: 54.102
+    y_mm: 75.438
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': 5V
+    '2': GND
+    '3': VSW
+    '4': 5V
+    '5': VFB
+  bom_data:
+    No.: '49'
+    Designator: U4
+    Quantity: '1'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: TLV62569DBVR
+    Comment: TLV62569DBVR
+    Footprint: SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BR
+    Mounting Style: SMT
+    Supplier Part: C141836
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20180423/C141836_1FC17A3D2C2E4ECD339DF92B83CED618.pdf
+  schematic_page: P1
+  function_block: 3.3V synchronous buck converter
+  schematic_notes:
+  - 'TLV62569DBVR: 3MHz synchronous step-down, 5V in to 3.3V out'
+  - 'Feedback divider: R4=33k (lower), R10=150k (upper), C9=22pF feed-forward'
+  - 'Output: Vout = 0.6V * (1 + 150k/33k) = 3.33V'
+  - L3=1uH output inductor; I_sat>=1.2A, DCR<=200 mohm
+  alternate_parts:
+  - supplier_part: C479074
+    manufacturer_part: SY8089A1AAC
+    note: Pin-compatible alternate
+  - supplier_part: C5116078
+    manufacturer_part: TMI3408C
+    note: Pin-compatible alternate
+- designator: U5
+  type: ic
+  value: SD8931
+  footprint: SOP-8_L4.9-W3.9-P1.27-LS6.0-BL-1
+  comment: SD8931
+  manufacturer: WAVE(兴威帆电子)
+  manufacturer_part: SD8931
+  supplier_part: C48982555
+  placement:
+    x_mm: 18.796
+    y_mm: 61.722
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': RTC
+    '2': 3.3V
+    '3': IRQ_I2C
+    '5': GND
+    '6': VBAT
+    '7': I2C1_SDA
+    '8': I2C1_SCL
+  bom_data:
+    No.: '50'
+    Designator: U5
+    Quantity: '1'
+    Manufacturer: WAVE(兴威帆电子)
+    Manufacturer Part: SD8931
+    Comment: SD8931
+    Footprint: SOP-8_L4.9-W3.9-P1.27-LS6.0-BL-1
+    Mounting Style: SMT
+    Supplier Part: C48982555
+    Datasheet: https://item.szlcsc.com/datasheet/SD8931/51313842.html
+  schematic_page: P2
+  function_block: Real-time clock (RTC)
+  schematic_notes:
+  - 'SD8931: I2C RTC with built-in crystal and temperature compensation'
+  - Backup supply from VBAT rail (BT1 CR1220 battery)
+  - IRQ output on IRQ_I2C net; connected to MCU EXTI pin PC13
+  - Frequency output on RTC net with 10k pull-up R12
+  - On I2C1 bus
+  alternate_parts:
+  - supplier_part: C107410
+    manufacturer_part: DS3231MZ+TRL
+    manufacturer: Maxim/Analog Devices
+    note: Higher accuracy TCXO-based RTC; +/-2ppm vs SD8931 basic crystal accuracy
+- designator: U6
+  type: ic
+  value: W25Q128JVSIQ
+  footprint: SOIC-8_L5.3-W5.3-P1.27-LS8.0-BL
+  comment: W25Q128JVSIQ
+  manufacturer: WINBOND(华邦)
+  manufacturer_part: W25Q128JVSIQ
+  supplier_part: C97521
+  placement:
+    x_mm: 43.81
+    y_mm: 63.627
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': FLASH_CS
+    '2': $2N741099
+    '3': 3.3V
+    '4': GND
+    '5': SPI2_MOSI
+    '6': SPI2_CLK
+    '7': 3.3V
+    '8': 3.3V
+  bom_data:
+    No.: '51'
+    Designator: U6,U8
+    Quantity: '2'
+    Manufacturer: WINBOND(华邦)
+    Manufacturer Part: W25Q128JVSIQ
+    Comment: W25Q128JVSIQ
+    Footprint: SOIC-8_L5.3-W5.3-P1.27-LS8.0-BL
+    Mounting Style: SMT
+    Supplier Part: C97521
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20170316/1489627409956.pdf
+  schematic_page: P2
+  function_block: SPI NOR flash 128 Mbit
+  schematic_notes:
+  - 'W25Q128JVSIQ: 128 Mbit (16 MB) SPI flash'
+  - 'Connected via SPI2: SPI2_CLK, SPI2_MOSI, SPI2_MISO, FLASH_CS'
+  - MISO series terminated by R13 33 ohm
+  - CS pull-up R9 10k; WP and HOLD tied to 3.3V (write-enabled, hold-disabled)
+- designator: U7
+  type: ic
+  value: TLV61046ADBVR
+  footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+  comment: TLV61046ADBVR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: TLV61046ADBVR
+  supplier_part: C464815
+  placement:
+    x_mm: 54.61
+    y_mm: 62.738
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': $2N576115
+    '2': GND
+    '3': 5V
+    '4': 3.3V
+    '5': 12V
+    '6': 5V
+  bom_data:
+    No.: '52'
+    Designator: U7
+    Quantity: '1'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: TLV61046ADBVR
+    Comment: TLV61046ADBVR
+    Footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+    Mounting Style: SMT
+    Supplier Part: C464815
+    Datasheet: https://www.ti.com/cn/lit/gpn/tlv61046a
+  schematic_page: P2
+  function_block: 12V boost converter for OLED
+  schematic_notes:
+  - 'TLV61046ADBVR: boost converter, 5V in to 12V out for OLED charge pump'
+  - Output inductor L4 10uH
+  - Output caps C15 C16 C17 C18 C19 on 12V rail; all 50V rated
+  - 12V supplied to FPC1 for OLED VCOMH and pixel supply
+  alternate_parts:
+  - supplier_part: C42371112
+    manufacturer_part: SGM6604YN6G/TR
+    note: Pin-compatible alternate
+- designator: U8
+  type: ic
+  value: W25Q128JVSIQ
+  footprint: SOIC-8_L5.3-W5.3-P1.27-LS8.0-BL
+  comment: W25Q128JVSIQ
+  manufacturer: WINBOND(华邦)
+  manufacturer_part: W25Q128JVSIQ
+  supplier_part: C97521
+  placement:
+    x_mm: 32.004
+    y_mm: 56.769
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': QSPI1_CS
+    '2': QSPI1_IO1
+    '3': QSPI1_IO2
+    '4': GND
+    '5': QSPI1_IO0
+    '6': QSPI1_SCK
+    '7': QSPI1_IO3
+    '8': 3.3V
+  bom_data:
+    No.: '51'
+    Designator: U6,U8
+    Quantity: '2'
+    Manufacturer: WINBOND(华邦)
+    Manufacturer Part: W25Q128JVSIQ
+    Comment: W25Q128JVSIQ
+    Footprint: SOIC-8_L5.3-W5.3-P1.27-LS8.0-BL
+    Mounting Style: SMT
+    Supplier Part: C97521
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20170316/1489627409956.pdf
+  schematic_page: P1
+  function_block: QSPI NOR flash 128 Mbit
+  schematic_notes:
+  - 'W25Q128JVSIQ: 128 Mbit (16 MB) QSPI flash'
+  - 'Connected via QSPI1: QSPI1_CLK, QSPI1_IO0-3, QSPI1_CS'
+  - CS pull-up R18 10k
+  - Series termination via RN1 RN2 resistor arrays
+- designator: U9
+  type: ic
+  value: 24C64S(XBLW)
+  footprint: SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR
+  comment: 24C64S(XBLW)
+  manufacturer: XBLW(芯伯乐)
+  manufacturer_part: 24C64S(XBLW)
+  supplier_part: C41408505
+  placement:
+    x_mm: 20.066
+    y_mm: 53.848
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': I2C1_SCL
+    '2': GND
+    '3': I2C1_SDA
+    '4': 3.3V
+    '5': GND
+  bom_data:
+    No.: '53'
+    Designator: U9
+    Quantity: '1'
+    Manufacturer: XBLW(芯伯乐)
+    Manufacturer Part: 24C64S(XBLW)
+    Comment: 24C64S(XBLW)
+    Footprint: SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR
+    Mounting Style: SMT
+    Supplier Part: C41408505
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20240923/A3E70BC338BD871C99DB6D87E8EE0B9D.pdf
+  schematic_page: P2
+  function_block: I2C EEPROM 64 Kbit
+  schematic_notes:
+  - '24C64S(XBLW): 64 Kbit I2C EEPROM on I2C1 bus'
+  - Stores configuration or calibration data
+  - WP pin not connected (write enabled)
+  alternate_parts:
+  - supplier_part: C5263778
+    manufacturer_part: FT24C64A-ELR-T
+    note: Pin-compatible 64 Kbit I2C EEPROM alternate
+- designator: U10
+  type: ic
+  value: TPS22929DDBVR
+  footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+  comment: TPS22929DDBVR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: TPS22929DDBVR
+  supplier_part: C415177
+  placement:
+    x_mm: 48.387
+    y_mm: 52.578
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': 5V
+    '2': GND
+    '3': VBUS
+    '4': VBUS
+    '5': GND
+    '6': VBUS
+  bom_data:
+    No.: '47'
+    Designator: U2,U10,U16
+    Quantity: '3'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: TPS22929DDBVR
+    Comment: TPS22929DDBVR
+    Footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+    Mounting Style: SMT
+    Supplier Part: C415177
+    Datasheet: https://www.ti.com/cn/lit/gpn/tps22929d
+  schematic_page: P1
+  function_block: USB VBUS power switch
+  schematic_notes:
+  - TPS22929D load switch; gates 5V to VBUS rail for USB connector
+  - Allows software control of USB VBUS output
+- designator: U11
+  type: ic
+  value: 1206L050YR
+  footprint: F1206
+  comment: 1206L050YR
+  manufacturer: Littelfuse(美国力特)
+  manufacturer_part: 1206L050YR
+  supplier_part: C163512
+  placement:
+    x_mm: 48.387
+    y_mm: 46.101
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '1': HS_VBUS
+    '2': VBUS
+  bom_data:
+    No.: '54'
+    Designator: U11
+    Quantity: '1'
+    Manufacturer: Littelfuse(美国力特)
+    Manufacturer Part: 1206L050YR
+    Comment: 1206L050YR
+    Footprint: F1206
+    Mounting Style: SMT
+    Supplier Part: C163512
+    Datasheet: https://item.szlcsc.com/datasheet/1206L050YR/174894.html
+  schematic_page: P1
+  function_block: USB VBUS polyfuse
+  schematic_notes:
+  - '1206L050YR: 500mA resettable polyfuse on HS_VBUS line'
+  - Protects against USB overcurrent; resets automatically when fault clears
+  - Placed between D5 TVS clamp and U10 load switch
+- designator: U12
+  type: ic
+  value: AT32F405RCT7-7
+  footprint: LQFP-64_L7.0-W7.0-P0.40-LS9.0-TL
+  comment: AT32F405RCT7-7
+  manufacturer: Artery(雅特力)
+  manufacturer_part: AT32F405RCT7-7
+  supplier_part: C9900094935
+  placement:
+    x_mm: 30.48
+    y_mm: 38.1
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': 3.3V
+    '2': IRQ_I2C
+    '3': OSC32_IN
+    '4': OSC32_OUT
+    '5': OSC_IN
+    '6': OSC_OUT
+    '7': RST
+    '8': I2C3_SCL
+    '9': I2C3_SDA
+    '10': LED0
+    '11': ADC_VIO
+    '12': GND
+    '13': 3.3V_ANA
+    '14': PA0
+    '15': PA1
+    '16': SERIAL_TXD
+    '17': SERIAL_RXD
+    '18': T_OE
+    '19': T_POWER_ON
+    '20': PA4
+    '21': PA5
+    '22': PA6
+    '23': PA7
+    '24': AUX_TXD
+    '25': AUX_RXD
+    '26': T_RST_IN
+    '27': PB1
+    '28': IRQ_PREV
+    '29': IRQ_SELECT
+    '30': IRQ_NEXT
+    '31': GND
+    '32': T_RST_OUT
+    '33': HS_R
+    '34': HS_DM
+    '35': HS_DP
+    '36': 3.3V
+    '37': CONSOLE_TXD
+    '38': CONSOLE_RXD
+    '39': SD_ON
+    '40': SD_DETECT
+    '41': $1N200203
+    '42': $1N200201
+    '43': $1N200200
+    '44': $1N200169
+    '45': SPI2_MISO
+    '46': SYS_SWDIO
+    '47': AUX_SWO
+    '48': DISP_DC
+    '49': SYS_SWCLK
+    '50': QSPI_IO2
+    '51': QSPI_IO1
+    '52': QSPI_CS
+    '53': DISP_RST
+    '54': DISP_CS
+    '55': QSPI_IO3
+    '56': QSPI_SCK
+    '57': QSPI_IO0
+    '58': I2C1_SCL
+    '59': I2C1_SDA
+    '60': BOOT0
+    '61': CAN_RX
+    '62': $1N200184
+    '63': GND
+    '64': 3.3V
+  bom_data:
+    No.: '55'
+    Designator: U12
+    Quantity: '1'
+    Manufacturer: Artery(雅特力)
+    Manufacturer Part: AT32F405RCT7-7
+    Comment: AT32F405RCT7-7
+    Footprint: LQFP-64_L7.0-W7.0-P0.40-LS9.0-TL
+    Mounting Style: SMT
+    Supplier Part: C9900094935
+  schematic_page: P1
+  function_block: Main MCU
+  schematic_notes:
+  - 'AT32F405RCT7-7: ARM Cortex-M4F 216MHz LQFP-64'
+  - 'Interfaces in use: USB-HS (native), CAN, I2C1, I2C3, SPI2, QSPI1, USART1, USART2'
+  - 'Crystals: 12MHz HSE (X2), 32.768kHz LSE (X1)'
+  - VDDA isolated from VDD via L5+C34+C36 for ADC accuracy
+  - SWD debug via CN3; BOOT0/RST via SW1/SW2
+  - Consigned part for JLCPCB assembly (C9900094935)
+- designator: U13
+  type: ic
+  value: SN74AVC4T774PWR
+  footprint: TSSOP-16_L5.0-W4.4-P0.65-LS6.4-BL
+  comment: SN74AVC4T774PWR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: SN74AVC4T774PWR
+  supplier_part: C129363
+  placement:
+    x_mm: 17.018
+    y_mm: 17.653
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': $3N4403
+    '2': $3N4404
+    '3': $3N4405
+    '4': $3N4406
+    '5': $3N4411
+    '6': $3N4412
+    '7': $3N4413
+    '8': $3N4414
+    '9': T_OE
+    '10': GND
+    '11': $3N4348
+    '12': $3N4347
+    '13': $3N4349
+    '14': $3N4350
+    '15': VIO
+    '16': 3.3V
+  bom_data:
+    No.: '56'
+    Designator: U13,U15
+    Quantity: '2'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: SN74AVC4T774PWR
+    Comment: SN74AVC4T774PWR
+    Footprint: TSSOP-16_L5.0-W4.4-P0.65-LS6.4-BL
+    Mounting Style: SMT
+    Supplier Part: C129363
+    Datasheet: https://www.ti.com/cn/lit/gpn/sn74avc4t774
+  schematic_page: P3
+  function_block: Target SWD and UART level translator
+  schematic_notes:
+  - 'SN74AVC4T774PWR: quad bidirectional level translator'
+  - VCCA = 3.3V (MCU side), VCCB = VIO (target side)
+  - Translates T_SWCLK, T_SWDIO, T_RXD, T_TXD to target voltage
+  - OE# (T_OE) active low; R45 10k pull-up holds enabled at startup
+  - 'Warning: SN74AXC4T774PWR has internal 71k B-side pull-downs; use AVC not AXC
+    variant'
+  alternate_parts:
+  - supplier_part: C5372578
+    manufacturer_part: RS4T774XTSS16
+    note: Supports VCCB down to 0.9V
+  - supplier_part: C5139004
+    manufacturer_part: AIP74LVC4T774TA16
+    note: Supports VCCB up to 5.5V
+- designator: U14
+  type: ic
+  value: 74HC14D,653
+  footprint: SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL
+  comment: 74HC14D,653
+  manufacturer: Nexperia(安世)
+  manufacturer_part: 74HC14D,653
+  supplier_part: C5605
+  placement:
+    x_mm: 31.242
+    y_mm: 16.256
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': SW_NEXT
+    '2': $2N788718
+    '3': SW_SELECT
+    '4': $2N788825
+    '5': SW_PREV
+    '6': $2N788929
+    '7': GND
+    '8': IRQ_PREV
+    '9': $2N788938
+    '10': IRQ_SELECT
+    '11': $2N788818
+    '12': IRQ_NEXT
+    '13': $2N788708
+    '14': 3.3V
+  bom_data:
+    No.: '57'
+    Designator: U14
+    Quantity: '1'
+    Manufacturer: Nexperia(安世)
+    Manufacturer Part: 74HC14D,653
+    Comment: 74HC14D,653
+    Footprint: SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL
+    Mounting Style: SMT
+    Supplier Part: C5605
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20170209/1486607341486.pdf
+  schematic_page: P2
+  function_block: Schmitt inverter for switch debounce
+  schematic_notes:
+  - '74HC14D: hex Schmitt-trigger inverter'
+  - Three inverter pairs debounce SW_NEXT, SW_SELECT, SW_PREV
+  - RC time constant ~20ms (22k + 1uF); Schmitt gives clean digital edge
+  - Outputs IRQ_NEXT, IRQ_SELECT, IRQ_PREV to MCU interrupt pins
+- designator: U15
+  type: ic
+  value: SN74AVC4T774PWR
+  footprint: TSSOP-16_L5.0-W4.4-P0.65-LS6.4-BL
+  comment: SN74AVC4T774PWR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: SN74AVC4T774PWR
+  supplier_part: C129363
+  placement:
+    x_mm: 43.942
+    y_mm: 17.653
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': GND
+    '2': GND
+    '3': $3N86563
+    '4': $3N86568
+    '5': $3N86573
+    '6': $3N86578
+    '7': GND
+    '8': 3.3V
+    '9': T_OE
+    '10': GND
+    '11': $3N5227
+    '12': $3N5228
+    '13': $3N5229
+    '14': $3N5230
+    '15': VIO
+    '16': 3.3V
+  bom_data:
+    No.: '56'
+    Designator: U13,U15
+    Quantity: '2'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: SN74AVC4T774PWR
+    Comment: SN74AVC4T774PWR
+    Footprint: TSSOP-16_L5.0-W4.4-P0.65-LS6.4-BL
+    Mounting Style: SMT
+    Supplier Part: C129363
+    Datasheet: https://www.ti.com/cn/lit/gpn/sn74avc4t774
+  schematic_page: P3
+  function_block: Target AUX level translator
+  schematic_notes:
+  - 'SN74AVC4T774PWR: quad bidirectional level translator'
+  - VCCA = 3.3V (MCU side), VCCB = VIO (target side)
+  - Translates T_AUX_TXD, T_AUX_RXD, T_SWO, T_RST to target voltage
+  - Shares OE# (T_OE) with U13
+  - 'Warning: avoid SN74AXC4T774PWR variant (internal 71k B-side pull-downs)'
+  alternate_parts:
+  - supplier_part: C5372578
+    manufacturer_part: RS4T774XTSS16
+    note: Supports VCCB down to 0.9V
+  - supplier_part: C5139004
+    manufacturer_part: AIP74LVC4T774TA16
+    note: Supports VCCB up to 5.5V
+- designator: U16
+  type: ic
+  value: TPS22929DDBVR
+  footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+  comment: TPS22929DDBVR
+  manufacturer: TI(德州仪器)
+  manufacturer_part: TPS22929DDBVR
+  supplier_part: C415177
+  placement:
+    x_mm: 24.13
+    y_mm: 13.081
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': VIO
+    '2': GND
+    '3': T_POWER_ON
+    '4': 3.3V
+    '5': GND
+    '6': 3.3V
+  bom_data:
+    No.: '47'
+    Designator: U2,U10,U16
+    Quantity: '3'
+    Manufacturer: TI(德州仪器)
+    Manufacturer Part: TPS22929DDBVR
+    Comment: TPS22929DDBVR
+    Footprint: SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL
+    Mounting Style: SMT
+    Supplier Part: C415177
+    Datasheet: https://www.ti.com/cn/lit/gpn/tps22929d
+  schematic_page: P3
+  function_block: Target VIO power switch
+  schematic_notes:
+  - TPS22929D load switch; gates 3.3V to VIO rail for target interface
+  - Controlled by MCU T_POWER_ON signal
+  - Allows software-controlled power to target device
+- designator: USBC1
+  type: unknown
+  value: TYPE-C-31-M-12
+  footprint: USB-C_SMD-TYPE-C-31-M-12
+  comment: TYPE-C-31-M-12
+  manufacturer: 韩国韩荣
+  manufacturer_part: TYPE-C-31-M-12
+  supplier_part: C165948
+  placement:
+    x_mm: 54.864
+    y_mm: 35.201
+    rotation_deg: 90.0
+    layer: T
+  pins:
+    '0': $1N254540
+    A5: $1N254529
+    B7: HS_DM
+    A6: HS_DP
+    A7: HS_DM
+    B6: HS_DP
+    B5: $1N254528
+    A1: GND
+    B12: GND
+    A4: HS_VBUS
+    B9: HS_VBUS
+    B4: HS_VBUS
+    A9: HS_VBUS
+    B1: GND
+    A12: GND
+  bom_data:
+    No.: '58'
+    Designator: USBC1
+    Quantity: '1'
+    Manufacturer: 韩国韩荣
+    Manufacturer Part: TYPE-C-31-M-12
+    Comment: TYPE-C-31-M-12
+    Footprint: USB-C_SMD-TYPE-C-31-M-12
+    Mounting Style: DIP
+    Supplier Part: C165948
+  schematic_page: P1
+  function_block: USB-C connector
+  schematic_notes:
+  - 'TYPE-C-31-M-12: USB-C receptacle'
+  - HS_DP/HS_DM connected to AT32 USB-HS PHY via D7 ESD array
+  - CC1/CC2 pull-downs R25/R22 5.1k for USB sink current advertisement
+  - VBUS protected by polyfuse U11 and TVS D5
+  - 'Shield: C38 4.7nF to GND, R27 1M to GND'
+  - 'Note: BOM mounting style listed as DIP is a BOM entry error; part is SMT'
+  alternate_parts:
+  - supplier_part: C3020560
+    manufacturer_part: USB4105-GF-A
+    manufacturer: GCT
+    note: GCT alternate USB-C receptacle
+  - supplier_part: C3197731
+    manufacturer_part: CU3216SASDLR010-NH
+    manufacturer: CVILUX
+    note: CVILUX alternate
+- designator: X1
+  type: crystal
+  value: 32.768kHz
+  footprint: FC-135R_L3.2-W1.5
+  comment: 32.768kHz
+  manufacturer: EPSON(爱普生)
+  manufacturer_part: Q13FC1350000400
+  supplier_part: C32346
+  placement:
+    x_mm: 19.812
+    y_mm: 43.688
+    rotation_deg: 180.0
+    layer: T
+  pins:
+    '1': OSC32_IN
+    '2': OSC32_OUT
+  bom_data:
+    No.: '59'
+    Designator: X1
+    Quantity: '1'
+    Manufacturer: EPSON(爱普生)
+    Manufacturer Part: Q13FC1350000400
+    Comment: 32.768kHz
+    Footprint: FC-135R_L3.2-W1.5
+    Mounting Style: SMT
+    Supplier Part: C32346
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20190108/C32346_746D6B07EAF90824457A96480007685F.pdf
+  schematic_page: P1
+  function_block: RTC low-speed crystal (LSE) 32.768kHz
+  schematic_notes:
+  - 'Epson Q13FC1350000400: 32.768kHz, 12.5pF load capacitance'
+  - Load caps C27 and C28 are 18pF each
+  - Drives MCU OSC32_IN/OSC32_OUT for RTC and low-power clock
+- designator: X2
+  type: crystal
+  value: 12MHz
+  footprint: CRYSTAL-SMD_4P-L3.2-W2.5-BL
+  comment: 12MHz
+  manufacturer: CJ(江苏长电/长晶)
+  manufacturer_part: CJ13-120001210B20
+  supplier_part: C2875246
+  placement:
+    x_mm: 19.431
+    y_mm: 38.1
+    rotation_deg: 0.0
+    layer: T
+  pins:
+    '1': OSC_OUT
+    '2': GND
+    '3': OSC_IN
+    '4': GND
+  bom_data:
+    No.: '60'
+    Designator: X2
+    Quantity: '1'
+    Manufacturer: CJ(江苏长电/长晶)
+    Manufacturer Part: CJ13-120001210B20
+    Comment: 12MHz
+    Footprint: CRYSTAL-SMD_4P-L3.2-W2.5-BL
+    Mounting Style: SMT
+    Supplier Part: C2875246
+    Datasheet: https://atta.szlcsc.com/upload/public/pdf/source/20210824/E6873A29EC9F0F4D38BC5C84A85B05C9.pdf
+  schematic_page: P1
+  function_block: Main high-speed crystal (HSE) 12MHz
+  schematic_notes:
+  - 'CJ CJ13-120001210B20: 12MHz, 12pF load capacitance'
+  - Load caps C30 and C33 are 15pF each (targets 12pF spec with ~3pF PCB stray)
+  - Drives MCU OSC_IN/OSC_OUT for main system clock PLL
+nets:
+- name: $1N200169
+  connections:
+  - RN3-4
+  - U12-44
+- name: $1N200184
+  connections:
+  - R19-1
+  - U12-62
+- name: $1N200200
+  connections:
+  - RN3-3
+  - U12-43
+- name: $1N200201
+  connections:
+  - RN3-2
+  - U12-42
+- name: $1N200203
+  connections:
+  - RN3-1
+  - U12-41
+- name: $1N206167
+  connections:
+  - LED1-1
+  - R38-2
+- name: $1N254528
+  connections:
+  - R22-1
+  - USBC1-B5
+- name: $1N254529
+  connections:
+  - R25-2
+  - USBC1-A5
+- name: $1N254540
+  connections:
+  - C38-2
+  - R27-2
+  - USBC1-0
+- name: $2N508660
+  connections:
+  - R1-2
+  - U1-7
+- name: $2N576115
+  connections:
+  - L4-2
+  - U7-1
+- name: $2N741099
+  connections:
+  - R13-2
+  - U6-2
+- name: $2N788708
+  connections:
+  - C39-1
+  - R29-2
+  - U14-13
+- name: $2N788718
+  connections:
+  - R29-1
+  - U14-2
+- name: $2N788818
+  connections:
+  - C40-1
+  - R30-2
+  - U14-11
+- name: $2N788825
+  connections:
+  - R30-1
+  - U14-4
+- name: $2N788929
+  connections:
+  - R31-1
+  - U14-6
+- name: $2N788938
+  connections:
+  - C41-1
+  - R31-2
+  - U14-9
+- name: $3N4347
+  connections:
+  - R32-1
+  - RN7-2
+  - U13-12
+- name: $3N4348
+  connections:
+  - R33-1
+  - RN7-1
+  - U13-11
+- name: $3N4349
+  connections:
+  - R28-1
+  - RN7-3
+  - U13-13
+- name: $3N4350
+  connections:
+  - R34-1
+  - RN7-4
+  - U13-14
+- name: $3N4403
+  connections:
+  - RN5-5
+  - U13-1
+- name: $3N4404
+  connections:
+  - RN5-6
+  - U13-2
+- name: $3N4405
+  connections:
+  - RN5-7
+  - U13-3
+- name: $3N4406
+  connections:
+  - RN5-8
+  - U13-4
+- name: $3N4411
+  connections:
+  - RN4-5
+  - U13-5
+- name: $3N4412
+  connections:
+  - RN4-6
+  - U13-6
+- name: $3N4413
+  connections:
+  - RN4-7
+  - U13-7
+- name: $3N4414
+  connections:
+  - RN4-8
+  - U13-8
+- name: $3N5227
+  connections:
+  - RN8-1
+  - U15-11
+- name: $3N5228
+  connections:
+  - R35-1
+  - RN8-2
+  - U15-12
+- name: $3N5229
+  connections:
+  - R36-1
+  - RN8-3
+  - U15-13
+- name: $3N5230
+  connections:
+  - RN8-4
+  - U15-14
+- name: $3N53774
+  connections:
+  - L1-1
+  - U3-13
+- name: $3N53786
+  connections:
+  - L1-2
+  - U3-12
+- name: $3N5450
+  connections:
+  - Q1-1
+  - R26-2
+  - R37-2
+- name: $3N86563
+  connections:
+  - RN6-1
+  - U15-3
+- name: $3N86568
+  connections:
+  - RN6-2
+  - U15-4
+- name: $3N86573
+  connections:
+  - RN6-3
+  - U15-5
+- name: $3N86578
+  connections:
+  - RN6-4
+  - U15-6
+- name: 12V
+  connections:
+  - C15-2
+  - C18-2
+  - C19-2
+  - FPC1-11
+  - FPC1-2
+  - TP8-1
+  - U7-5
+- name: 3.3V
+  connections:
+  - C11-2
+  - C12-2
+  - C13-2
+  - C16-2
+  - C17-2
+  - C22-1
+  - C23-2
+  - C24-1
+  - C26-2
+  - C29-2
+  - C31-2
+  - C32-2
+  - C37-2
+  - C43-1
+  - C45-2
+  - C47-1
+  - C6-2
+  - C9-2
+  - CN2-2
+  - CN3-1
+  - FPC1-9
+  - L3-2
+  - L5-1
+  - LED1-2
+  - R10-2
+  - R11-2
+  - R12-2
+  - R15-1
+  - R16-2
+  - R17-1
+  - R18-1
+  - R20-1
+  - R21-1
+  - R3-2
+  - R42-2
+  - R43-2
+  - R44-2
+  - R45-2
+  - R6-2
+  - R7-2
+  - R8-2
+  - R9-1
+  - SW1-3
+  - TP6-1
+  - U12-1
+  - U12-36
+  - U12-64
+  - U13-16
+  - U14-14
+  - U15-16
+  - U15-8
+  - U16-4
+  - U16-6
+  - U2-4
+  - U2-6
+  - U3-7
+  - U5-2
+  - U6-3
+  - U6-7
+  - U6-8
+  - U7-4
+  - U8-8
+  - U9-4
+- name: 3.3V_ANA
+  connections:
+  - C34-2
+  - C36-2
+  - L5-2
+  - U12-13
+- name: 5V
+  connections:
+  - C10-2
+  - C20-2
+  - C7-2
+  - C8-2
+  - L4-1
+  - TP9-1
+  - U10-1
+  - U3-1
+  - U4-1
+  - U4-4
+  - U7-3
+  - U7-6
+- name: ADC_VIO
+  connections:
+  - C48-1
+  - D10-2
+  - R39-2
+  - R40-1
+  - U12-11
+- name: AUX_RXD
+  connections:
+  - RN6-6
+  - U12-25
+- name: AUX_SWO
+  connections:
+  - RN6-7
+  - U12-47
+- name: AUX_TXD
+  connections:
+  - RN6-5
+  - U12-24
+- name: BOOT0
+  connections:
+  - D6-2
+  - R23-1
+  - SW1-4
+  - U12-60
+- name: CAN_5V_IN
+  connections:
+  - C3-2
+  - L2-2
+  - TP4-1
+  - U3-11
+- name: CAN_5V_OUT
+  connections:
+  - C1-2
+  - C2-2
+  - L2-1
+  - U3-16
+- name: CAN_GND
+  connections:
+  - C1-1
+  - C2-1
+  - C3-1
+  - C52-2
+  - CN1-1
+  - CN1-6
+  - CN1-7
+  - CN1-8
+  - D1-3
+  - M1-1
+  - TP3-1
+  - U3-10
+  - U3-15
+  - U3-9
+- name: CAN_HI
+  connections:
+  - CN1-3
+  - CN1-5
+  - D1-2
+  - L1-4
+- name: CAN_LO
+  connections:
+  - CN1-2
+  - CN1-4
+  - D1-1
+  - L1-3
+- name: CAN_RX
+  connections:
+  - R5-1
+  - U12-61
+- name: CAN_RX_INT
+  connections:
+  - R5-2
+  - U3-5
+- name: CAN_TX
+  connections:
+  - R16-1
+  - R19-2
+  - U3-3
+- name: CONSOLE_RXD
+  connections:
+  - CN3-3
+  - D9-4
+  - D9-7
+  - U12-38
+- name: CONSOLE_TXD
+  connections:
+  - CN3-2
+  - D9-5
+  - D9-6
+  - U12-37
+- name: DISP_CS
+  connections:
+  - FPC1-7
+  - U12-54
+- name: DISP_DC
+  connections:
+  - FPC1-5
+  - U12-48
+- name: DISP_RST
+  connections:
+  - FPC1-6
+  - U12-53
+- name: FLASH_CS
+  connections:
+  - R9-2
+  - RN3-8
+  - U6-1
+- name: GND
+  connections:
+  - BT1-3
+  - C10-1
+  - C11-1
+  - C12-1
+  - C13-1
+  - C14-1
+  - C15-1
+  - C16-1
+  - C17-1
+  - C18-1
+  - C19-1
+  - C20-1
+  - C21-1
+  - C22-2
+  - C23-1
+  - C24-2
+  - C25-1
+  - C26-1
+  - C27-1
+  - C28-1
+  - C29-1
+  - C30-2
+  - C31-1
+  - C32-1
+  - C33-1
+  - C34-1
+  - C35-1
+  - C36-1
+  - C37-1
+  - C38-1
+  - C39-2
+  - C4-1
+  - C40-2
+  - C41-2
+  - C42-2
+  - C43-2
+  - C44-2
+  - C45-1
+  - C46-2
+  - C47-2
+  - C48-2
+  - C49-1
+  - C5-2
+  - C50-2
+  - C51-2
+  - C52-1
+  - C6-1
+  - C7-1
+  - C8-1
+  - CN2-1
+  - CN2-7
+  - CN2-8
+  - CN3-6
+  - CN3-7
+  - CN3-8
+  - CN4-6
+  - CN4-7
+  - CN4-8
+  - CN5-6
+  - CN5-7
+  - CN5-8
+  - D10-1
+  - D11-1
+  - D12-3
+  - D12-8
+  - D13-1
+  - D14-1
+  - D15-1
+  - D16-1
+  - D17-3
+  - D17-8
+  - D2-2
+  - D2-3
+  - D2-4
+  - D2-7
+  - D2-8
+  - D2-9
+  - D3-2
+  - D3-3
+  - D3-8
+  - D3-9
+  - D4-3
+  - D4-8
+  - D5-2
+  - D6-1
+  - D7-3
+  - D7-4
+  - D7-5
+  - D7-6
+  - D7-7
+  - D7-8
+  - D8-1
+  - D9-3
+  - D9-8
+  - FPC1-1
+  - FPC1-12
+  - FPC1-13
+  - FPC1-14
+  - M2-1
+  - M3-1
+  - M4-1
+  - Q1-2
+  - R14-1
+  - R2-1
+  - R22-2
+  - R23-2
+  - R24-2
+  - R25-1
+  - R27-1
+  - R37-1
+  - R39-1
+  - R4-1
+  - R41-1
+  - RN2-1
+  - RN2-8
+  - SW2-3
+  - SW3-4
+  - SW3-5
+  - SW3-6
+  - SW3-7
+  - SW3-C
+  - TP2-1
+  - U1-10
+  - U1-11
+  - U1-12
+  - U1-13
+  - U1-6
+  - U10-2
+  - U10-5
+  - U12-12
+  - U12-31
+  - U12-63
+  - U13-10
+  - U14-7
+  - U15-1
+  - U15-10
+  - U15-2
+  - U15-7
+  - U16-2
+  - U16-5
+  - U2-2
+  - U2-5
+  - U3-2
+  - U3-8
+  - U4-2
+  - U5-5
+  - U6-4
+  - U7-2
+  - U8-4
+  - U9-2
+  - U9-5
+  - USBC1-A1
+  - USBC1-A12
+  - USBC1-B1
+  - USBC1-B12
+  - X2-2
+  - X2-4
+- name: HS_DM
+  connections:
+  - D7-2
+  - D7-9
+  - U12-34
+  - USBC1-A7
+  - USBC1-B7
+- name: HS_DP
+  connections:
+  - D7-1
+  - D7-10
+  - U12-35
+  - USBC1-A6
+  - USBC1-B6
+- name: HS_R
+  connections:
+  - R24-1
+  - U12-33
+- name: HS_VBUS
+  connections:
+  - D5-1
+  - U11-1
+  - USBC1-A4
+  - USBC1-A9
+  - USBC1-B4
+  - USBC1-B9
+- name: I2C1_SCL
+  connections:
+  - CN2-4
+  - D4-2
+  - D4-9
+  - R15-2
+  - RN1-1
+  - RN1-8
+  - U12-58
+  - U5-8
+  - U9-1
+- name: I2C1_SDA
+  connections:
+  - CN2-3
+  - D4-1
+  - D4-10
+  - R17-2
+  - U12-59
+  - U5-7
+  - U9-3
+- name: I2C3_SCL
+  connections:
+  - CN2-6
+  - D4-5
+  - D4-6
+  - R20-2
+  - U12-8
+- name: I2C3_SDA
+  connections:
+  - CN2-5
+  - D4-4
+  - D4-7
+  - R21-2
+  - U12-9
+- name: IREF
+  connections:
+  - FPC1-8
+  - R14-2
+- name: IRQ_I2C
+  connections:
+  - R11-1
+  - U12-2
+  - U5-3
+- name: IRQ_NEXT
+  connections:
+  - U12-30
+  - U14-12
+- name: IRQ_PREV
+  connections:
+  - U12-28
+  - U14-8
+- name: IRQ_SELECT
+  connections:
+  - U12-29
+  - U14-10
+- name: LED0
+  connections:
+  - R38-1
+  - U12-10
+- name: OSC32_IN
+  connections:
+  - C28-2
+  - U12-3
+  - X1-1
+- name: OSC32_OUT
+  connections:
+  - C27-2
+  - U12-4
+  - X1-2
+- name: OSC_IN
+  connections:
+  - C30-1
+  - U12-5
+  - X2-3
+- name: OSC_OUT
+  connections:
+  - C33-2
+  - U12-6
+  - X2-1
+- name: PA0
+  connections:
+  - RN4-1
+  - U12-14
+- name: PA1
+  connections:
+  - RN4-2
+  - U12-15
+- name: PA4
+  connections:
+  - RN5-1
+  - U12-20
+- name: PA5
+  connections:
+  - RN5-2
+  - U12-21
+- name: PA6
+  connections:
+  - RN5-3
+  - U12-22
+- name: PA7
+  connections:
+  - RN5-4
+  - U12-23
+- name: PB1
+  connections:
+  - TP1-1
+  - U12-27
+- name: QSPI1_CS
+  connections:
+  - R18-2
+  - RN2-5
+  - U8-1
+- name: QSPI1_IO0
+  connections:
+  - RN1-2
+  - U8-5
+- name: QSPI1_IO1
+  connections:
+  - RN2-6
+  - U8-2
+- name: QSPI1_IO2
+  connections:
+  - RN2-7
+  - U8-3
+- name: QSPI1_IO3
+  connections:
+  - RN1-4
+  - U8-7
+- name: QSPI1_SCK
+  connections:
+  - RN1-3
+  - U8-6
+- name: QSPI_CS
+  connections:
+  - RN2-4
+  - U12-52
+- name: QSPI_IO0
+  connections:
+  - RN1-7
+  - U12-57
+- name: QSPI_IO1
+  connections:
+  - RN2-3
+  - U12-51
+- name: QSPI_IO2
+  connections:
+  - RN2-2
+  - U12-50
+- name: QSPI_IO3
+  connections:
+  - RN1-5
+  - U12-55
+- name: QSPI_SCK
+  connections:
+  - RN1-6
+  - U12-56
+- name: RST
+  connections:
+  - C35-2
+  - D8-2
+  - SW2-4
+  - U12-7
+- name: RTC
+  connections:
+  - R12-1
+  - TP7-1
+  - U5-1
+- name: SD_CS
+  connections:
+  - D2-1
+  - D2-10
+  - R6-1
+  - RN3-5
+  - U1-2
+- name: SD_DETECT
+  connections:
+  - D3-5
+  - D3-6
+  - R3-1
+  - U1-Cd
+  - U12-40
+- name: SD_ON
+  connections:
+  - R2-2
+  - U12-39
+  - U2-3
+- name: SERIAL_RXD
+  connections:
+  - RN4-4
+  - U12-17
+- name: SERIAL_TXD
+  connections:
+  - RN4-3
+  - U12-16
+- name: SPI2_CLK
+  connections:
+  - D3-1
+  - D3-10
+  - FPC1-4
+  - RN3-7
+  - U1-5
+  - U6-6
+- name: SPI2_MISO
+  connections:
+  - D3-4
+  - D3-7
+  - R1-1
+  - R13-1
+  - R8-1
+  - U12-45
+- name: SPI2_MOSI
+  connections:
+  - D2-5
+  - D2-6
+  - FPC1-3
+  - R7-1
+  - RN3-6
+  - U1-3
+  - U6-5
+- name: SW_NEXT
+  connections:
+  - D13-2
+  - R42-1
+  - SW3-2
+  - U14-1
+- name: SW_PREV
+  connections:
+  - D15-2
+  - R44-1
+  - SW3-1
+  - U14-5
+- name: SW_SELECT
+  connections:
+  - D14-2
+  - R43-1
+  - SW3-T
+  - U14-3
+- name: SYS_SWCLK
+  connections:
+  - CN3-5
+  - D9-1
+  - D9-10
+  - U12-49
+- name: SYS_SWDIO
+  connections:
+  - CN3-4
+  - D9-2
+  - D9-9
+  - U12-46
+- name: T_AUX_RXD
+  connections:
+  - CN5-3
+  - D17-4
+  - D17-7
+  - RN8-7
+- name: T_AUX_TXD
+  connections:
+  - CN5-2
+  - D17-5
+  - D17-6
+  - RN8-8
+- name: T_OE
+  connections:
+  - R45-1
+  - U12-18
+  - U13-9
+  - U15-9
+- name: T_POWER_ON
+  connections:
+  - R41-2
+  - U12-19
+  - U16-3
+- name: T_RST
+  connections:
+  - CN5-5
+  - D17-1
+  - D17-10
+  - Q1-3
+  - R46-2
+  - RN8-5
+- name: T_RST_IN
+  connections:
+  - RN6-8
+  - U12-26
+- name: T_RST_OUT
+  connections:
+  - R26-1
+  - U12-32
+- name: T_RXD
+  connections:
+  - CN4-3
+  - D12-4
+  - D12-7
+  - RN7-7
+- name: T_SWCLK
+  connections:
+  - CN4-5
+  - D12-1
+  - D12-10
+  - RN7-5
+- name: T_SWDIO
+  connections:
+  - CN4-4
+  - D12-2
+  - D12-9
+  - RN7-6
+- name: T_SWO
+  connections:
+  - CN5-4
+  - D17-2
+  - D17-9
+  - RN8-6
+- name: T_TXD
+  connections:
+  - CN4-2
+  - D12-5
+  - D12-6
+  - RN7-8
+- name: VBAT
+  connections:
+  - BT1-1
+  - BT1-2
+  - C21-2
+  - U5-6
+- name: VBUS
+  connections:
+  - C25-2
+  - U10-3
+  - U10-4
+  - U10-6
+  - U11-2
+- name: VCOMH
+  connections:
+  - C14-2
+  - FPC1-10
+- name: VFB
+  connections:
+  - C9-1
+  - R10-1
+  - R4-2
+  - U4-5
+- name: VIO
+  connections:
+  - C42-1
+  - C44-1
+  - C46-1
+  - C49-2
+  - C50-1
+  - C51-1
+  - CN4-1
+  - CN5-1
+  - D11-2
+  - D16-2
+  - R28-2
+  - R32-2
+  - R33-2
+  - R34-2
+  - R35-2
+  - R36-2
+  - R40-2
+  - R46-1
+  - TP10-1
+  - U13-15
+  - U15-15
+  - U16-1
+- name: VSD
+  connections:
+  - C4-2
+  - C5-1
+  - TP5-1
+  - U1-4
+  - U2-1
+- name: VSW
+  connections:
+  - L3-1
+  - U4-3
+statistics:
+  component_types:
+    battery: 1
+    capacitor: 52
+    connector: 5
+    diode: 17
+    unknown: 3
+    inductor: 5
+    led: 1
+    mechanical: 4
+    transistor: 1
+    resistor: 46
+    resistor_array: 8
+    switch: 3
+    test_point: 10
+    ic: 16
+    crystal: 2

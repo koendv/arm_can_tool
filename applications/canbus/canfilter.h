@@ -76,4 +76,16 @@ struct canfilter_fdcan_h7
     uint32_t ext_filter[64][2]; // Fixed-size array for extended filters
 } __attribute__((packed, aligned(4)));
 
+typedef struct canfilter_bxcan_f0 can_filter_t; /* running on bxcan hardware */
+
+extern const can_filter_t canfilter_bxcan_f0_pass_all;
+
+rt_err_t bxcan_set_filter(struct canfilter_bxcan_f0 bxcan_filter);
+
+void bxcan_filter_pass_all(void);
+
+rt_err_t can_set_filter(can_filter_t *new_hw_filter);
+
+rt_err_t can_get_filter(can_filter_t *hw_filter);
+
 #endif

@@ -32,6 +32,9 @@
 #define DS3231_REG_CONTROL 0x0E
 #define DS3231_REG_STATUS  0x0F
 #define DS3231_REG_TEMP    0x11
+#define DS3231_HOUR_MASK   0x3f
+#define DS3231_MONTH_MASK  0x7f
+#define DS3231_TEMP_MASK   0xc0
 
 static struct rt_i2c_bus_device *i2c_bus = RT_NULL;
 
@@ -151,12 +154,15 @@ void ds3231_sync()
     control_reg = buff[0];
     status_reg  = buff[1];
 
+#if 0
     /* disable 32.768kHz output */
     if (status_reg & 0x08) // EN32KHZ
     {
         status_reg &= ~0x08;
         ret         = ds3231_write_reg(DS3231_REG_STATUS, &status_reg, 1);
     }
+#endif
+
     if (status_reg & 0x80)
     { // ds3231 time invalid?
         LOG_W("ds3231: control %02x status %02x", control_reg, status_reg);
@@ -169,9 +175,9 @@ void ds3231_sync()
     if (ret != RT_EOK) return;
 
     year = bcd_to_bin(buff[6]) + 2000;
-    mon  = bcd_to_bin(buff[5] & 0x7f);
+    mon  = bcd_to_bin(buff[5] & DS3231_MONTH_MASK);
     mday = bcd_to_bin(buff[4]);
-    hour = bcd_to_bin(buff[2]);
+    hour = bcd_to_bin(buff[2] & DS3231_HOUR_MASK);
     min  = bcd_to_bin(buff[1]);
     sec  = bcd_to_bin(buff[0]);
 
@@ -228,9 +234,9 @@ void ds3231_date(int argc, char **argv)
         if (ret != RT_EOK) return;
 
         year = bcd_to_bin(buff[6]) + 2000;
-        mon  = bcd_to_bin(buff[5] & 0x7f);
+        mon  = bcd_to_bin(buff[5] & DS3231_MONTH_MASK);
         mday = bcd_to_bin(buff[4]);
-        hour = bcd_to_bin(buff[2]);
+        hour = bcd_to_bin(buff[2] & DS3231_HOUR_MASK);
         min  = bcd_to_bin(buff[1]);
         sec  = bcd_to_bin(buff[0]);
 
@@ -251,7 +257,7 @@ void ds3231_date(int argc, char **argv)
     buff[5] = bin_to_bcd(mon);
     buff[4] = bin_to_bcd(mday);
     buff[3] = bin_to_bcd(wday + 1);
-    buff[2] = bin_to_bcd(hour);
+    buff[2] = bin_to_bcd(hour) & DS3231_HOUR_MASK;
     buff[1] = bin_to_bcd(min);
     buff[0] = bin_to_bcd(sec);
 
@@ -279,8 +285,8 @@ rt_int16_t ds3231_temp_x4(void)
     ret = ds3231_read_reg(DS3231_REG_TEMP, buf, 2);
     if (ret != RT_EOK) return -9999; // returns -9999 if i2c error
 
-    temp_x4 = (buf[0] & 0x7f) << 2 | (buf[1] >> 6);
-    if (buf[0] >> 7) temp_x4 = -temp_x4;
+    temp_x4   = (int16_t)((buf[0] << 8) | (buf[1] & DS3231_TEMP_MASK));
+    temp_x4 >>= 6;
 
     return temp_x4;
 }
@@ -288,17 +294,16 @@ rt_int16_t ds3231_temp_x4(void)
 /* prints ds3231 temperature, in units of 0.25 degree C */
 void ds3231_temp(void)
 {
-    rt_err_t   ret = RT_EOK;
-    rt_uint8_t buf[2];
-    rt_uint8_t i, j, s;
+    int32_t temp_x4 = ds3231_temp_x4();
+    char    sign    = ' ';
 
-    ret = ds3231_read_reg(DS3231_REG_TEMP, buf, 2);
-    if (ret != RT_EOK) return;
+    if (temp_x4 < 0)
+    {
+        temp_x4 = -temp_x4;
+        sign    = '-';
+    }
 
-    s = buf[0] >> 7 ? '-' : ' ';
-    i = buf[0] & 0x7f;
-    j = buf[1] >> 6;
-    rt_kprintf("%c%d.%02dC\r\n", s, i, 25 * j);
+    rt_kprintf("%c%d.%02dC\r\n", sign, temp_x4 / 4, (temp_x4 % 4) * 25);
 }
 
 #ifdef RT_USING_FINSH
@@ -351,9 +356,9 @@ void clock_get(uint8_t *year, uint8_t *mon, uint8_t *mday, uint8_t *hour, uint8_
 
     /* copy date and time */
     *year = bcd_to_bin(buff[6]);
-    *mon  = bcd_to_bin(buff[5] & 0x7f);
+    *mon  = bcd_to_bin(buff[5] & DS3231_MONTH_MASK);
     *mday = bcd_to_bin(buff[4]);
-    *hour = bcd_to_bin(buff[2]);
+    *hour = bcd_to_bin(buff[2] & DS3231_HOUR_MASK);
     *min  = bcd_to_bin(buff[1]);
     *sec  = bcd_to_bin(buff[0]);
     return;
@@ -373,7 +378,7 @@ void clock_set(uint8_t year, uint8_t mon, uint8_t mday, uint8_t hour, uint8_t mi
     buff[5] = bin_to_bcd(mon);
     buff[4] = bin_to_bcd(mday);
     buff[3] = bin_to_bcd(wday + 1);
-    buff[2] = bin_to_bcd(hour);
+    buff[2] = bin_to_bcd(hour) & DS3231_HOUR_MASK;
     buff[1] = bin_to_bcd(min);
     buff[0] = bin_to_bcd(sec);
 

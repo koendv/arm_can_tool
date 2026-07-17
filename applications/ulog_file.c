@@ -52,14 +52,13 @@ void ulog_file(const char *ulog_dir, const char *ulog_file_name)
     /* switch on logging to file */
     ulog_file_backend_enable(&file_be);
 
-    LOG_I("logging to %s/%s", ulog_dir, ulog_file_name);
+    LOG_I("logging to %s/%s.log", ulog_dir, ulog_file_name);
 }
 
 #ifdef RT_USING_FINSH
 static int cmd_ulog(int argc, char **argv)
 {
-    uint32_t length;
-    char     msg[ULOG_LINE_BUF_SIZE];
+    char msg[ULOG_LINE_BUF_SIZE];
 
     if (argc == 2 && !strncmp(argv[1], "-c", strlen(argv[1])))
     {
@@ -71,15 +70,23 @@ static int cmd_ulog(int argc, char **argv)
     else if (argc >= 2)
     {
         /* log command arguments */
-        char *s = msg;
+        char    *s         = msg;
+        uint32_t remaining = sizeof(msg);
+
+        *s = '\0';
         for (int i = 1; i < argc; i++)
         {
-            if (strlen(s) + strlen(argv[i]) >= sizeof(msg)) break;
-            strcpy(s, argv[i]);
-            s    += strlen(argv[i]);
-            *s++  = ' ';
+            uint32_t arglen = strlen(argv[i]);
+            if (arglen + 1 > remaining) break;
+            memcpy(s, argv[i], arglen);
+            s         += arglen;
+            *s++       = ' ';
+            remaining -= (arglen + 1);
         }
-        *--s = '\0';
+        if (s > msg)
+            *--s = '\0';
+        else
+            *s = '\0';
         LOG_I("%s", msg);
     }
     else
@@ -94,7 +101,7 @@ static int ulog_file_init(void)
 {
     if (settings.logging_enable)
     {
-        ulog_file("/sdcard/log", "rtthread");
+        ulog_file("/sdcard", "rtthread");
     }
     return RT_EOK;
 }
