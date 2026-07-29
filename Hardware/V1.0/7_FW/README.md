@@ -12,10 +12,12 @@ The AT32F405 processor uses two separate memory regions for firmware. The intern
 
 ## File Overview
 
-| File | Purpose | Usage Frequency |
-|------|---------|-----------------|
-| `bootloader/cherryuf2_arm_can_tool.bin` | UF2 bootloader | Once (first-time setup) |
-| `application/rtthread.uf2` | Application firmware | Every firmware update |
+Download from [Releases](https://github.com/koendv/arm_can_tool/releases):
+
+| File | Purpose |
+|------|---------|
+| `cherryuf2_arm_can_tool.bin` | UF2 bootloader |
+| `rtthread.uf2` | Application firmware |
 
 ---
 
@@ -27,6 +29,7 @@ The AT32F405 contains a factory DFU bootloader accessible by holding [BOOT0] dur
 **Prerequisites:**
 - `dfu-util` installed
 - Board connected via USB
+- `cherryuf2_arm_can_tool.bin` downloaded from [at32f405-uf2boot Releases](https://github.com/koendv/at32f405-uf2boot/releases)
 
 **Procedure:**
 1. Press and hold [RESET] and [BOOT0] simultaneously.
@@ -45,7 +48,7 @@ Bus 003 Device 012: ID 2e3c:df11 Artery-Tech DFU in FS Mode
 4. Write the bootloader binary:
 ```bash
 dfu-util -a 0 -d 2e3c:df11 --dfuse-address 0x08000000 \
-         -D bootloader/cherryuf2_arm_can_tool.bin
+         -D cherryuf2_arm_can_tool.bin
 ```
 
 **Expected output:**
@@ -81,6 +84,7 @@ The UF2 bootloader presents the QSPI flash as a USB mass storage device. The app
 **Prerequisites:**
 - UF2 bootloader installed (see previous section)
 - Board connected via USB
+- `rtthread.uf2` downloaded from [Releases](https://github.com/koendv/arm_can_tool/releases)
 
 **Procedure:**
 1. Press and hold [RESET] and the multi-direction switch simultaneously.
@@ -98,7 +102,7 @@ CURRENT.UF2
 **Procedure (continued):**
 4. Copy the application firmware:
 ```bash
-cp application/rtthread.uf2 /media/$USER/CherryUF2/CURRENT.UF2
+cp rtthread.uf2 /media/$USER/CherryUF2/CURRENT.UF2
 ```
 
 **Expected behavior:**
@@ -124,9 +128,3 @@ I/MAIN: ready
 
 ---
 
-## Building from Source
-
-- **UF2 bootloader:** [at32f405-uf2boot](https://github.com/koendv/at32f405-uf2boot)
-- **Application firmware:** See `../../../applications/` (RT-Thread)
-
-**Complete documentation:** See [DEVELOPER.md](../../../doc/DEVELOPER.md)
