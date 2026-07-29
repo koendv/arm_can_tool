@@ -6,7 +6,7 @@
 
 ## Product Summary
 
-|[![English](doc/pictures/front_en_small.jpg)](doc/pictures/front_en_big.jpg)|[![Chinese](doc/pictures/front_zh_small.jpg)](doc/pictures/front_zh_big.jpg)|
+|[![English](pictures/front_en_small.jpg)](pictures/front_en_big.jpg)|[![Chinese](pictures/front_zh_small.jpg)](pictures/front_zh_big.jpg)|
 |---|---|
 |English|简体中文|
 

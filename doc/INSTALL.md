@@ -11,12 +11,12 @@
 Board received from PCB assembly has no UF2 bootloader and no application firmware installed.
 Complete both steps before first use.
 
-Download required files:
+Download from [Releases](https://github.com/koendv/arm_can_tool/releases):
 
-| File | Source |
-|---|---|
-| `cherryuf2_arm_can_tool.bin` | [at32f405-uf2boot releases](https://github.com/koendv/at32f405-uf2boot/releases) |
-| `rtthread.uf2` | [arm_can_tool releases](https://github.com/koendv/arm_can_tool/releases) |
+| File | Purpose |
+|------|---------|
+| `cherryuf2_arm_can_tool.bin` | UF2 bootloader |
+| `rtthread.uf2` | Application firmware |
 
 ---
 
