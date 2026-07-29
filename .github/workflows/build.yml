@@ -9,6 +9,10 @@ on:
         description: 'Publish a GitHub release from this build'
         type: boolean
         default: false
+      release_name:
+        description: 'Release title/tag (optional, defaults to build-<run number>)'
+        type: string
+        default: ''
 
 name: arm_can_tool
 
@@ -60,16 +64,21 @@ jobs:
           name: arm_can_tool_firmware
           path: artifacts
 
-      - name: set short sha
+      - name: set release vars
         id: vars
-        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "title=${RELEASE_NAME:-build-$GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+        env:
+          RELEASE_NAME: ${{ inputs.release_name }}
 
       - name: release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "artifacts/*"
           body: "arm_can_tool firmware, built from ${{ steps.vars.outputs.short_sha }}"
-          tag: build-${{ github.run_number }}
+          tag: ${{ steps.vars.outputs.title }}
+          name: ${{ steps.vars.outputs.title }}
           commit: ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
