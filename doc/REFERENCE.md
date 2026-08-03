@@ -165,7 +165,7 @@ I/GSUSB: init
 I/GSUSB: waiting
 I/UART: uart2 speed 115200
 I/UART: uart3 speed 115200
-I/UART: uart7 speed 1000000
+I/SWO: uart7 speed 1000000
 msh />
 ```
 

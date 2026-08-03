@@ -42,19 +42,11 @@ Using the Arduino IDE:
 Or, using the Arduino cli:
 
 ```
-$ arduino-cli compile -b STMicroelectronics:stm32:GenF4:pnum=GENERIC_F412RETX,opt=ogstd ~/Arduino/FiveWay
-
-Sketch uses 24924 bytes (4%) of program storage space. Maximum is 524288 bytes.
-Global variables use 2824 bytes (1%) of dynamic memory, leaving 259320 bytes for local variables. Maximum is 262144 bytes.
-
-Used library     Version Path
-RTT Stream       1.4.1   /home/koen/Arduino/libraries/RTT_Stream
-SerialWireOutput 1.0.6   /home/koen/Arduino/libraries/SerialWireOutput
-STM32_CAN        1.2.2   /home/koen/Arduino/libraries/STM32_CAN
-SrcWrapper       1.0.1   /home/koen/.arduino15/packages/STMicroelectronics/hardware/stm32/2.12.0/libraries/SrcWrapper
-
-Used platform            Version Path
-STMicroelectronics:stm32 2.12.0  /home/koen/.arduino15/packages/STMicroelectronics/hardware/stm32/2.12.0
+arduino-cli compile -b STMicroelectronics:stm32:GenF4:pnum=GENERIC_F412RETX,opt=ogstd \
+    --build-property "compiler.c.extra_flags=-g" \
+    --build-property "compiler.cpp.extra_flags=-g" \
+    --output-dir ~/Arduino/FiveWay/build \
+    ~/Arduino/FiveWay
 ```
 
 Choose IDE for ease of use; CLI for reproducible builds.
@@ -464,7 +456,7 @@ I/GSUSB: init
 I/GSUSB: waiting
 I/UART: uart2 speed 115200
 I/UART: uart3 speed 115200
-I/UART: uart7 speed 1000000
+I/SWO: uart7 speed 1000000
 I/STARTUP: attached
 I/STARTUP: rtt
 I/STARTUP: target running

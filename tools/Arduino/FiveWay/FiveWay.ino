@@ -5,7 +5,6 @@
 //#define LED LED_BUILTIN
 #define LED PB2 // WeAct STM32F412 CoreBoard
 
-HardwareSerial Serial1(USART1);
 RTTStream rtt;
 SWOStream swo(1000000);
 
