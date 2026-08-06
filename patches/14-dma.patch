@@ -1,0 +1,262 @@
+diff --git a/bsp/at32/libraries/rt_drivers/drv_dma.h b/bsp/at32/libraries/rt_drivers/drv_dma.h
+index 38591e1269..72eba896a1 100644
+--- a/bsp/at32/libraries/rt_drivers/drv_dma.h
++++ b/bsp/at32/libraries/rt_drivers/drv_dma.h
+@@ -32,7 +32,7 @@ extern "C" {
+ struct dma_config {
+     dma_type *dma_x;
+     rt_uint8_t channel_index;
+-    rt_bool_t dma_done;
++    volatile rt_bool_t dma_done;
+     dma_channel_type *dma_channel;
+     crm_periph_clock_type dma_clock;
+     IRQn_Type dma_irqn;
+@@ -49,6 +49,7 @@ struct dma_config {
+     dmamux_channel_type *dmamux_channel;
+     rt_uint32_t request_id;
+ #endif
++    struct rt_completion cpt;
+ };
+ 
+ #ifdef __cplusplus
+diff --git a/bsp/at32/libraries/rt_drivers/drv_spi.c b/bsp/at32/libraries/rt_drivers/drv_spi.c
+index e4a3f11be2..fde7acf4e7 100644
+--- a/bsp/at32/libraries/rt_drivers/drv_spi.c
++++ b/bsp/at32/libraries/rt_drivers/drv_spi.c
+@@ -64,6 +64,8 @@ static struct at32_spi_config spi_config[] = {
+ #endif
+ };
+ 
++static struct at32_spi spis[sizeof(spi_config) / sizeof(spi_config[0])] = {0};
++
+ /* private rt-thread spi ops function */
+ static rt_err_t configure(struct rt_spi_device* device, struct rt_spi_configuration* configuration);
+ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* message);
+@@ -149,6 +151,7 @@ static rt_err_t configure(struct rt_spi_device* device,
+     {
+         uint32_t spi_apb_clock;
+         uint32_t max_hz;
++        uint32_t divisor;
+         crm_clocks_freq_type clocks_struct;
+ 
+         max_hz = configuration->max_hz;
+@@ -171,36 +174,47 @@ static rt_err_t configure(struct rt_spi_device* device,
+         if(max_hz >= (spi_apb_clock / 2))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_2;
++            divisor = 2;
+         }
+         else if (max_hz >= (spi_apb_clock / 4))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_4;
++            divisor = 4;
+         }
+         else if (max_hz >= (spi_apb_clock / 8))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_8;
++            divisor = 8;
+         }
+         else if (max_hz >= (spi_apb_clock / 16))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_16;
++            divisor = 16;
+         }
+         else if (max_hz >= (spi_apb_clock / 32))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_32;
++            divisor = 32;
+         }
+         else if (max_hz >= (spi_apb_clock / 64))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_64;
++            divisor = 64;
+         }
+         else if (max_hz >= (spi_apb_clock / 128))
+         {
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_128;
++            divisor = 128;
+         }
+         else
+         {
+             /* min prescaler 256 */
+             spi_init_struct.mclk_freq_division = SPI_MCLK_DIV_256;
++            divisor = 256;
+         }
++
++        /* actual spi clock, may be lower than max_hz */
++        instance->clock_hz = spi_apb_clock / divisor;
+     } /* baudrate */
+ 
+     switch(configuration->mode & RT_SPI_MODE_3)
+@@ -359,6 +373,56 @@ static void _spi_polling_receive_transmit(struct at32_spi *instance, rt_uint8_t
+     }
+ }
+ 
++/* wait for dma completion using rt_completion */
++static rt_err_t _spi_dma_wait(struct at32_spi *instance, rt_bool_t wait_tx, rt_bool_t wait_rx, rt_int32_t timeout)
++{
++    rt_err_t result = RT_EOK;
++
++    if (!rt_scheduler_is_available() || rt_hw_interrupt_is_disabled())
++    {
++        /* fallback: busy-wait if scheduler not started yet */
++        while ((wait_tx && !instance->config->dma_tx->dma_done) ||
++               (wait_rx && !instance->config->dma_rx->dma_done));
++        return RT_EOK;
++    }
++
++    if (wait_tx)
++        result = rt_completion_wait(&instance->config->dma_tx->cpt, timeout);
++    /* dma_done guards against a stray completion signal that isn't this channel's */
++    if (result == RT_EOK && wait_tx && !instance->config->dma_tx->dma_done)
++        result = -RT_ETIMEOUT;
++
++    if (result == RT_EOK && wait_rx)
++        result = rt_completion_wait(&instance->config->dma_rx->cpt, timeout);
++    if (result == RT_EOK && wait_rx && !instance->config->dma_rx->dma_done)
++        result = -RT_ETIMEOUT;
++
++    if (result != RT_EOK)
++    {
++        LOG_E("%s dma transfer timeout\n", instance->config->spi_name);
++
++        if (wait_tx && !instance->config->dma_tx->dma_done)
++        {
++            dma_interrupt_enable(instance->config->dma_tx->dma_channel, DMA_FDT_INT, FALSE);
++            dma_channel_enable(instance->config->dma_tx->dma_channel, FALSE);
++            spi_i2s_dma_transmitter_enable(instance->config->spi_x, FALSE);
++        }
++        if (wait_rx && !instance->config->dma_rx->dma_done)
++        {
++            dma_interrupt_enable(instance->config->dma_rx->dma_channel, DMA_FDT_INT, FALSE);
++            dma_channel_enable(instance->config->dma_rx->dma_channel, FALSE);
++            spi_i2s_dma_receiver_enable(instance->config->spi_x, FALSE);
++        }
++
++        /* reset if stuck */
++        spi_i2s_flag_clear(instance->config->spi_x, SPI_I2S_ROERR_FLAG);
++        spi_enable(instance->config->spi_x, FALSE);
++        spi_enable(instance->config->spi_x, TRUE);
++    }
++
++    return result;
++}
++
+ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* message)
+ {
+     struct rt_spi_bus * at32_spi_bus = (struct rt_spi_bus *)device->bus;
+@@ -369,10 +433,25 @@ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* mess
+     rt_uint16_t send_length = 0;
+     rt_uint8_t *recv_buf;
+     const rt_uint8_t *send_buf;
++    rt_err_t dma_result = RT_EOK;
++    rt_int32_t dma_timeout;
+ 
+     RT_ASSERT(device != NULL);
+     RT_ASSERT(message != NULL);
+ 
++    /* dma completion timeout, same as timeout_tick in stm32 spixfer() */
++    {
++        rt_uint32_t bytes_per_sec = instance->clock_hz / 8;
++        if (bytes_per_sec == 0)
++        {
++            /* should never happen */
++            LOG_E("%s dma timeout: clock_hz is 0\n", instance->config->spi_name);
++            bytes_per_sec = 1;
++        }
++        dma_timeout = (rt_int32_t)rt_tick_from_millisecond(
++            (rt_int32_t)(((rt_uint64_t)message->length * 1000) / bytes_per_sec) + 100);
++    }
++
+     /* take cs */
+     if(message->cs_take)
+     {
+@@ -415,11 +494,14 @@ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* mess
+             if ((instance->config->spi_dma_flag & RT_DEVICE_FLAG_DMA_RX) && \
+                 (instance->config->spi_dma_flag & RT_DEVICE_FLAG_DMA_TX))
+             {
++                rt_completion_init(&instance->config->dma_tx->cpt);
++                rt_completion_init(&instance->config->dma_rx->cpt);
+                 _spi_dma_receive(instance, (uint8_t *)recv_buf, send_length);
+                 _spi_dma_transmit(instance, (uint8_t *)send_buf, send_length);
+-                /* wait transfer complete */
++                dma_result = _spi_dma_wait(instance, RT_TRUE, RT_TRUE, dma_timeout);
++                if (dma_result != RT_EOK)
++                    break;
+                 while(spi_i2s_flag_get(instance->config->spi_x, SPI_I2S_BF_FLAG) != RESET);
+-                while((instance->config->dma_tx->dma_done == RT_FALSE) || (instance->config->dma_rx->dma_done == RT_FALSE));
+                 /* clear rx overrun flag */
+                 spi_i2s_flag_clear(instance->config->spi_x, SPI_I2S_ROERR_FLAG);
+                 spi_enable(instance->config->spi_x, FALSE);
+@@ -434,10 +516,12 @@ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* mess
+         {
+             if (instance->config->spi_dma_flag & RT_DEVICE_FLAG_DMA_TX)
+             {
++                rt_completion_init(&instance->config->dma_tx->cpt);
+                 _spi_dma_transmit(instance, (uint8_t *)send_buf, send_length);
+-                /* wait transfer complete */
++                dma_result = _spi_dma_wait(instance, RT_TRUE, RT_FALSE, dma_timeout);
++                if (dma_result != RT_EOK)
++                    break;
+                 while(spi_i2s_flag_get(instance->config->spi_x, SPI_I2S_BF_FLAG) != RESET);
+-                while(instance->config->dma_tx->dma_done == RT_FALSE);
+                 /* clear rx overrun flag */
+                 spi_i2s_flag_clear(instance->config->spi_x, SPI_I2S_ROERR_FLAG);
+                 spi_enable(instance->config->spi_x, FALSE);
+@@ -459,11 +543,14 @@ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* mess
+             memset((void *)recv_buf, 0xff, send_length);
+             if (instance->config->spi_dma_flag & RT_DEVICE_FLAG_DMA_RX)
+             {
++                rt_completion_init(&instance->config->dma_tx->cpt);
++                rt_completion_init(&instance->config->dma_rx->cpt);
+                 _spi_dma_receive(instance, (uint8_t *)recv_buf, send_length);
+                 _spi_dma_transmit(instance, (uint8_t *)recv_buf, send_length);
+-                /* wait transfer complete */
++                dma_result = _spi_dma_wait(instance, RT_TRUE, RT_TRUE, dma_timeout);
++                if (dma_result != RT_EOK)
++                    break;
+                 while(spi_i2s_flag_get(instance->config->spi_x, SPI_I2S_BF_FLAG) != RESET);
+-                while((instance->config->dma_tx->dma_done == RT_FALSE) || (instance->config->dma_rx->dma_done == RT_FALSE));
+                 /* clear rx overrun flag */
+                 spi_i2s_flag_clear(instance->config->spi_x, SPI_I2S_ROERR_FLAG);
+                 spi_enable(instance->config->spi_x, FALSE);
+@@ -485,6 +572,9 @@ static rt_ssize_t xfer(struct rt_spi_device* device, struct rt_spi_message* mess
+         LOG_D("spi release cs\n");
+     }
+ 
++    if (dma_result != RT_EOK)
++        return -RT_ETIMEOUT;
++
+     return message->length;
+ }
+ 
+@@ -597,6 +687,8 @@ void spi_dma_isr(struct dma_config *dma_instance)
+         dma_channel_enable(dma_instance->dma_channel, FALSE);
+         /* mark done flag */
+         dma_instance->dma_done = RT_TRUE;
++        /* wake up the thread waiting for this dma transfer, if any */
++        rt_completion_done(&dma_instance->cpt);
+     }
+ }
+ 
+@@ -816,8 +908,6 @@ void SPI3_2_TX_RX_DMA_IRQHandler(void)
+ }
+ #endif
+ 
+-static struct at32_spi spis[sizeof(spi_config) / sizeof(spi_config[0])] = {0};
+-
+ static void at32_spi_get_dma_config(void)
+ {
+ #ifdef BSP_USING_SPI1
+diff --git a/bsp/at32/libraries/rt_drivers/drv_spi.h b/bsp/at32/libraries/rt_drivers/drv_spi.h
+index 8ff557c84e..b63a6e5b50 100644
+--- a/bsp/at32/libraries/rt_drivers/drv_spi.h
++++ b/bsp/at32/libraries/rt_drivers/drv_spi.h
+@@ -30,6 +30,7 @@ struct at32_spi
+ {
+     struct at32_spi_config *config;
+     struct rt_spi_bus spi_bus;
++    rt_uint32_t clock_hz;
+ };
+ 
+ struct at32_spi_cs
