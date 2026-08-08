@@ -277,6 +277,28 @@ SWO decoding and bit-banged GPIO are the two subsystems where the rt-thread abst
 
 ---
 
+## DWT Trace
+
+`monitor dwt` (`cortexm_dwt()` in `cortexm.c`) configures target `DWT_CTRL` and `ITM_TCR` to generate DWT packets.
+
+`monitor swo` (`swo_itm_decode()` in `swo_itm_decode.c`) decodes both ITM software packets and DWT hardware packets (PC sample, exception trace, data trace, local and global timestamp) from the SWO byte stream, using the DMA path described above.
+
+Three output formats: `log`, `top` and `graph`.
+
+- `log` outputs DWT trace to USB CDC as a text stream. The text is suitable for parsing using traditional unix tools (`grep -e "^PC:" dwt.log|sort|uniq -c|sort -rn|head`) or python scripts.
+
+- `top` sorts the PC samples in up to 4096 buckets and outputs the top 25 periodically. (DWT_TOP_MAX_BUCKETS, DWT_TOP_N). Suitable for unattended capture of PC traces to SD card.
+
+- `graph` outputs the same data as `top`, but formatted for ansi terminal. Suitable for seeing firmware status at a glance.
+
+- the accepted tradeoff: no symbol resolution, hex addresses only.
+
+ARMv7-M (M3/M4/M7) and ARMv8-M (M23/M33/...) define DWT trace as implementation-dependent. DWT is absent on ARMv6-M (Cortex-M0/M0+/M1).
+
+`mon dwt status` prints an error message if DWT is absent.
+
+For a full PC trace, see [Orbuculum](https://github.com/orbcode/orbuculum)).
+
 ## Semihosting
 
 In gdb server mode semihosting calls are executed locally, on arm can tool.
@@ -587,6 +609,14 @@ Stock CherryUSB's rt-thread character-device glue (`rt_usbd_serial.c`) requests 
 
 Fixed by `patches/09-rt_usbd_serial.patch`: don't request more data until the receive buffer has 512 bytes free (USB HS). See [CherryUSB PR #408](https://github.com/cherry-embedded/CherryUSB/pull/408).
 
+### SPI driver busy-waited
+
+The rt-thread AT32 SPI driver used DMA for transfers but busy-waited until the DMA finished.
+On ARM CAN Tool, this implied logging to file starved gdb server of cpu.
+Fixed by `patches/14-dma.patch`: use `rt_completion()` to signal DMA completion, the same pattern as the rt-thread STM32 HAL SPI driver.
+
+`drv_usart.c` and `drv_usart_v2.c` have the same busy-wait on DMA TX, not changed.
+
 ---
 
 ## Future Directions
@@ -621,12 +651,6 @@ Log compression trades off CPU for SPI bandwidth and SD card space.
 - Incoming characters arrive via `EVENT_MASK_CDC0_RX` → `cdc0_receive()`. In `cdc0_receive()`, when `settings.cdc0_out == CDC0_OUT_SEMIHOSTING`, incoming characters are queued to the FIFO, a character is popped from the queue, written to the target, `in_syscall` cleared, and the target resumed.
 
 `SYS_READ` unqueues up to the requested number of available characters; on an empty FIFO it uses the same in_syscall halt as SYS_READC, since returning 0 bytes filled would signal EOF to the target.
-
-### Program Counter Sampling
-
-Current SWO implementation decodes text output only.
-
-Extend `swo_itm_decode()` to also recognise the subset of DWT hardware packets whose type and length are fully determined by header byte alone, and output each one as a short, mnemonic text line into the same decoded-data stream used for SWO ITM packets. Keep it light, no snprintf(). Decode bytes as they come in, writing text last byte first.
 
 ---
 

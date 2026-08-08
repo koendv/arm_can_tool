@@ -1,5 +1,6 @@
 #include "settings.h"
 #include "at24c256.h"
+#include "swo.h"
 #include <rtthread.h>
 #define DBG_TAG "EEPROM"
 #define DBG_LVL DBG_INFO
@@ -124,6 +125,7 @@ static const settings_struct default_settings =
         .memwatch_table     = {0},
         .memwatch_cnt       = 0,
         .memwatch_timestamp = false,
+        .dwt_top            = {0},
 };
 
 settings_struct settings = default_settings;
@@ -169,6 +171,9 @@ void store_settings(uint8_t preset)
     /* copy can bus hardware filter settings */
     can_get_filter(&settings.can1_hw_filter);
 
+    /* copy dwt top settings */
+    settings.dwt_top = dwt_top;
+
     /* calculate crc */
     settings.crc = 0;
     settings.crc = calc_crc();
@@ -192,6 +197,22 @@ void recall_settings(uint8_t preset)
     /* restore settings from eeprom */
     at24_read(eeprom_address, (uint8_t *)&settings, sizeof(settings));
 
+    /* check crc before trusting/applying anything just loaded -- an unwritten or
+     * version-mismatched eeprom must not have its contents applied live */
+    saved_crc      = settings.crc;
+    settings.crc   = 0;
+    calculated_crc = calc_crc();
+    if ((calculated_crc != saved_crc) || (settings.version != SETTINGS_VERSION))
+    {
+        LOG_I("first run, resetting settings");
+        reset_settings();
+        store_settings(settings_preset);
+    }
+
+    /* restore dwt top settings */
+    if (!swo_itm_decode_set_top(&settings.dwt_top))
+        LOG_E("dwt top settings restore failed");
+
     /* restore memwatch settings */
     if (settings.memwatch_enable)
     {
@@ -205,17 +226,6 @@ void recall_settings(uint8_t preset)
         memset(memwatch_table, 0, sizeof(memwatch_table));
         memwatch_cnt       = 0;
         memwatch_timestamp = 0;
-    }
-
-    /* check crc */
-    saved_crc      = settings.crc;
-    settings.crc   = 0;
-    calculated_crc = calc_crc();
-    if ((calculated_crc != saved_crc) || (settings.version != SETTINGS_VERSION))
-    {
-        LOG_I("first run, resetting settings");
-        reset_settings();
-        store_settings(settings_preset);
     }
 }
 
@@ -281,6 +291,15 @@ void list_settings()
             s = "?";
         rt_kprintf("name%u=%s\r\n", i, s);
     }
+
+    /* dwt top */
+    rt_kprintf("[dwt_top]\r\n");
+    rt_kprintf("low_addr=0x%08X\r\n", settings.dwt_top.low_addr);
+    rt_kprintf("high_addr=0x%08X\r\n", settings.dwt_top.high_addr);
+    rt_kprintf("bucket_bits=%u\r\n", settings.dwt_top.bucket_bits);
+    rt_kprintf("interval_seconds=%u\r\n", settings.dwt_top.interval_seconds);
+    rt_kprintf("graph=%u\r\n", settings.dwt_top.graph);
+
     rt_kprintf("[end]\r\n");
 }
 

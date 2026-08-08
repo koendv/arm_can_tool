@@ -26,7 +26,7 @@ Demonstrates simultaneous capture of five debug streams — serial console, RTT,
 | Tool | Installation |
 |------|--------------|
 | `arm-none-eabi-gdb` | [xPack GNU Arm Embedded GCC](https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack) |
-| `microcom` | `apt-get install microcom` |
+| `minicom` | `apt-get install minicom` |
 | [Arduino IDE](https://www.arduino.cc) | With [STM32duino](https://github.com/stm32duino/Arduino_Core_STM32) core |
 
 ### Target Software
@@ -125,7 +125,7 @@ Open two terminal windows:
 | Terminal | Purpose | Command |
 |----------|---------|---------|
 | Window 1 | GDB session | `arm-none-eabi-gdb` |
-| Window 2 | Target console (unified log) | `microcom -D /dev/ttyBmpTarg` |
+| Window 2 | Target console (unified log) | `minicom -D /dev/ttyBmpTarg` |
 
 If udev rules are not installed, find device names: `ls /dev/ttyACM*`
 

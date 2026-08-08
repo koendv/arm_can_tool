@@ -70,7 +70,7 @@ If `Target voltage: 0.000V`:
 (gdb) run
 ```
 
-Verification: GDB reports `Attaching to Remote target`. Target executes loaded firmware.
+**Verification:** GDB reports `Attaching to Remote target`. Target executes loaded firmware.
 
 The `monitor` prefix sends commands to Black Magic Debug firmware on the probe.
 
@@ -108,7 +108,7 @@ $ arm-none-eabi-gdb
 (gdb) run
 ```
 
-Verification: OpenOCD reports `Listening on port 3333 for gdb connections`. GDB connects and target executes loaded firmware.
+**Verification:** OpenOCD reports `Listening on port 3333 for gdb connections`. GDB connects and target executes loaded firmware.
 
 Prebuilt OpenOCD binaries: [xPack project](https://xpack-dev-tools.github.io/openocd-xpack/).
 
@@ -152,7 +152,7 @@ $ arm-none-eabi-gdb
 (gdb) run
 ```
 
-Verification: BMDA reports `Listening on TCP port: 2000`. GDB connects and target executes loaded firmware.
+**Verification:** BMDA reports `Listening on TCP port: 2000`. GDB connects and target executes loaded firmware.
 
 ### pyOCD
 
@@ -176,7 +176,7 @@ $ arm-none-eabi-gdb
 (gdb) run
 ```
 
-Verification: pyOCD reports GDB server listening on port 3333. GDB connects and target executes loaded firmware.
+**Verification:** pyOCD reports GDB server listening on port 3333. GDB connects and target executes loaded firmware.
 
 ---
 
@@ -286,7 +286,7 @@ Enable RTT:
 (gdb) monitor rtt enable
 ```
 
-Verification:
+**Verification:**
 
 ```
 (gdb) mon rtt stat
@@ -329,10 +329,12 @@ SWO requires Arm ITM. ITM is present on Cortex-M3, M4, M33, and others. ITM is n
 4. Enable serial2: Serial → Serial Enable → serial2 → On.
 5. Connect terminal emulator to `/dev/ttyBmpTarg` (CDC serial 0).
 
-Verification: Decoded SWO output appears in terminal emulator.
+**Verification:** Decoded SWO output appears in terminal emulator.
+
+Arm ITM uses 32 software channels (0-31) for application debug output, selected with `decode`.
 
 In gdb server:
-To switch swo on, serial port speed 1000000, swo ports 1 and 3:
+To switch swo on, serial port speed 1000000, swo channels 1 and 3:
 
 ```
 (gdb) mon swo enable 1000000 decode 1 3
@@ -345,6 +347,289 @@ to switch swo off:
 (gdb) mon swo disable
 Trace disabled
 ```
+
+---
+
+## DWT
+
+DWT (Data Watchpoint and Trace) prints
+
+- PC (program counter) samples
+- exceptions
+- data watchpoints
+- timestamps
+
+of a running target.
+
+DWT trace and ITM printing use the same SWO output pin.
+Because the SWO clock is slower than the MCU clock, it is not possible to send the program counter of every instruction.
+Instead, the program counter is sampled. Use the program counter samples for statistical analysis, to see where the MCU spends most of its time.
+
+DWT hardware trace packets (PC samples, exceptions, data watchpoints, timestamps) are separate from ITM packets. DWT trace packets are decoded, regardless of which channels `mon swo decode` selects.
+
+DWT packets are sent over the same output pin as SWO.
+Therefore, SWO must be enabled before you can see any DWT output.
+First set up SWO, then set up DWT.
+
+- `mon swo` to set up how ARM Can Tool prints.
+- `mon dwt` to set up what the target sends.
+
+### monitor swo
+
+`mon swo` configures ARM CAN Tool how to print.
+
+```
+(gdb) mon swo [enable [BAUDRATE] [decode [CHANNEL_NR ...]]|disable|log|[top|graph] <low_addr> <high_addr> <bucket_bits> <interval_seconds>|selftest]
+```
+
+| Option | Meaning |
+| --- | --- |
+| enable | switch ITM decoding on |
+| disable | switch ITM decoding off |
+| BAUDRATE | speed of the serial port |
+| decode [CHANNEL_NR ...] | ITM channels to show |
+| log | log individual PC trace packets (default)|
+| top <low_addr> <high_addr> <bucket_bits> <interval_seconds> | PC trace histogram, text format |
+| graph <low_addr> <high_addr> <bucket_bits> <interval_seconds> | PC trace histogram, ANSI terminal |
+| selftest | test SWO with known good packets |
+
+The SWO speed is a few megabit/s, and depends on the length of the wire.
+
+| Speed | Comment |
+| --- | --- |
+| 1 Mbit/s | safe |
+| 2 to 2.5 Mbit/s | typical |
+| 6.75 Mbit/s | ARM CAN Tool maximum |
+
+When printing over SWO, a channel number has to be specified. Using different channel numbers for different subsystems allows separate logs for separate subsystems without recompiling.
+
+For `top` and `graph`, the command shows
+
+- the 25 most used PC addresses
+- between `low_addr` and `high_addr`
+- in groups of 2**`bucket_bits`
+- every `interval_seconds`.
+
+`top` outputs for logfiles, `graph` outputs for ansi terminal.
+
+Example: 32 kbyte of code, beginning at 0x08000000, in blocks of 512 bytes (9 bit), displaying statistics every every 5 seconds:
+
+```
+(gdb) mon swo top 0x08000000 0x08008000 9 5
+```
+
+### monitor dwt
+
+`mon dwt` configures the target what to send.
+
+```
+(gdb) mon dwt [enable|disable|status|clear|0..31|exception|lts <0..3>|gts <0..3>|timestamp]...
+```
+
+| Option | Meaning |
+| --- | --- |
+| enable | switch DWT trace on |
+| disable | switch DWT trace off |
+| status | show target DWT registers |
+| clear | switch PC, exception, timestamp trace off |
+| 0..31 | switch PC trace on, 0 = slowest, 31 = fastest |
+| exception | switch exception trace on |
+| lts 0..3 | local timestamp clock |
+| gts 0..3 | global timestamp source |
+| timestamp | switch timestamp trace on |
+
+The slowest PC trace is 1 sample every 16384 cycles, the fastest 1 sample every 64 cycles.
+If the number of samples is too high for the SWO speed, some packets will be dropped, and the log shows overflow ("OVF").
+For a typical Cortex-M4, `mon dwt enable <rate>` where rate >= 15 requests PC samples faster than the link can carry, and samples are dropped.
+
+### Example
+
+```
+$ arm-none-eabi-gdb
+(gdb) target extended /dev/ttyBmpGdb
+(gdb) monitor swd_scan
+Target voltage: 3.326V
+Available Targets:
+No. Att Driver
+ 1      STM32F412 M4
+```
+
+**Verification:** gdb lists target
+
+```
+(gdb) attach 1
+(gdb) file ~/Arduino/FiveWay/build/FiveWay.ino.elf
+Reading symbols from ~/Arduino/FiveWay/build/FiveWay.ino.elf...
+(gdb) load
+(gdb) compare-sections
+```
+
+**Verification:** gdb outputs: "Section ... matched", firmware flashed ok.
+
+```
+(gdb) monitor swo enable 1000000 decode
+Channel mask: 11111111111111111111111111111111
+(gdb) monitor swo log
+(gdb) break main
+```
+
+**Verification:** gdb outputs: "Breakpoint ... at ..."
+
+The `mon dwt` command is only available if the processor is Cortex-M, and after `attach`.
+
+```
+(gdb) run
+Breakpoint 1, main () at ...
+(gdb) mon dwt enable 0
+(gdb) mon dwt status
+DWT_CTRL: 0x400013ff
+PC sampling on
+ITM_TCR: 0x00000019
+trace forwarding to SWO: on
+
+```
+
+**Verification:** gdb outputs include the lines "PC sampling on" and "trace forwarding to SWO: on".
+
+Open a terminal window on /dev/ttyBmpTarg:
+
+```
+minicom -D /dev/ttyBmpTarg
+```
+
+Continue the target program:
+
+```
+(gdb) continue
+Continuing.
+```
+
+**Verification:** /dev/ttyBmpTarg outputs swo text and program counter trace:
+
+```
+serial: 1
+swo: 1
+PC:0x080054CA
+PC:0x08001798
+PC:0x080054BC
+PC:0x080054BC
+PC:0x08003AD6
+PC:0x08003AD6
+...
+```
+
+The output is suitable for saving and postprocessing on pc. Example of postprocessing: Look up function at address.
+
+```
+$  arm-none-eabi-addr2line -sfe ~/Arduino/FiveWay/build/FiveWay.ino.elf 0x080054BC 0x08003AD6
+delay
+wiring_time.c:43 (discriminator 1)
+getCurrentMillis
+clock.c:52
+```
+Interrupt the program with ctrl-c, and change DWT output format:
+
+```
+Program received signal SIGINT, Interrupt.
+(gdb) mon swo top 0x08000000 0x08008000 9 5
+(gdb) continue
+Continuing.
+```
+
+/dev/ttyBmpTarg now outputs PC addresses from 0x08000000 to 0x08008000 only, sorted in blocks of 512byte (9 bit), every 5 seconds:
+
+```
+serial: 5
+swo: 5
+serial: 6
+swo: 6
+12375 0x08005400
+11345 0x08003A00
+ 6168 0x08001600
+    1 0x08000000
+```
+
+The output is suitable for logging to SD card.
+
+Each line represents a PC address range of 512 bytes. E.g. 0x08000000 represents addresses from 0x08000000 to 0x080001ff. To set up smaller ranges, e.g. 256 bytes:
+
+```
+(gdb) mon swo top 0x08000000 0x08008000 8 5
+```
+
+The total number of ranges is limited to 4096: `(high_addr - low_addr)/2**bucket_bits <= 4096`.
+
+Stop target program, and choose output format for ansi terminal:
+
+```
+ctrl-c
+Program received signal SIGINT, Interrupt.
+(gdb) mon swo graph 0x08000000 0x08008000 9 5
+(gdb) continue
+Continuing.
+```
+
+**Verification:** Graph of PC samples
+
+```
+   12348   0x08005400                                    █
+   11344   0x08003A00                        █
+    6191   0x08001600       █
+       1   0x08003200                    █
+       1   0x08000000   █
+serial: 57
+swo: 57
+serial: 58
+swo: 58
+...
+```
+
+In this graph, the vertical axis is increasing number of samples, the horizontal axis is program counter.
+
+The output is suitable for seeing target status at a glance.
+
+Stop target program, and add tracing exceptions:
+
+```
+^C
+Program received signal SIGINT, Interrupt.
+(gdb) mon dwt enable 0 exception
+(gdb) continue
+Continuing.
+```
+
+The terminal now shows:
+
+```
+12309 0x08005400                                        █
+11299 0x08003A00                            █
+ 6171 0x08001600           █
+   80 0x08002000               █
+ 5096 SysTick
+   30 IRQ 37
+OVERFLOW
+serial: 29
+swo: 29
+serial: 30
+swo: 30
+serial: 31
+swo: 31
+```
+
+This display contains:
+
+- PC activity
+- exceptions (here: SysTick and interrupt 37)
+- OVERFLOW: some packets have been dropped because SWO was too slow.
+- console output (serial: ) and SWO output (swo: )
+
+The `mon dwt` command is convenient, but not necessary: a target can also set it's own DWT register from code.
+
+`Settings->Save` also saves SWO settings.
+If `Startup->swo` is configured, the SWO settings are restored at startup.
+Decoding SWO does not require an SWD connection.
+
+---
 
 ## Semihosting
 
@@ -403,7 +688,7 @@ Remote debugging using :3333
 Starting program:
 ```
 
-Verification: `Hello from ARM CAN Tool!` appears in the window where openocd runs.
+**Verification:** `Hello from ARM CAN Tool!` appears in the window where openocd runs.
 
 ⚠️ **Warning — security:** Only enable semihosting for trusted programs. When enabled, a target program can open any file and execute any program on the PC.
 
@@ -450,7 +735,9 @@ No. Att Driver
 Starting program:
 ```
 
-Verification: `Hello from ARM CAN Tool!` appears on `/dev/ttyBmpTarg`.
+**Verification:** `Hello from ARM CAN Tool!` appears on `/dev/ttyBmpTarg`.
+
+---
 
 ## Online Book
 

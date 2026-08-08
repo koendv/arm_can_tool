@@ -14,6 +14,7 @@
 - Electrically isolated CAN 2.0A/B interface
 - Debug output and CAN bus traffic merged into single USB serial log stream
 - Standalone semihosting: target stdout, file I/O, and clock — no PC required
+- ARM DWT program counter and exception trace
 - Lua scripting for standalone use
 - Automated logging to SD card
 - User interface in English and simplified Chinese
