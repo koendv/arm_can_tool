@@ -29,13 +29,20 @@ RUN apt-get install -y \
       scons python3-requests python3-psutil python3-kconfiglib python3-tqdm \
       python3-yaml pandoc
 
-# ARM toolchain
-RUN wget -O /tmp/toolchain.tgz -q "https://github.com/RT-Thread/toolchains-ci/releases/download/v1.8/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz" \
-    && mkdir -p /opt \
-    && tar -xf /tmp/toolchain.tgz -C /opt \
-    && rm -f /tmp/toolchain.tgz
+# xpack toolchain
+COPY --from=node:22-bookworm-slim /usr/local /usr/local
 
-ENV RTT_EXEC_PATH=/opt/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin
+RUN npm install --global xpm@latest \
+    && xpm --version
+
+# ARM toolchain from xpack
+RUN cd /opt/ \
+    && xpm init \
+    && xpm install @xpack-dev-tools/arm-none-eabi-gcc@13.2.1-1.1.1 \
+    && xpacks/.bin/arm-none-eabi-gcc --version
+
+ENV PATH=/opt/xpacks/.bin:${PATH}
+ENV RTT_EXEC_PATH=/opt/xpacks/.bin
 ENV RTT_CC=gcc
 
 # RT-Thread env/pkgs tooling and package registry
