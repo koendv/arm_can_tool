@@ -3,3 +3,8 @@
 /__pycache__/
 /packages/
 /build/
+/.sconsign.dblite
+/rtthread.bin
+/rtthread.elf
+/rtthread.map
+/rtthread.uf2
