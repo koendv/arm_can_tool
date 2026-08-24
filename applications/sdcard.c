@@ -39,8 +39,9 @@ static rt_timer_t sdcard_change_tim = RT_NULL;
 
  */
 
-static void sdcard_mount()
+static void sdcard_mount(void *param)
 {
+    (void)param;
     rt_err_t err;
     bool     sd_detect = FALSE;
 
@@ -149,7 +150,7 @@ int sdcard_init(void)
     rt_pin_attach_irq(SD_DETECT_PIN, PIN_IRQ_MODE_RISING_FALLING, sdcard_change_handler, RT_NULL);
     rt_pin_irq_enable(SD_DETECT_PIN, PIN_IRQ_ENABLE);
 
-    sdcard_mount();
+    sdcard_mount(RT_NULL);
 
     return RT_EOK;
 }
