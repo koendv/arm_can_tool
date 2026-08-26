@@ -631,6 +631,182 @@ Decoding SWO does not require an SWD connection.
 
 ---
 
+## MTB
+
+Micro Trace Buffer (MTB) is a branch/exception trace, not a program counter trace. When program execution is not sequential, two addresses are logged to a circular buffer in ram: the address the program jumped from and the address the program jumped to. Program execution between two log entries is linear.
+
+The `mon mtb` command is available in gdb server mode, and only when attached to Cortex-M target.
+
+MTB is an optional component for Cortex-M0+, Cortex-M23, Cortex-M33 and STAR-MC1.
+
+Unlike DWT/SWO, MTB needs no SWO wire. MTB only uses the SWD/JTAG debug connection.
+
+`mon mtb` does not switch MTB on. The target program allocates a trace buffer in ram and switches MTB on.
+
+### Target Program
+
+Before writing the target program, attach with `arm-none-eabi-gdb` and type `mon mtb status`. If a target has no MTB, `mon mtb status` prints `no mtb`. Type `mon mtb size` to show maximum buffer size.
+
+Example: SAMD21.
+
+```
+(gdb) mon mtb status
+trace: off halt request: off wrapped: no autostop: off autohalt: off
+buffer: 0x20007c00 - 0x20007fff (1024 bytes) watermark: 0x20007fc8
+mtb base: 0x41006000 sram base: 0x20000000
+mtb master: 0x00000006 position: 0x00007f90 flow: 0x00007fc8
+(gdb) mon mtb size
+max buffer size: 32768 bytes
+```
+
+Output shows:
+
+- target has MTB
+- MTB registers are at `mtb base: 0x41006000`
+- MTB trace buffer is at or after `sram base: 0x20000000`
+- maximum MTB trace buffer is 32kbyte.
+
+These data are necessary and sufficient to configure MTB. The target program then:
+
+1. Reserves a buffer of 2^n bytes, aligned to its own size, at or after `sram base:`. Typical size: 512 bytes to 2k.
+2. Writes buffer address minus "sram base:" to register MTB POSITION.
+3. Writes buffer size and enable bit to register MTB MASTER.
+
+Target program [MTB.ino](tools/Arduino/MTB/MTB.ino) shows the pattern.
+
+### monitor mtb
+
+```
+(gdb) mon mtb [status|dump|size]
+```
+
+| Option | Meaning |
+| --- | --- |
+| status | print MTB registers, buffer address and size |
+| dump | print trace buffer in hex, oldest jump first |
+| size | print the largest buffer the MTB can address |
+
+`mon mtb status` and `mon mtb dump` are read-only.
+
+`mon mtb size` writes MTB registers, then restores the registers to the original value. Maximum size printed is maximum size MTB can address, not ram size.
+
+`mon mtb dump` prints one line per jump. First address is where the jump came from, second address is where the jump went to. Example:
+
+```
+- 0x00000122 - 0x00000108
+```
+
+| Flag | Meaning |
+| --- | --- |
+| `-` | none |
+| `A` | first address is an exception (entry, return, or debug-state PC update), not a program counter |
+| `S` | trace started or restarted at second address |
+
+If autostop is set, tracing stops when the trace buffer reaches the watermark.
+If autohalt is set, target enters a breakpoint when the trace buffer reaches the watermark.
+If autostop is not set and autohalt is not set, watermark is stored but unused, and the buffer wraps normally.
+
+### gdb mtb.py script
+
+The gdb script `tools/mtb/mtb.py` adds an `mtb` command to gdb.
+Where `mon mtb dump` prints addresses in hex, `mtb` prints function name, file and line number. Repeated jumps are printed once, with a count. Script in python requires `arm-none-eabi-gdb-py3`.
+
+```
+(gdb) set pagination off
+(gdb) source tools/mtb/mtb.py
+(gdb) mtb
+```
+
+### Example
+
+Target program `tools/Arduino/MTB` switches MTB on and solves Towers of Hanoi. Moves are printed on Serial1.
+
+Compile for SAMD21:
+
+```
+$ arduino-cli compile --fqbn arduino:samd:arduino_zero_native \
+    --build-property "build.ldscript=linker_scripts/gcc/flash_without_bootloader.ld" \
+    --export-binaries tools/Arduino/MTB
+```
+
+Flash:
+
+```
+$ arm-none-eabi-gdb-py3
+(gdb) target extended-remote /dev/ttyBmpGdb
+Remote debugging using /dev/ttyBmpGdb
+(gdb) mon swd_scan
+Target voltage: 3.336V
+Available Targets:
+No. Att Driver
+ 1      Atmel SAMD21G18A (rev D) M0+
+(gdb) attach 1
+(gdb) file tools/Arduino/MTB/build/arduino.samd.arduino_zero_native/MTB.ino.elf
+Reading symbols from tools/Arduino/MTB/build/arduino.samd.arduino_zero_native/MTB.ino.elf...
+(gdb) load
+(gdb) compare-sections
+Section .text, range 0x0 -- 0x2ec4: matched.
+Section .data, range 0x2ec4 -- 0x2f54: matched.
+```
+
+**Verification:** gdb outputs: "Section ... matched", firmware flashed ok.
+
+Break at the deepest level of the recursion:
+
+```
+(gdb) break hanoi if n == 0
+Breakpoint 1 at 0x108: file tools/Arduino/MTB/MTB.ino, line 90.
+(gdb) run
+Breakpoint 1, hanoi (n=n@entry=0, from=from@entry=1, to=to@entry=3, via=via@entry=2)
+    at tools/Arduino/MTB/MTB.ino:90
+90	void hanoi(int n, int from, int to, int via) {
+(gdb) mon mtb status
+trace: on halt request: off wrapped: no autostop: off autohalt: off
+buffer: 0x20000800 - 0x20000bff (1024 bytes) watermark: 0x20000000
+mtb base: 0x41006000 sram base: 0x20000000
+mtb master: 0x80000006 position: 0x00000838 flow: 0x00000000
+```
+
+**Verification:** gdb stops in `hanoi` with `n=0`. `mon mtb status` outputs "trace: on". "mtb base:" is the address of the MTB registers, `MTB_SFR_BASE` in `MTB.ino`.
+
+Print the trace:
+
+```
+(gdb) mon mtb dump
+- 0x000001cc S 0x00000bc2
+- 0x00000bc2 - 0x0000017c
+- 0x00000186 - 0x00000108
+- 0x00000122 - 0x00000108
+- 0x00000122 - 0x00000108
+- 0x00000122 - 0x00000108
+- 0x00000122 - 0x00000108
+```
+
+Print the trace with symbols:
+
+```
+(gdb) set pagination off
+(gdb) source tools/mtb/mtb.py
+(gdb) mtb
+- 0x000001cc setup() at MTB.ino:105                   -> S 0x00000bc2 main() at main.cpp:53
+- 0x00000bc2 main() at main.cpp:53                    -> - 0x0000017c loop() at MTB.ino:107
+- 0x00000186 loop() at MTB.ino:108                    -> - 0x00000108 hanoi(int, int, int, int) at MTB.ino:90
+- 0x00000122 hanoi(int, int, int, int) at MTB.ino:92  -> - 0x00000108 hanoi(int, int, int, int) at MTB.ino:90  (4 times)
+```
+
+This trace contains:
+
+- `S`: trace started when `setup()` switched MTB on. First jump recorded is `setup()` returning to `main()`.
+- `main()` calling `loop()`
+- `loop()` calling `hanoi()`.
+- `hanoi()` calling itself 4 times, down to `n=0`.
+
+Addresses without symbols print as `??`: exception return values (0xFFFFFFF1 - 0xFFFFFFFD), and code compiled without debug information.
+
+Note the target program switches MTB off in the fault handler `HardFault_Handler()`, else the trace buffer fills up with `while (true) {}`.
+
+---
+
 ## Semihosting
 
 Using semihosting a target program can write to stdout, read from stdin, and do basic file input/output.

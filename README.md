@@ -40,7 +40,7 @@ This documentation is published as a set of Markdown files, and as an epub.
 - [INSTALL](doc/INSTALL.md) — Install the UF2 bootloader and application firmware. Begin here if the board came from PCB assembly with no firmware.
 - [TUTORIAL](doc/TUTORIAL.md) — A first session: wire a target, flash firmware, read the console, capture CAN frames, and log to SD card. Begin here if the board already has firmware installed.
 - [OPERATION](doc/OPERATION.md) — How the device interface works: operating modes, OLED menu, serial ports, target power, and startup services.
-- [DEBUG](doc/DEBUG.md) — Debug workflows using Black Magic Debug or CMSIS-DAP, plus memwatch, RTT, and SWO.
+- [DEBUG](doc/DEBUG.md) — Debug workflows using Black Magic Debug or CMSIS-DAP, plus memwatch, RTT, SWO, and MTB.
 - [TARGETS](doc/TARGETS.md) — Supported targets.
 - [CANBUS](doc/CANBUS.md) — The CAN bus interface: isolation, protocols, hardware filters, and logging.
 - [SCRIPT](doc/SCRIPT.md) — Lua scripting: event model, deployment workflows, and flash sector layout.
