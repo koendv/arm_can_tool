@@ -1,26 +1,27 @@
-commit 65f9a3c0e60528a8f63928bee8ddd0bd699c90cc
+commit 75d998c287036f09508939fa991a65ed5fc36b56
 Author: Koen De Vleeschauwer <kdv@kdvelectronics.eu>
-Date:   Sun Jun 1 08:54:34 2025 +0200
+Date:   Wed Aug 26 14:44:18 2026 +0200
 
     blackmagic
 
 diff --git a/tools/Kconfig b/tools/Kconfig
-index e951e25..8070126 100644
+index 5f11dd5..cb2019c 100644
 --- a/tools/Kconfig
 +++ b/tools/Kconfig
-@@ -1,5 +1,6 @@
- menu "tools packages"
- 
+@@ -17,6 +17,7 @@ source "$PKGS_DIR/packages/tools/logmgr/Kconfig"
+ source "$PKGS_DIR/packages/tools/adbd/Kconfig"
+ source "$PKGS_DIR/packages/tools/CoreMark/Kconfig"
+ source "$PKGS_DIR/packages/tools/Dhrystone/Kconfig"
 +source "$PKGS_DIR/packages/tools/blackmagic/Kconfig"
- source "$PKGS_DIR/packages/tools/CmBacktrace/Kconfig"
- source "$PKGS_DIR/packages/tools/EasyFlash/Kconfig"
- source "$PKGS_DIR/packages/tools/EasyLogger/Kconfig"
+ source "$PKGS_DIR/packages/tools/MemoryPerf/Kconfig"
+ source "$PKGS_DIR/packages/tools/nr_micro_shell/Kconfig"
+ source "$PKGS_DIR/packages/tools/ChineseFontLibrary/Kconfig"
 diff --git a/tools/blackmagic/Kconfig b/tools/blackmagic/Kconfig
 new file mode 100644
-index 0000000..c83e108
+index 0000000..9d366ee
 --- /dev/null
 +++ b/tools/blackmagic/Kconfig
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,69 @@
 +# Kconfig file for package blackmagic
 +menuconfig PKG_USING_BLACKMAGIC
 +    bool "black magic probe: firmware download tool"
@@ -67,8 +68,12 @@ index 0000000..c83e108
 +
 +    choice
 +        prompt "Version"
++        default PKG_USING_BLACKMAGIC_V200
 +        help
 +            Select the package version
++
++        config PKG_USING_BLACKMAGIC_V200
++            bool "v2.0.0"
 +
 +        config PKG_USING_BLACKMAGIC_LATEST_VERSION
 +            bool "latest"
@@ -76,7 +81,7 @@ index 0000000..c83e108
 +
 +    config PKG_BLACKMAGIC_VER
 +       string
-+       default "v1.10.2"   if PKG_USING_BLACKMAGIC_V1_10_2
++       default "v2.0.0"    if PKG_USING_BLACKMAGIC_V200
 +       default "latest"    if PKG_USING_BLACKMAGIC_LATEST_VERSION
 +
 +    config BLACKMAGIC_VERSION
@@ -88,10 +93,10 @@ index 0000000..c83e108
 +endif
 diff --git a/tools/blackmagic/package.json b/tools/blackmagic/package.json
 new file mode 100644
-index 0000000..eb9d2b1
+index 0000000..2e4272d
 --- /dev/null
 +++ b/tools/blackmagic/package.json
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,33 @@
 +{
 +  "name": "blackmagic",
 +  "description": "firmware download tool",
@@ -111,6 +116,12 @@ index 0000000..eb9d2b1
 +  "homepage": "https://github.com/koendv/blackmagic-rtthread#README.md",
 +  "doc": "https://black-magic.org/",
 +  "site": [
++    {
++      "version": "v2.0.0",
++      "URL": "https://github.com/koendv/blackmagic-rtthread.git",
++      "filename": "",
++      "VER_SHA": "2.0.0-rtthread1"
++    },
 +    {
 +      "version": "latest",
 +      "URL": "https://github.com/koendv/blackmagic-rtthread.git",

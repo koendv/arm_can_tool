@@ -18,6 +18,12 @@
   "doc": "https://black-magic.org/",
   "site": [
     {
+      "version": "v2.0.0",
+      "URL": "https://github.com/koendv/blackmagic-rtthread.git",
+      "filename": "",
+      "VER_SHA": "2.0.0-rtthread1"
+    },
+    {
       "version": "latest",
       "URL": "https://github.com/koendv/blackmagic-rtthread.git",
       "filename": "",

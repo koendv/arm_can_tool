@@ -44,8 +44,12 @@ if PKG_USING_BLACKMAGIC
 
     choice
         prompt "Version"
+        default PKG_USING_BLACKMAGIC_V200
         help
             Select the package version
+
+        config PKG_USING_BLACKMAGIC_V200
+            bool "v2.0.0"
 
         config PKG_USING_BLACKMAGIC_LATEST_VERSION
             bool "latest"
@@ -53,7 +57,7 @@ if PKG_USING_BLACKMAGIC
 
     config PKG_BLACKMAGIC_VER
        string
-       default "v1.10.2"   if PKG_USING_BLACKMAGIC_V1_10_2
+       default "v2.0.0"    if PKG_USING_BLACKMAGIC_V200
        default "latest"    if PKG_USING_BLACKMAGIC_LATEST_VERSION
 
     config BLACKMAGIC_VERSION
