@@ -1,5 +1,7 @@
 # Changelog
 
+## V1.2 — 2026-08-26
+
 - New: ARM MTB (Micro Trace Buffer) instruction trace for Cortex-M0+ and Cortex-M23 (`mon mtb`, `tools/mtb/mtb.py`)
 
 ## V1.1 — 2026-08-08

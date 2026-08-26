@@ -376,8 +376,8 @@
 #define PKG_USING_BLACKMAGIC
 #define BLACKMAGIC_ENABLE_RTT
 #define BLACKMAGIC_ENABLE_DEBUG
-#define PKG_USING_BLACKMAGIC_V200
-#define BLACKMAGIC_VERSION "v2.0.0"
+#define PKG_USING_BLACKMAGIC_LATEST_VERSION
+#define BLACKMAGIC_VERSION "latest"
 /* end of tools packages */
 
 /* system packages */
