@@ -10,7 +10,6 @@ if ! grep -q blackmagic ~/.env/packages/packages/tools/Kconfig; then
     cp patches/packages/Kconfig ~/.env/packages/packages/tools/blackmagic
     cp patches/packages/package.json ~/.env/packages/packages/tools/blackmagic
 fi
-# patch -p1 -d ~/.env/packages/packages < patches/packages/packages.patch
 # install arm_can_tool rtthread packages
 pkgs --update
 # patch rtthread and packages for arm_can_tool
