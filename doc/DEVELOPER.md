@@ -281,7 +281,7 @@ SWO decoding and bit-banged GPIO are the two subsystems where the rt-thread abst
 
 `monitor dwt` (`cortexm_dwt()` in `cortexm.c`) configures target `DWT_CTRL` and `ITM_TCR` to generate DWT packets.
 
-`monitor swo` (`swo_itm_decode()` in `swo_itm_decode.c`) decodes both ITM software packets and DWT hardware packets (PC sample, exception trace, data trace, local and global timestamp) from the SWO byte stream, using the DMA path described above.
+`monitor swo` (`swo_itm_decode()` in `swo_dwt_itm_decode.c`) decodes both ITM software packets and DWT hardware packets (PC sample, exception trace, data trace, local and global timestamp) from the SWO byte stream, using the DMA path described above.
 
 Three output formats: `log`, `top` and `graph`.
 
