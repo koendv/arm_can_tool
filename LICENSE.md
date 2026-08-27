@@ -18,7 +18,7 @@ This project incorporates third-party software packages. Each package retains it
 
 | Component | License | Distributor Obligation |
 | --- | --- | --- |
-| [Black Magic Debug](https://codeberg.org/blackmagic-debug/blackmagic) | GPL v3 (core); BSD 3-Clause and MIT for selected files — see `packages/blackmagic-latest/licenses/` | Source code must be available to recipients |
+| [Black Magic Debug](https://codeberg.org/blackmagic-debug/blackmagic) | GPL v3 | Source code must be available to recipients |
 | [RT-Thread](https://github.com/RT-Thread/rt-thread) | Apache 2.0 | Preserve copyright and license notices |
 | [CMSIS-Core](https://github.com/ARM-software/CMSIS_6) | Apache 2.0 | Preserve copyright and license notices |
 | [Lua](https://www.lua.org/) | MIT | Preserve copyright notice |

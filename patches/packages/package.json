@@ -12,7 +12,7 @@
     "email": "koen@kdvelectronics.eu",
     "github": "koendv"
   },
-  "license": "MIT",
+  "license": "GPL-3.0",
   "repository": "https://github.com/koendv/blackmagic-rtthread",
   "homepage": "https://github.com/koendv/blackmagic-rtthread#README.md",
   "doc": "https://black-magic.org/",

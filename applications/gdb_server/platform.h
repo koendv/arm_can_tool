@@ -43,7 +43,7 @@ void gdb_halt_target(void);
  Higher speeds are possible writing to registers directly.
 
  TODO: writes to target by gpio register access.
- ? optimize writing to target using dma to gpio. (ST AN4666, Artery AN0123)
+ ? optimize writing to target using dma to gpio. (ST AN4666, Artery AN0103)
  */
 
 #define BLACKMAGIC_DELAY_CONSTANT 14300

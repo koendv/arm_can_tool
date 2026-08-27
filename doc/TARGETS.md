@@ -70,6 +70,7 @@ To add a new target: See [New Target](DEVELOPER.md#adding-a-new-target).
 | GigaDevice GD32F4 | GD32F405, GD32F450, GD32F470 |
 | ArteryTek AT32F40x | AT32F403, AT32F403A/407, AT32F405, AT32F413, AT32F415, AT32F421, AT32F423, AT32F425 |
 | ArteryTek AT32F43x | AT32F435, AT32F437 |
+| STMicroelectronics STM32C5 | STM32C53x, STM32C55x, STM32C59x |
 | MindMotion MM32 (Star-MC1) | MM32F327, MM32F52 |
 | MindMotion MM32 (Cortex-M3) | MM32SPIN05, MM32SPIN27 |
 | MindMotion MM32L (Cortex-M0) | MM32L07x |
@@ -89,6 +90,7 @@ To add a new target: See [New Target](DEVELOPER.md#adding-a-new-target).
 | Renesas RZ | RZ/A1L, RZ/A1LC, RZ/A1 (covers A1LU / A1H) |
 | AMD / Xilinx Zynq-7000 | Zynq-7020 (Cortex-A9 cores) |
 | Texas Instruments Sitara AM335x | AM335x (Cortex-A8) — groundwork only, no flash/debug support |
+| Generic ARMv8-A | ARMv8-A core (e.g. Cortex-A53/A55/A72-class) |
 
 ---
 
@@ -97,9 +99,12 @@ To add a new target: See [New Target](DEVELOPER.md#adding-a-new-target).
 | Family / Series | Specific Targets |
 |---|---|
 | GigaDevice GD32VF | GD32VF103 |
+| GigaDevice/Nuclei GD32VW5 | GD32VW5 (Wi-Fi RISC-V SoC) |
+| WCH CH32V003 | CH32V003 |
+| WCH CH32V2/V3 | CH32V203, CH32V208, CH32V303, CH32V305, CH32V307 |
 | Raspberry Pi RP2350 (Hazard3) | RP2350 RISC-V core |
 | Generic RISC-V 32-bit | Any RISC-V debug v0.13 target via JTAG DTM or ADI DTM |
-| Generic RISC-V 64-bit | Scaffolding present, no concrete target |
+| Generic RISC-V 64-bit | Scaffolding only |
 
 ---
 
@@ -109,3 +114,5 @@ To add a new target: See [New Target](DEVELOPER.md#adding-a-new-target).
 |---|---|
 | ARM ADIv5 JTAG-DP | Generic ARM ADIv5 JTAG debug port |
 | Xilinx FPGA | XCVU440 and broad Xilinx FPGA family — JTAG chain traversal only, no debug |
+| Texas Instruments ICEPICK | JTAG router — enables TAPs behind an ICEPICK-C/D scan-chain controller |
+| Lattice ECP5 FPGA | SRAM/eFuse configuration programming over JTAG |

@@ -30,7 +30,7 @@ static bool startup_attach()
     bool scan_result = false;
     TRY(EXCEPTION_ALL)
     {
-        scan_result = adiv5_swd_scan(0);
+        scan_result = adiv5_swd_scan();
     }
     CATCH()
     {
