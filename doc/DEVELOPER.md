@@ -297,7 +297,7 @@ ARMv7-M (M3/M4/M7) and ARMv8-M (M23/M33/...) define DWT trace as implementation-
 
 `mon dwt status` prints an error message if DWT is absent.
 
-For a full PC trace, see [Orbuculum](https://github.com/orbcode/orbuculum)).
+For a full PC trace (ETM, Embedded Trace Macrocell), see [Orbuculum](https://github.com/orbcode/orbuculum).
 
 ---
 
@@ -305,9 +305,9 @@ For a full PC trace, see [Orbuculum](https://github.com/orbcode/orbuculum)).
 
 `monitor mtb` (`cortexm_mtb()` in `cortexm_mtb.c`) reads the CoreSight Micro Trace Buffer. Reference: ARM DDI 0486B.
 
-On attach, `adi.c` walks the Arm CoreSight ROM. If MTB is present, MTB base address is stored in `ap->mtb_base`. SRAM base is read from the MTB BASE register on first use and stored in `ap->mtb_sram`. `cortexm_mtb_fixup()` overrides both addresses for chips where the ROM table or BASE register is wrong (LPC84x).
+On attach, `adi.c` walks the Arm CoreSight ROM. If MTB is present, MTB base address is stored in `ap->mtb_base`. SRAM base is read from the MTB BASE register on first use and stored in `ap->mtb_sram`. `cortexm_mtb_fixup()` overrides `ap->mtb_base` and/or `ap->mtb_sram` for chips where the ROM table or BASE register is wrong (LPC84x).
 
-`status` and `dump` only read. `mon mtb size` stops tracing, writes all ones to register MTB POSITION to measure maximum buffer size (DDI 0486B, B.1), then restores POSITION and tracing. On restore failure tracing is left off.
+`monitor mtb status` and `monitor mtb dump` only read. `mon mtb size` writes: stops tracing, writes all ones to register MTB POSITION to measure maximum buffer size (DDI 0486B, B.1), then restores POSITION and tracing. On restore failure, tracing is left off.
 
 ---
 

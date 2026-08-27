@@ -8,7 +8,7 @@
 | Model | ARM CAN Tool |
 |-|-|
 | Hardware Version | V1.0 |
-| Firmware Version | V1.1 |
+| Firmware Version | V1.2 |
 
 - SWD/JTAG debug probe for ARM and RISC-V embedded systems
 - Electrically isolated CAN 2.0A/B interface

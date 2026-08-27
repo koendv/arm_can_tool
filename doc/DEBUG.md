@@ -389,8 +389,8 @@ First set up SWO, then set up DWT.
 | BAUDRATE | speed of the serial port |
 | decode [CHANNEL_NR ...] | ITM channels to show |
 | log | log individual PC trace packets (default)|
-| top <low_addr> <high_addr> <bucket_bits> <interval_seconds> | PC trace histogram, text format |
-| graph <low_addr> <high_addr> <bucket_bits> <interval_seconds> | PC trace histogram, ANSI terminal |
+| top <low\_addr> <high\_addr> <bucket\_bits> <interval\_seconds> | PC trace histogram, text format |
+| graph <low\_addr> <high\_addr> <bucket\_bits> <interval\_seconds> | PC trace histogram, ANSI terminal |
 | selftest | test SWO with known good packets |
 
 The SWO speed is a few megabit/s, and depends on the length of the wire.
@@ -637,9 +637,9 @@ Micro Trace Buffer (MTB) is a branch/exception trace, not a program counter trac
 
 The `mon mtb` command is available in gdb server mode, and only when attached to Cortex-M target.
 
-MTB is an optional component for Cortex-M0+, Cortex-M23, Cortex-M33 and STAR-MC1.
-
 Unlike DWT/SWO, MTB needs no SWO wire. MTB only uses the SWD/JTAG debug connection.
+
+MTB is an optional component for Cortex-M0+, Cortex-M23, Cortex-M33 and STAR-MC1.
 
 `mon mtb` does not switch MTB on. The target program allocates a trace buffer in ram and switches MTB on.
 
@@ -664,15 +664,15 @@ Output shows:
 - target has MTB
 - MTB registers are at `mtb base: 0x41006000`
 - MTB trace buffer is at or after `sram base: 0x20000000`
-- maximum MTB trace buffer is 32kbyte.
+- maximum MTB trace buffer is 32 kbyte.
 
 These data are necessary and sufficient to configure MTB. The target program then:
 
-1. Reserves a buffer of 2^n bytes, aligned to its own size, at or after `sram base:`. Typical size: 512 bytes to 2k.
-2. Writes buffer address minus "sram base:" to register MTB POSITION.
+1. Reserves a buffer of 2^n bytes, aligned to its own size, at or after `sram base`. Typical size: from 512 bytes to 2k.
+2. Writes buffer address minus "sram base" to register MTB POSITION.
 3. Writes buffer size and enable bit to register MTB MASTER.
 
-Target program [MTB.ino](tools/Arduino/MTB/MTB.ino) shows the pattern.
+Use the pattern in target program [MTB.ino](tools/Arduino/MTB/MTB.ino).
 
 ### monitor mtb
 
@@ -684,13 +684,15 @@ Target program [MTB.ino](tools/Arduino/MTB/MTB.ino) shows the pattern.
 | --- | --- |
 | status | print MTB registers, buffer address and size |
 | dump | print trace buffer in hex, oldest jump first |
-| size | print the largest buffer the MTB can address |
+| size | print the largest buffer MTB can address |
 
 `mon mtb status` and `mon mtb dump` are read-only.
 
 `mon mtb size` writes MTB registers, then restores the registers to the original value. Maximum size printed is maximum size MTB can address, not ram size.
 
-`mon mtb dump` prints one line per jump. First address is where the jump came from, second address is where the jump went to. Example:
+`mon mtb dump` prints the trace buffer, one line per jump.
+First hex number is the address the program jumped from. Second hex number is the address the program jumped to.
+Example:
 
 ```
 - 0x00000122 - 0x00000108
@@ -699,7 +701,7 @@ Target program [MTB.ino](tools/Arduino/MTB/MTB.ino) shows the pattern.
 | Flag | Meaning |
 | --- | --- |
 | `-` | none |
-| `A` | first address is an exception (entry, return, or debug-state PC update), not a program counter |
+| `A` | first address is an exception return address |
 | `S` | trace started or restarted at second address |
 
 If autostop is set, tracing stops when the trace buffer reaches the watermark.
@@ -709,7 +711,7 @@ If autostop is not set and autohalt is not set, watermark is stored but unused, 
 ### gdb mtb.py script
 
 The gdb script `tools/mtb/mtb.py` adds an `mtb` command to gdb.
-Where `mon mtb dump` prints addresses in hex, `mtb` prints function name, file and line number. Repeated jumps are printed once, with a count. Script in python requires `arm-none-eabi-gdb-py3`.
+Where `mon mtb dump` prints addresses in hex, `mtb` prints function name, file and line number. Repeated jumps are printed once, with a count. Script `mtb.py` requires gdb with python3 support `arm-none-eabi-gdb-py3`.
 
 ```
 (gdb) set pagination off
@@ -751,7 +753,7 @@ Section .data, range 0x2ec4 -- 0x2f54: matched.
 
 **Verification:** gdb outputs: "Section ... matched", firmware flashed ok.
 
-Break at the deepest level of the recursion:
+Breakpoint at the deepest level of the recursion:
 
 ```
 (gdb) break hanoi if n == 0
