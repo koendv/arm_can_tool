@@ -112,6 +112,8 @@ sudo dfu-util -a 0 -d 2e3c:df11 \
 
 ## Software Architecture
 
+> Build one layer on top of existing, known-good software. Focus on improvements and useful new features.
+
 ![Software block diagram](pictures/software_block.svg)
 
 *Software block diagram.*
@@ -242,7 +244,7 @@ I/SWD: ramfunc 3700 byte
 
 One GPIO register write updates all 8 pins.
 
-This pinout also allows SWD bit-banging using DMA to GPIO.
+This pinout also allows SWD/JTAG bit-banging using timer-triggered DMA to GPIO ([ST AN4666](https://www.st.com/resource/en/application_note/an4666-parallel-synchronous-transmission-using-gpio-and-dma-stmicroelectronics.pdf), [Artery AN0103](https://www.arterytek.com/download/APNOTE/AN0103_AT32F435_437_DMA_Application_Note_EN_V2.0.1.pdf)).
 
 ---
 
@@ -279,6 +281,8 @@ SWO decoding and bit-banged GPIO are the two subsystems where the rt-thread abst
 
 ## DWT Trace
 
+`swo_dwt_itm_decode.c` replaces `swo_itm_decode.c`: command-line compatible with the original `mon swo`, but adding `top` and `graph`.
+
 `monitor dwt` (`cortexm_dwt()` in `cortexm.c`) configures target `DWT_CTRL` and `ITM_TCR` to generate DWT packets.
 
 `monitor swo` (`swo_itm_decode()` in `swo_dwt_itm_decode.c`) decodes both ITM software packets and DWT hardware packets (PC sample, exception trace, data trace, local and global timestamp) from the SWO byte stream, using the DMA path described above.
@@ -308,6 +312,8 @@ For a full PC trace (ETM, Embedded Trace Macrocell), see [Orbuculum](https://git
 On attach, `adi.c` walks the Arm CoreSight ROM. If MTB is present, MTB base address is stored in `ap->mtb_base`. SRAM base is read from the MTB BASE register on first use and stored in `ap->mtb_sram`. `cortexm_mtb_fixup()` overrides `ap->mtb_base` and/or `ap->mtb_sram` for chips where the ROM table or BASE register is wrong (LPC84x).
 
 `monitor mtb status` and `monitor mtb dump` only read. `mon mtb size` writes: stops tracing, writes all ones to register MTB POSITION to measure maximum buffer size (DDI 0486B, B.1), then restores POSITION and tracing. On restore failure, tracing is left off.
+
+MTB could be extended to sample the trace buffer while the target is running, and provide a display of most active addresses, similar to "mon swo top".
 
 ---
 
