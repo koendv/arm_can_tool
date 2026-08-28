@@ -1,5 +1,6 @@
 #include "general.h"
 #include "platform.h"
+#include "pins.h"
 #include "settings.h"
 #include "serials.h"
 #include <rtthread.h>

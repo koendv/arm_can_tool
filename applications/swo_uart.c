@@ -4,6 +4,7 @@
 #define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
+#include "board.h"
 #include "general.h"
 #include "platform.h"
 #include "swo.h"

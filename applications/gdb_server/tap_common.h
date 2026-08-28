@@ -52,8 +52,7 @@
 #include <at32f402_405_gpio.h>
 #include <stdint.h>
 
-#define SYSTEM_CORE_CLOCK (216000000)
-#define SWD_DEFAULT_CLOCK (2000000)
+#include "platform.h"
 
 /* gcc attributes */
 //#define OPTIMIZE  __attribute__((optimize("Os")))
@@ -82,23 +81,23 @@
 
 #define SWD_PORT GPIOA
 
-#define SWCLK_DIR_PIN 7
-#define SWDIO_DIR_PIN 6
-#define SWCLK_PIN     5
-#define SWDIO_PIN     4
-#define TDO_PIN       3
-#define TDI_PIN       2
-#define TDO_DIR_PIN   1
-#define TDI_DIR_PIN   0
+#define TAP_SWCLK_DIR_PIN 7
+#define TAP_SWDIO_DIR_PIN 6
+#define TAP_SWCLK_PIN     5
+#define TAP_SWDIO_PIN     4
+#define TAP_TDO_PIN       3
+#define TAP_TDI_PIN       2
+#define TAP_TDO_DIR_PIN   1
+#define TAP_TDI_DIR_PIN   0
 
-#define SWCLK_DIR_MASK BIT(SWCLK_DIR_PIN)
-#define SWDIO_DIR_MASK BIT(SWDIO_DIR_PIN)
-#define SWCLK_MASK     BIT(SWCLK_PIN)
-#define SWDIO_MASK     BIT(SWDIO_PIN)
-#define TDO_MASK       BIT(TDO_PIN)
-#define TDI_MASK       BIT(TDI_PIN)
-#define TDO_DIR_MASK   BIT(TDO_DIR_PIN)
-#define TDI_DIR_MASK   BIT(TDI_DIR_PIN)
+#define TAP_SWCLK_DIR_MASK BIT(TAP_SWCLK_DIR_PIN)
+#define TAP_SWDIO_DIR_MASK BIT(TAP_SWDIO_DIR_PIN)
+#define TAP_SWCLK_MASK     BIT(TAP_SWCLK_PIN)
+#define TAP_SWDIO_MASK     BIT(TAP_SWDIO_PIN)
+#define TAP_TDO_MASK       BIT(TAP_TDO_PIN)
+#define TAP_TDI_MASK       BIT(TAP_TDI_PIN)
+#define TAP_TDO_DIR_MASK   BIT(TAP_TDO_DIR_PIN)
+#define TAP_TDI_DIR_MASK   BIT(TAP_TDI_DIR_PIN)
 
 /* DWT delay */
 extern uint32_t target_clk_divider;

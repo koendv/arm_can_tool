@@ -7,7 +7,7 @@
 
 #include "tap_common.h"
 #include "swd.h"
-#include "swdp_tap.h"
+#include "tap_swdp.h"
 
 typedef enum swdio_status_e
 {

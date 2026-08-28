@@ -2,6 +2,7 @@
 #define PINS_H
 
 #include <rtthread.h>
+#include <drv_gpio.h>
 
 #define DISP_CS_PIN          GET_PIN(D, 2)
 #define DISP_DC_PIN          GET_PIN(F, 7)

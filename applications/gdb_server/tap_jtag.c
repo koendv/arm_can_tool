@@ -7,7 +7,7 @@
 
 #include "tap_common.h"
 
-#include "jtag_tap.h"
+#include "tap_jtag.h"
 #include "adiv5.h"
 
 jtag_proc_s jtag_proc;

@@ -9,14 +9,13 @@
 
 #include <rtthread.h>
 #include <rtdevice.h>
-#include <drv_gpio.h>
-#include "pins.h"
 
 extern bool running_status;
 
 #define PLATFORM_IDENT "AT32F405 "
 
 #define SYSTEM_CORE_CLOCK 216000000
+#define SWD_DEFAULT_CLOCK (2000000)
 
 /* request halt running target */
 void gdb_halt_target(void);

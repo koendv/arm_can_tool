@@ -1,7 +1,9 @@
 #include <rtthread.h>
 #include <rtconfig.h>
 #include <stdarg.h>
+#include <board.h>
 #include "platform.h"
+#include "pins.h"
 #include "serials.h"
 #include "settings.h"
 #include "logger.h"
