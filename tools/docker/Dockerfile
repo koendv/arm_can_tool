@@ -23,6 +23,8 @@ WORKDIR ${DEST_DIR}
 
 RUN apt-get update && apt-get upgrade -y
 
+RUN apt-get install -y apt-utils
+
 RUN apt-get install -y \
       vim git wget zip jq uuid-runtime build-essential xz-utils \
       python3 python-is-python3 python3-pip libncurses5-dev \
