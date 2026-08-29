@@ -11,6 +11,10 @@
 #   docker cp "$id":/output ./arm_can_tool_firmware
 #   docker rm "$id"
 #
+# Tested:
+# - amd64/ubuntu
+# - arm64/raspberry pi os (use ubuntu:latest)
+#
 
 FROM ubuntu:24.04 AS tools
 

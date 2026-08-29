@@ -81,6 +81,36 @@ scons: done building targets.
 
 ---
 
+## devcontainer
+
+An alternative to a native Linux install: build once, then bind-mount the source tree into the container for every edit-compile cycle. Runs as a non-root user matching the host UID/GID, so files created in the mounted tree stay owned by the host user.
+
+### docker build
+
+Once:
+
+```bash
+docker build --target build -t arm_can_tool-tools \
+  --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g) \
+  -f tools/docker/Dockerfile .
+```
+
+### docker run
+
+For every session:
+
+```bash
+docker run -it --rm \
+  -v ~/src/rt-thread:/work/rt-thread \
+  -e RTT_ROOT=/work/rt-thread \
+  -w /work/rt-thread/bsp/at32/arm_can_tool \
+  arm_can_tool-tools bash
+```
+
+Then `scons` inside. Build output is in the source tree on the host — no `docker cp` needed. `exit` to end the session; the container is removed (`--rm`), the host tree is untouched.
+
+---
+
 ## Firmware Installation
 
 For complete firmware installation and recovery procedures, see [INSTALL](INSTALL.md).
