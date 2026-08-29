@@ -21,11 +21,12 @@ To add a new target: See [New Target](DEVELOPER.md#adding-a-new-target).
 | STMicroelectronics STM32F2 | STM32F2 |
 | STMicroelectronics STM32F3 | STM32F3 |
 | STMicroelectronics STM32F4/F7 | STM32F40x, F42x, F47x, F446, F401C/E, F410, F411, F412, F413, F74x, F76x, F72x |
-| STMicroelectronics STM32G0 | STM32G03/4, G05/6, G07/8, G0B/C |
+| STMicroelectronics STM32G0/C0/U0 | STM32G03/4, G05/6, G07/8, G0B/C, C011, C031, C051, C071, C091/092, U031, U073/083 |
 | STMicroelectronics STM32H5 | STM32H5 |
 | STMicroelectronics STM32H7 | STM32H7 |
+| STMicroelectronics STM32H7RS | STM32H7R/S |
 | STMicroelectronics STM32L0/L1 | STM32L0, STM32L1 |
-| STMicroelectronics STM32L4/L5/G4/U5 | STM32L41x, L43x, L45x, L47x, L49x, L4Rx, L55, G43, G47, G49, U535/545, U575/585, U59x/5Ax, U5Fx/5Gx |
+| STMicroelectronics STM32L4/L5/G4/U3/U5 | STM32L41x, L43x, L45x, L47x, L49x, L4Rx, L55, G43, G47, G49, U3B5/3C5, U356/366, U375/385, U535/545, U575/585, U59x/5Ax, U5Fx/5Gx |
 | STMicroelectronics STM32WL/WB | STM32WLxx, STM32WBxx, WB35/55, WB1x |
 | STMicroelectronics STM32WB0 | STM32WB0 |
 | STMicroelectronics STM32MP15 (CM4 core) | STM32MP15 Cortex-M4 core |
@@ -100,8 +101,6 @@ To add a new target: See [New Target](DEVELOPER.md#adding-a-new-target).
 |---|---|
 | GigaDevice GD32VF | GD32VF103 |
 | GigaDevice/Nuclei GD32VW5 | GD32VW5 (Wi-Fi RISC-V SoC) |
-| WCH CH32V003 | CH32V003 |
-| WCH CH32V2/V3 | CH32V203, CH32V208, CH32V303, CH32V305, CH32V307 |
 | Raspberry Pi RP2350 (Hazard3) | RP2350 RISC-V core |
 | Generic RISC-V 32-bit | Any RISC-V debug v0.13 target via JTAG DTM or ADI DTM |
 | Generic RISC-V 64-bit | Scaffolding only |

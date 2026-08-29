@@ -729,6 +729,8 @@ more packages/blackmagic-latest/src/target/* > ~/Downloads/bmp_targets.txt
 3. Review AI output. Confirm flagged removals and partial support notes.
 4. Replace TARGETS.md with reviewed output.
 
+CH32V003 and CH32V103/203/208/303/305/307 use a proprietary WCH debug protocol (RVSWD/SDI), not SWD or JTAG. [PR #2172](https://codeberg.org/blackmagic-debug/blackmagic/pulls/2172) requires more work before these targets can be added.
+
 ---
 
 ## Adding a New Target
