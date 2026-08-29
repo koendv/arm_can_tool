@@ -26,8 +26,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="0.33541667"
-     inkscape:cx="799.0062"
-     inkscape:cy="1205.9627"
+     inkscape:cx="801.98757"
+     inkscape:cy="1208.9441"
      inkscape:window-width="1854"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -145,18 +145,7 @@
   ════════════════════════════════════════════════════ --><!-- Optional edition note — small, tracked small caps --><!-- ═══════════════════════════════════════════════════
        BOTTOM SECTION  (y: ~2200 – 2304)
        LaTeX title page: publisher / institution block
-  ════════════════════════════════════════════════════ --><!-- Version --><text
-     x="800"
-     y="2252"
-     font-family="Inter, 'Noto Sans', sans-serif"
-     font-size="32px"
-     font-weight="400"
-     letter-spacing="2"
-     fill="#888888"
-     text-anchor="middle"
-     dominant-baseline="alphabetic"
-     id="text27"
-     style="fill:#000000;fill-opacity:1">HW: 1.0 / FW: 1.0</text><!-- Footer text: interface list — tracked, small --><text
+  ════════════════════════════════════════════════════ --><!-- Version --><!-- Footer text: interface list — tracked, small --><text
      x="800"
      y="2302"
      font-family="Inter, 'Noto Sans', sans-serif"
