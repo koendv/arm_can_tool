@@ -1,8 +1,14 @@
 # Changelog
 
+## V1.3 — ongoing
+
+- New: Black Magic Debug updated to v2.1.0
+- New: GDB NoAckMode advertised by default
+- Changed: Docker build runs as non-root user
+
 ## V1.2 — 2026-08-26
 
-- New: ARM MTB (Micro Trace Buffer) instruction trace for Cortex-M0+ and Cortex-M23 (`mon mtb`, `tools/mtb/mtb.py`)
+- New: ARM MTB (Micro Trace Buffer) instruction trace (`mon mtb`, `tools/mtb/mtb.py`)
 
 ## V1.1 — 2026-08-08
 
