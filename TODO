@@ -4,37 +4,10 @@ Before release:
 
 After release:
 - feature freeze
-- save memory: unify ulog to file and logger.c
-- save memory: unify usb_event.c and serial_event
 
 New features:
-- update black magic debug?
 - lua: add sys.timer() call to sys library, add timer event to event loop.
 - doc: add example of external trigger: breakpoint on overcurrent with ina228 module.
 - doc: add Lua example of script that watches serial port data for a keyword. When the keyword is seen, reads a target variable over SWD, and clears target variable back to zero — all without requiring the target to halt.
 - ui: add screen with rtt/swo/serial/cdc0 output (careful: maintain low cpu usage, even if much output)
-
-New targets:
-if update black magic debug:
-
-STMicroelectronics (Cortex-M)
-- STM32C0 — C011, C031, C051, C071, C09x — in `stm32g0.c`
-- STM32C5 — C53x, C55x, C59x — in `stm32h5.c`
-- STM32H7R/S — H7Rx/H7Sx — new `stm32h7rs.c`
-- STM32L1 — now a distinct probe covering all category variants (1–6) — in `stm32l0.c`
-- STM32U0 — U031, U0x3 — in `stm32g0.c`
-- STM32U3 — U3B5/3C5, U356/366, U375/385 — in `stm32l4.c`
-
-WCH (RISC-V)
-- CH32V003 — QingKe V2 core — new `ch32vx.c`
-- CH32Vx — CH32V303, V305, V307 — new `ch32vx.c`
-
-GigaDevice (RISC-V)
-- GD32VW5 — Nuclei Bumblebee core — in `stm32_common.c`
-
-ARM Cortex-A/R
-- ARM Cortex-A55 (ARMv8-A) — generic A55 via CoreSight component LUT — new `cortexa_armv8.c`
-
-JTAG
-- Lattice ECP5 FPGA — LFE5U/UM/UM5G (12/25/45/85 density) with actual flash/SRAM programming — new `lattice_ecp5.c`
 
