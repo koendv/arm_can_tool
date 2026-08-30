@@ -20,35 +20,6 @@ extern bool running_status;
 /* request halt running target */
 void gdb_halt_target(void);
 
-/*
- The SWD and JTAG frequency is controlled by a delay loop.
- The relation between frequency and number of delay loop iterations is determined by BLACKMAGIC_DELAY_CONSTANT and BLACKMAGIC_FASTCLOCK.
-
- BLACKMAGIC_DELAY_CONSTANT is the number of delay loop iterations at which SWCLK frequency is 1 kHz.
- BLACKMAGIC_DELAY_CONSTANT can be determined by executing the "clock_test NUMBER" shell command with varying parameter value and measuring the frequency on the SWCLK pin.
-
- BLACKMAGIC_FASTCLOCK is the frequency in Hz produced on the SWCLK pin when running the "clock_test 1" shell command.
- For a given frequency, the number of iterations is obtained by interpolation between (1, BLACKMAGIC_FASTCLOCK) and (BLACKMAGIC_DELAY_CONSTANT, 1000).
- If the frequency is higher than BLACKMAGIC_FASTCLOCK, the number of loops is 0.
-
- You can also measure maximum achievable frequency by running the "clock_test 0" shell command.
-
- On at32f435:
- clock_test 0 produces 1.02 MHz
- clock_test 1 produces 910 kHz
- clock_test 14300 produces 1 kHz
-
- These are the speeds when using rt_pin_write().
- Higher speeds are possible writing to registers directly.
-
- TODO: writes to target by gpio register access.
- ? optimize writing to target using dma to gpio. (ST AN4666, Artery AN0103)
- */
-
-#define BLACKMAGIC_DELAY_CONSTANT 14300
-#define BLACKMAGIC_FASTCLOCK      910000
-
-#if 1
 /* aux serial port - connect to target console */
 #define AUX_UART          "uart2"
 #define AUX_DEFAULT_SPEED 115200U
@@ -59,22 +30,14 @@ void gdb_halt_target(void);
 #define AUX1_DEFAULT_SPEED 115200U
 #define AUX1_RX_BUFSIZE    BSP_UART3_RX_BUFSIZE
 
-/* aux2 serial port - receive only */
-#define AUX2_UART          "uart7"
-#define AUX2_DEFAULT_SPEED 115200U
-#define AUX2_RX_BUFSIZE    BSP_UART7_RX_BUFSIZE
-#endif
+/* aux2 serial port - uart7, receive only, used for swo */
 
-#if 1
 /* rtt input and output via usb cdc1 */
 #define RTT_UP_BUF_SIZE   (2048U + 8U)
 #define RTT_DOWN_BUF_SIZE 256U
-#endif
 
-#if 1
 #define PLATFORM_HAS_TRACESWO
 #define SWO_ENCODING 2
-#endif
 
 #define PLATFORM_HAS_POWER_SWITCH
 
@@ -141,7 +104,5 @@ void jtagtap_platform_init();
 
 void target_power_enable(bool on_off);
 void target_output_enable(bool on_off);
-
-void usb_serial_write(const char *buf, const size_t len);
 
 #endif
