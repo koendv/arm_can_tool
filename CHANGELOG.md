@@ -1,6 +1,6 @@
 # Changelog
 
-## V1.3 — ongoing
+## V1.3 — 2026-08-30
 
 - New: Black Magic Debug updated to v2.1.0
 - New: GDB NoAckMode advertised by default
