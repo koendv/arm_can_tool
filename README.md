@@ -30,6 +30,7 @@
 | Board has firmware, want to use it | [TUTORIAL](doc/TUTORIAL.md) |
 | Want to reproduce the board | [MANUFACTURING](doc/MANUFACTURING.md) |
 | Want to sell the board | [COMMERCIAL](doc/COMMERCIAL.md) |
+| Want to build or modify the firmware | [DEVELOPER](doc/DEVELOPER.md) |
 
 ---
 

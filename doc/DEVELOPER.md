@@ -26,7 +26,15 @@
 
 Github actions runs the same Dockerfile in CI.
 
-On a host that matches the linux used in the Dockerfile, the commands can be run directly instead of inside a container.
+On a host that matches the linux used in the Dockerfile, the commands can be run directly instead of inside a container. In order, the Dockerfile:
+
+- installs the linux packages listed in the `tools` stage, plus the `arm-none-eabi-gcc` xpack toolchain
+- clones `RT-Thread/env` and `RT-Thread/packages`
+- clones `RT-Thread/rt-thread` and sets `RTT_ROOT` to it
+- places the arm can tool repo at `$RTT_ROOT/bsp/at32/arm_can_tool`
+- patches rt-thread using `./tools/install_pkgs.sh`
+- compiles firmware to uf2 using `scons`
+- builds the uf2 bootloader from [koendv/at32f405-uf2boot](https://github.com/koendv/at32f405-uf2boot)
 
 To build:
 
