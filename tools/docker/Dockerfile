@@ -96,8 +96,6 @@ RUN ./tools/manifest.sh ../../.. /home/devuser/.env/packages/packages > MANIFEST
 
 RUN scons
 
-RUN ./tools/uf2conv/uf2conv.py -c -b 0x90000000 -f 0xf35c900d -o rtthread.uf2 rtthread.bin
-
 RUN ./tools/mkepub.sh
 
 RUN git clone https://github.com/koendv/at32f405-uf2boot /home/devuser/at32f405-uf2boot \
