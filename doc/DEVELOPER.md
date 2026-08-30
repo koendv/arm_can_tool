@@ -107,7 +107,7 @@ docker run -it --rm \
   arm_can_tool-tools bash
 ```
 
-Then `scons` inside. Build output is in the source tree on the host — no `docker cp` needed. `exit` to end the session; the container is removed (`--rm`), the host tree is untouched.
+Then `scons` inside. No `docker cp` needed, build output is in the mounted source tree on the host. `exit` to end the session; the container is removed (`--rm`), the host tree is untouched.
 
 ---
 
