@@ -230,3 +230,7 @@ The `canfilter` rt-thread shell command configures CAN bus filters when the rt-t
 Saving settings also saves the CAN bus filter.
 If canfilter is enabled in the CAN bus menu: saved filter is applied at boot for all modes where CAN bus is active: gdb server, cmsis-dap and Lua script.
 
+## Extending
+
+To add higher-level protocol decoding (e.g. J1939) on top of raw CAN frames, see [CAN Bus Receive Hook](DEVELOPER.md#can-bus-receive-hook).
+
