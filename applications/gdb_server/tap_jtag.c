@@ -170,10 +170,13 @@ void OPTIMIZE RAMFUNC jtagtap_tdi_seq(const bool final_tms, const uint8_t * cons
 
 void OPTIMIZE RAMFUNC jtagtap_cycle(const bool tms, const bool tdi, const size_t clock_cycles)
 {
+    if (clock_cycles == 0U)
+        return;
+
     INTERRUPTS_OFF();
     jtagtap_next_delay(tms, tdi);
 
-    for (size_t cycle = 0; cycle < clock_cycles; ++cycle)
+    for (size_t cycle = 0; cycle < clock_cycles - 1U; ++cycle)
     {
         TCK_HIGH();
         TCK_DELAY();
