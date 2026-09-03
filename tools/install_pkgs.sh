@@ -20,4 +20,5 @@ patch -p1 -d ../../../ <  patches/07_dev_soft_i2c.patch # less logging
 patch -p1 -d ../../../ <  patches/09-rt_usbd_serial.patch # needed
 patch -p1 -d ../../../ <  patches/12-tail.patch # faster
 patch -p1 -d ../../../ <  patches/14-dma.patch # no busy-wait
+patch -p1 -d ../../../ <  patches/15-sfud.patch
 #not truncated
