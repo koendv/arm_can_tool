@@ -282,8 +282,6 @@ I/SWD: ramfunc 3700 byte
 
 One GPIO register write updates all 8 pins.
 
-This pinout also allows SWD/JTAG bit-banging using timer-triggered DMA to GPIO ([ST AN4666](https://www.st.com/resource/en/application_note/an4666-parallel-synchronous-transmission-using-gpio-and-dma-stmicroelectronics.pdf), [Artery AN0103](https://www.arterytek.com/download/APNOTE/AN0103_AT32F435_437_DMA_Application_Note_EN_V2.0.1.pdf)).
-
 ---
 
 ## Flash Write Performance
@@ -302,6 +300,60 @@ These speeds are target-family dependent. The Black Magic Debug GDB server was o
 ### UF2 Bootloader Write Speed
 
 The UF2 bootloader programs the application firmware into QSPI flash at over 65 kB/s. No further optimisation planned.
+
+---
+
+## Speed Test
+
+> What gets measured gets managed
+
+The `speedtest` command measures SWD/JTAG throughput. `speedtest` backs up target RAM, times repeated writes of a test pattern, verifies the write, then restores the original contents.
+
+```
+(gdb) monitor speedtest
+16 times writing 1024 bytes to 0x20000000
+16384 bytes in 228 ms = 70.17 kB/s
+```
+
+### Command Syntax
+
+```
+(gdb) mon speedtest [COUNT [SIZE [ADDRESS]]]
+```
+
+| Argument | Description |
+|---|---|
+| COUNT | Number of writes. Default: 16 |
+| SIZE | Bytes per write, up to 4096. Default: 1024 |
+| ADDRESS | Target RAM address. Default: target RAM start |
+
+Example, non-default size:
+
+```
+(gdb) monitor speedtest 16 1023
+16 times writing 1023 bytes to 0x20000000
+16368 bytes in 896 ms = 17.83 kB/s
+```
+
+If the test takes too long, gdb complains the debugger is unresponsive. This can be ignored; the test continues.
+
+```
+(gdb) monitor speedtest 512 1024
+512 times writing 1024 bytes to 0x20000000
+Ignoring packet error, continuing...
+524288 bytes in 7323 ms = 69.91 kB/s
+```
+
+The measured speed may differ from the speed reported by GDB.
+
+```
+(gdb) load
+...
+Transfer rate: 13 KB/sec, 962 bytes/write.
+(gdb)
+```
+
+For target RAM, the dominant factor is the time needed to transfer the data over the debug interface. For target flash, the dominant factor is the time needed to erase and program the flash.
 
 ---
 
