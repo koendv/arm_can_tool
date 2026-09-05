@@ -210,7 +210,7 @@ void recall_settings(uint8_t preset)
     }
 
     /* restore dwt top settings */
-    if (!swo_itm_decode_set_top(&settings.dwt_top))
+    if (swo_itm_decode_set_top(&settings.dwt_top) != dwt_top_err_none)
         LOG_E("dwt top settings restore failed");
 
     /* restore memwatch settings */
