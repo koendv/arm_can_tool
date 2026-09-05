@@ -1,5 +1,9 @@
 # Changelog
 
+## V1.4
+
+- New: lua timer
+
 ## V1.3 — 2026-08-30
 
 - New: Black Magic Debug updated to v2.1.0

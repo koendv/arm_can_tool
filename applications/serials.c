@@ -48,6 +48,7 @@ const char * const event_name[EVENT_MAX] = {
     "EVENT_SERIAL2_RX",
     "EVENT_TARGET_HALT_REQUEST",
     "EVENT_TARGET_HALTED",
+    "EVENT_TIMER",
 };
 
 static uint8_t serial_rx_buf[HS_PACKET_SIZE - 1] __attribute__((aligned(4)));

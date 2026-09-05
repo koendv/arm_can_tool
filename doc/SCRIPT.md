@@ -75,6 +75,9 @@ What is not used does not get fixed.
 | `sys.serial1_receive(count)` | Read up to `count` bytes from serial1 |
 | `sys.serial0_write(string)` | Write a string to serial0 |
 | `sys.serial1_write(string)` | Write a string to serial1 |
+| `sys.timer_oneshot(delay_ms)` | Send `sys.EVENT_TIMER` once, after `delay_ms`. Returns true or (nil, error_string). |
+| `sys.timer_periodic(period_ms)` | Send `sys.EVENT_TIMER` every `period_ms`. Returns true or (nil, error_string). |
+| `sys.timer_cancel()` | Stop the timer. |
 
 **Event Constants**: The library also defines event flag constants (e.g., `sys.EVENT_CAN1_TX_DONE`, `sys.EVENT_CDC1_RX`, `sys.EVENT_TARGET_HALTED`) used with event handlers. See [events](LUA_REF.md#event-constants).
 
@@ -492,6 +495,100 @@ on
 ```
 
 ---
+
+### Demo: Heartbeat
+
+The demo consists of two pieces:
+
+- an autoexec script that starts a one-second periodic timer
+- an event handler that prints a line when the timer fires
+
+On PC:
+
+```
+$ more autoexec.lua heartbeat.lua
+::::::::::::::
+autoexec.lua
+::::::::::::::
+event_handler = {}
+event_handler[sys.EVENT_TIMER] = flash.load(1)
+
+heartbeat_count = 0
+sys.timer_periodic(1000)
+
+::::::::::::::
+heartbeat.lua
+::::::::::::::
+heartbeat_count = heartbeat_count + 1
+sys.write(string.format("heartbeat %d\r\n", heartbeat_count))
+$ luac32 -s -o autoexec.luac autoexec.lua
+$ luac32 -s -o heartbeat.luac heartbeat.lua
+```
+
+On arm can tool:
+
+- Mode -> Lua Script -> OK
+- Connect to /dev/ttyBmpLua:
+
+```
+lua> flash.eraseall()
+lua> flash.receive()
+Waiting for data
+```
+
+Disconnect from /dev/ttyBmpLua.
+On PC:
+
+```
+$ lfs_send.py -p /dev/ttyBmpLua -s 0 autoexec.luac -s 1 heartbeat.luac
+  autoexec.luac: 212 bytes, 1 sector(s), base sector 0, name 'autoexec'
+  heartbeat.luac: 175 bytes, 1 sector(s), base sector 1, name 'heartbeat'
+Sending 2 sector(s) via /dev/ttyBmpLua
+  sector   0 [cont] 2058 framed bytes ... ACK
+  sector   1 [last] 2059 framed bytes ... ACK
+Transfer complete.
+```
+
+- Connect to /dev/ttyBmpLua:
+
+```
+lua> flash.list()
+0x00    212  autoexec
+0x01    175  heartbeat
+62/64 free
+```
+
+On arm can tool:
+
+- Startup → lua autoexec
+- Settings → Store
+- reboot
+
+Connect to /dev/ttyBmpUser:
+
+```
+heartbeat 1
+heartbeat 2
+heartbeat 3
+heartbeat 4
+heartbeat 5
+...
+```
+**Verification:** prints one line per second.
+
+Connect to /dev/ttyBmpLua:
+
+```
+lua> sys.timer_periodic(2000)
+```
+
+**Verification:** prints one line per two seconds. The timer is reconfigured, the event handler is unchanged.
+
+```
+lua> sys.timer_cancel()
+```
+
+**Verification:** heartbeat lines stop.
 
 ## Standalone Logging
 

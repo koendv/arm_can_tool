@@ -169,6 +169,16 @@
 | `sys.serial0_write(s)` | *(nothing)* | Write string to serial0 |
 | `sys.serial1_write(s)` | *(nothing)* | Write string to serial1 |
 
+### Timer
+
+Use the timer to avoid busy waiting.
+
+| Function | Returns | Description |
+|---|---|---|
+| `sys.timer_oneshot(delay_ms)` | `true, err` | Send `EVENT_TIMER` once, after `delay_ms` |
+| `sys.timer_periodic(period_ms)` | `true, err` | Send `EVENT_TIMER` every `period_ms` |
+| `sys.timer_cancel()` | *(nothing)* | Stop timer |
+
 ### Event Constants
 
 | Constant | Description |
@@ -191,3 +201,4 @@
 | `EVENT_SERIAL2_RX` | UART2 data received |
 | `EVENT_TARGET_HALT_REQUEST` | Debug target halt requested |
 | `EVENT_TARGET_HALTED` | Debug target halted |
+| `EVENT_TIMER` | Lua timer expired |

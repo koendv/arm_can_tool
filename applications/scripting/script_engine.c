@@ -171,7 +171,8 @@ static void lua_task(void *param)
                                 | EVENT_MASK_CAN1_RX0_INDIC
                                 | EVENT_MASK_CAN1_BUS_OFF
                                 | EVENT_MASK_CAN1_RX_OVERFLOW
-                                | EVENT_MASK_CAN1_TX_OVERFLOW,
+                                | EVENT_MASK_CAN1_TX_OVERFLOW
+                                | EVENT_MASK_TIMER,
                             RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,
                             poll_ticks,
                             &recv_set);

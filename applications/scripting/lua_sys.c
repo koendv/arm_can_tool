@@ -313,6 +313,85 @@ static int lua_sys_eeprom_read(lua_State *L)
     return 1;
 }
 
+/* timer */
+
+static rt_timer_t lua_timer = RT_NULL;
+
+static void lua_timer_expired(void *param)
+{
+    (void)param;
+    if (serial_event)
+        rt_event_send(serial_event, EVENT_MASK_TIMER);
+}
+
+static rt_err_t lua_timer_arm(uint32_t period_ms, uint8_t flag)
+{
+    rt_tick_t period_tick = rt_tick_from_millisecond((rt_int32_t)period_ms);
+
+    if (period_tick == (rt_tick_t)RT_WAITING_FOREVER) /* period_ms too large */
+        return RT_ERROR;
+
+    if (lua_timer == RT_NULL) /* create on first use */
+    {
+        lua_timer = rt_timer_create("lua",
+                                    lua_timer_expired,
+                                    RT_NULL,
+                                    period_tick,
+                                    flag | RT_TIMER_FLAG_SOFT_TIMER);
+        if (lua_timer == RT_NULL)
+            return RT_ERROR;
+    }
+    else
+    {
+        rt_timer_control(lua_timer, RT_TIMER_CTRL_SET_TIME, &period_tick);
+        rt_timer_control(lua_timer,
+                         (flag & RT_TIMER_FLAG_PERIODIC) ? RT_TIMER_CTRL_SET_PERIODIC : RT_TIMER_CTRL_SET_ONESHOT,
+                         RT_NULL);
+    }
+
+    rt_timer_start(lua_timer);
+    return RT_EOK;
+}
+
+/* sys.timer_oneshot(delay_ms) - fire EVENT_TIMER once, after delay_ms */
+static int lua_timer_oneshot(lua_State *L)
+{
+    lua_Integer delay_ms = luaL_checkinteger(L, 1);
+    if (delay_ms <= 0)
+        return push_error(L, "invalid delay");
+
+    rt_err_t err = lua_timer_arm((uint32_t)delay_ms, RT_TIMER_FLAG_ONE_SHOT);
+    if (err != RT_EOK)
+        return push_error(L, "timer fail");
+
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
+/* sys.timer_periodic(period_ms) - fire EVENT_TIMER every period_ms */
+static int lua_timer_periodic(lua_State *L)
+{
+    lua_Integer period_ms = luaL_checkinteger(L, 1);
+    if (period_ms <= 0)
+        return push_error(L, "invalid period");
+
+    rt_err_t err = lua_timer_arm((uint32_t)period_ms, RT_TIMER_FLAG_PERIODIC);
+    if (err != RT_EOK)
+        return push_error(L, "timer fail");
+
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
+/* sys.timer_cancel() - stop the timer. silent no-op if not running. */
+static int lua_timer_cancel(lua_State *L)
+{
+    (void)L;
+    if (lua_timer != RT_NULL)
+        rt_timer_stop(lua_timer);
+    return 0;
+}
+
 /* serial */
 
 static int lua_serial_receive(lua_State *L, rt_device_t dev)
@@ -380,6 +459,10 @@ static const rotable_Reg sys_lib[] = {
     /* eeprom */
     {             "eeprom_write", lua_sys_eeprom_write,                         0},
     {              "eeprom_read",  lua_sys_eeprom_read,                         0},
+    /* timer */
+    {            "timer_oneshot",    lua_timer_oneshot,                         0},
+    {           "timer_periodic",   lua_timer_periodic,                         0},
+    {             "timer_cancel",     lua_timer_cancel,                         0},
     /* serial */
     {          "serial0_receive",  lua_serial0_receive,                         0},
     {          "serial1_receive",  lua_serial1_receive,                         0},
@@ -404,6 +487,7 @@ static const rotable_Reg sys_lib[] = {
     {         "EVENT_SERIAL2_RX",                 NULL,          EVENT_SERIAL2_RX},
     {"EVENT_TARGET_HALT_REQUEST",                 NULL, EVENT_TARGET_HALT_REQUEST},
     {      "EVENT_TARGET_HALTED",                 NULL,       EVENT_TARGET_HALTED},
+    {              "EVENT_TIMER",                 NULL,               EVENT_TIMER},
     {                       NULL,                 NULL,                         0}
 };
 

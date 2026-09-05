@@ -26,6 +26,7 @@ typedef enum
     EVENT_SERIAL2_RX,          /*!< uart: serial 2 receive event */
     EVENT_TARGET_HALT_REQUEST, /*!< gdb: message to gdb server: halt target */
     EVENT_TARGET_HALTED,       /*!< gdb: message from gdb server: target halted */
+    EVENT_TIMER,               /*!< lua: timer expired */
     EVENT_MAX
 } event_id_t;
 
@@ -49,6 +50,7 @@ typedef enum
 #define EVENT_MASK_SERIAL2_RX          EVENT_MASK(EVENT_SERIAL2_RX)
 #define EVENT_MASK_TARGET_HALT_REQUEST EVENT_MASK(EVENT_TARGET_HALT_REQUEST)
 #define EVENT_MASK_TARGET_HALTED       EVENT_MASK(EVENT_TARGET_HALTED)
+#define EVENT_MASK_TIMER               EVENT_MASK(EVENT_TIMER)
 
 /* event_names: keep in sync with enum */
 extern const char * const event_name[EVENT_MAX];

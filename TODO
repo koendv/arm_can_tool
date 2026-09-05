@@ -6,7 +6,6 @@ After release:
 - feature freeze
 
 New features:
-- lua: add sys.timer() call to sys library, add timer event to event loop.
 - doc: add example of external trigger: breakpoint on overcurrent with ina228 module.
 - doc: add Lua example of script that watches serial port data for a keyword. When the keyword is seen, reads a target variable over SWD, and clears target variable back to zero — all without requiring the target to halt.
 - ui: add screen with rtt/swo/serial/cdc0 output (careful: maintain low cpu usage, even if much output)
