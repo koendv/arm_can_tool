@@ -1,0 +1,103 @@
+diff --git a/components/drivers/spi/sfud/inc/sfud_def.h b/components/drivers/spi/sfud/inc/sfud_def.h
+index c06f9b1295..e05c97d986 100644
+--- a/components/drivers/spi/sfud/inc/sfud_def.h
++++ b/components/drivers/spi/sfud/inc/sfud_def.h
+@@ -158,6 +158,10 @@ if (!(EXPR))                                                                   \
+ #define SFUD_CMD_RESET                                 0x99
+ #endif
+ 
++#ifndef SFUD_CMD_RELEASE_POWER_DOWN
++#define SFUD_CMD_RELEASE_POWER_DOWN                    0xAB
++#endif
++
+ #ifndef SFUD_CMD_ENTER_4B_ADDRESS_MODE
+ #define SFUD_CMD_ENTER_4B_ADDRESS_MODE                 0xB7
+ #endif
+diff --git a/components/drivers/spi/sfud/src/sfud.c b/components/drivers/spi/sfud/src/sfud.c
+index 2f920cf67a..b208492e3c 100644
+--- a/components/drivers/spi/sfud/src/sfud.c
++++ b/components/drivers/spi/sfud/src/sfud.c
+@@ -825,15 +825,29 @@ sfud_err sfud_erase_write(const sfud_flash *flash, uint32_t addr, size_t size, c
+ static sfud_err reset(const sfud_flash *flash) {
+     sfud_err result = SFUD_SUCCESS;
+     const sfud_spi *spi = &flash->spi;
++    uint8_t cmd;
+     uint8_t cmd_data[2];
+ 
+     SFUD_ASSERT(flash);
+ 
++    cmd = SFUD_CMD_RELEASE_POWER_DOWN;
++    result = spi->wr(spi, &cmd, 1, NULL, 0);
++    if (result != SFUD_SUCCESS) {
++        SFUD_INFO("Error: Flash device reset failed.");
++        return result;
++    }
++
++    /* W25Q128JV datasheet 8.2.37: check BUSY before reset */
++    result = wait_busy(flash);
++    if (result != SFUD_SUCCESS) {
++        SFUD_INFO("Error: Flash device reset failed.");
++        return result;
++    }
++
++    /* W25Q128JV datasheet 8.2.37 send 66h and 99h back to back, not even a status read in-between */
+     cmd_data[0] = SFUD_CMD_ENABLE_RESET;
+     result = spi->wr(spi, cmd_data, 1, NULL, 0);
+-    if (result == SFUD_SUCCESS) {
+-        result = wait_busy(flash);
+-    } else {
++    if (result != SFUD_SUCCESS) {
+         SFUD_INFO("Error: Flash device reset failed.");
+         return result;
+     }
+@@ -841,6 +855,9 @@ static sfud_err reset(const sfud_flash *flash) {
+     cmd_data[1] = SFUD_CMD_RESET;
+     result = spi->wr(spi, &cmd_data[1], 1, NULL, 0);
+ 
++    /* W25Q128JV datasheet 8.2.37 needs tRST ~= 30us to complete the reset. */
++    rt_thread_delay(10);
++
+     if (result == SFUD_SUCCESS) {
+         result = wait_busy(flash);
+     }
+@@ -887,6 +904,7 @@ static sfud_err read_jedec_id(sfud_flash *flash) {
+ static sfud_err set_write_enabled(const sfud_flash *flash, bool enabled) {
+     sfud_err result = SFUD_SUCCESS;
+     uint8_t cmd, register_status;
++    size_t retry_times = flash->retry.times;
+ 
+     SFUD_ASSERT(flash);
+ 
+@@ -897,19 +915,26 @@ static sfud_err set_write_enabled(const sfud_flash *flash, bool enabled) {
+     }
+ 
+     result = flash->spi.wr(&flash->spi, &cmd, 1, NULL, 0);
++    if (result != SFUD_SUCCESS) {
++        return result;
++    }
+ 
+-    if (result == SFUD_SUCCESS) {
++    /* wait for WEL */
++    while (true) {
+         result = sfud_read_status(flash, &register_status);
++        if (result == SFUD_SUCCESS && ((register_status & SFUD_STATUS_REGISTER_WEL) != 0) == enabled) {
++            break;
++        }
++        SFUD_RETRY_PROCESS(flash->retry.delay, retry_times, result);
+     }
+ 
+-    if (result == SFUD_SUCCESS) {
+-        if (enabled && (register_status & SFUD_STATUS_REGISTER_WEL) == 0) {
++    if (result != SFUD_SUCCESS || ((register_status & SFUD_STATUS_REGISTER_WEL) != 0) != enabled) {
++        if (enabled) {
+             SFUD_INFO("Error: Can't enable write status.");
+-            return SFUD_ERR_WRITE;
+-        } else if (!enabled && (register_status & SFUD_STATUS_REGISTER_WEL) != 0) {
++        } else {
+             SFUD_INFO("Error: Can't disable write status.");
+-            return SFUD_ERR_WRITE;
+         }
++        return SFUD_ERR_WRITE;
+     }
+ 
+     return result;
