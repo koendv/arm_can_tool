@@ -9,19 +9,6 @@
 #include "usb_device.h"
 #include "settings.h"
 
-/*
- for at32:
- patch rt-thread/components/drivers/usb/cherryusb/port/dwc2/usb_dc_dwc2.c:
-
- #ifdef SOC_FAMILY_AT32
- #define SystemCoreClock system_core_clock
- extern unsigned int system_core_clock;
- #else
- extern uint32_t SystemCoreClock;
- #endif
-
- */
-
 void usb_dc_low_level_init(void)
 {
     at32_msp_usb_init(NULL);
