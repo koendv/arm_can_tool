@@ -2,7 +2,7 @@
 
 |[![English](doc/pictures/front_en_small.jpg)](doc/pictures/front_en_big.jpg)|[![Chinese](doc/pictures/front_zh_small.jpg)](doc/pictures/front_zh_big.jpg)|
 |---|---|
-|English|Chinese|
+|`English`|`Chinese`|
 
 
 | Model | ARM CAN Tool |
