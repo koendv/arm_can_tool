@@ -56,7 +56,7 @@ Hardware design is CC0. Manufacture, modify, and sell without restriction.
 
 Bootloader is MIT, permissive. Preload bootloader.
 
-Firmware includes GPLv3 components. Do not preload firmware - shipping firmware preloaded triggers license obligations. See [LICENSE.md](LICENSE.md) for details.
+Firmware includes GPLv3 components. Do not preload firmware - shipping firmware preloaded triggers license obligations. See [LICENSE.md](../LICENSE.md) for details.
 
 ---
 

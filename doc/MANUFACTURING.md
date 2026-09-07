@@ -102,7 +102,7 @@ For full electrical comparison, see [HARDWARE.md#can-bus-transceiver](HARDWARE.m
 | Size | 1.5 inch, 128×128 pixels, monochrome |
 | Interface | SPI |
 | Connector | Plug-in FPC, 12 pins, 0.5 mm pitch, top connection |
-| Datasheet | [ZJY150-2828KSWKG03.pdf](Hardware/V1.0/6_DOC/datasheets/ZJY150-2828KSWKG03.pdf) |
+| Datasheet | [ZJY150-2828KSWKG03.pdf](../Hardware/V1.0/6_DOC/datasheets/ZJY150-2828KSWKG03.pdf) |
 
 ⚠️ **Warning — two variants exist with incompatible connectors.** Order only the 12-pin plug-in FPC variant (插接式裸屏 排针默认不焊接推荐). The 25-pin soldering FPC variant is not compatible with this PCB.
 

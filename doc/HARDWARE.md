@@ -209,7 +209,7 @@ The CAN bus connector is 6-pin GH1.25. An adapter cable is required to connect t
 | [LCSC custom cables](https://www.lcsc.com/customcables) | Suitable for production quantities. |
 | AliExpress "GH1.25 Connectors and Pre-Crimped Silicone Cables" | Suitable for individual users. |
 
-Wiring diagram: [canbus_cable.pdf](canbus_cable.pdf)
+Wiring diagram: [canbus_cable.pdf](pictures/canbus_cable.pdf)
 
 **I2C Connector.** May be used as two independent I2C buses, or as one I2C bus (I2C1) with two GPIO pins (PC0, PC1), e.g. as I2C ALERT and RESET inputs.
 

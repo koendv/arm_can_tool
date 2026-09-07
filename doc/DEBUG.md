@@ -672,7 +672,7 @@ These data are necessary and sufficient to configure MTB. The target program the
 2. Writes buffer address minus "sram base" to register MTB POSITION.
 3. Writes buffer size and enable bit to register MTB MASTER.
 
-Use the pattern in target program [MTB.ino](tools/Arduino/MTB/MTB.ino).
+Use the pattern in target program [MTB.ino](../tools/Arduino/MTB/MTB.ino).
 
 ### monitor mtb
 

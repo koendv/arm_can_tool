@@ -107,16 +107,34 @@ local function is_image(path)
   return ext and IMAGE_EXTS[ext:lower()] or false
 end
 
+-- Collapse "." and ".." segments out of a relative path, e.g.
+-- "doc/../tools/foo.ino" -> "tools/foo.ino".  Links written relative to a
+-- doc/ source file (correct for GitHub browsing) resolve, via the "doc"
+-- resource-path entry, to a repo-root-relative path with a literal "..";
+-- normalizing keeps the URLs generated for the epub clean.
+local function normalize_path(path)
+  local parts = {}
+  for seg in path:gmatch("[^/]+") do
+    if seg == ".." and #parts > 0 and parts[#parts] ~= ".." then
+      table.remove(parts)
+    elseif seg ~= "." then
+      parts[#parts + 1] = seg
+    end
+  end
+  return table.concat(parts, "/")
+end
+
 -- Search for `path` in each resource-path directory in order.
 -- Returns the repo-relative path (dir/path) of the first match,
 -- or nil if not found anywhere.
 local function find_asset(path)
   for _, dir in ipairs(PANDOC_STATE.resource_path) do
     local full = (dir == "." or dir == "") and path or (dir .. "/" .. path)
-    local f = io.open(full, "r")
+    local norm = normalize_path(full)
+    local f = io.open(norm, "r")
     if f then
       f:close()
-      return full
+      return norm
     end
   end
   return nil
