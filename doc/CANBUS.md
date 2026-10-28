@@ -159,6 +159,7 @@ $ canfilter [options] [IDs and ranges]
 | `-o MODE` | `--output MODE` | Set output mode: `auto`, `bxcan_f0`, `bxcan_f4`, `fdcan_g0`, `fdcan_h7` |
 | `-a` | `--allow-all` | Allow all packets |
 | `-v` | `--verbose` | Enable verbose output (repeat up to three times) |
+| `-d` | `--dry-run` | Do not program hardware; just print filter configuration |
 | `-u VID:PID[@SERIAL]` | `--usb VID:PID[@SERIAL]` | USB vendor ID, product ID, and optional serial number |
 | `-h` | `--help` | Show help |
 

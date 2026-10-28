@@ -30,7 +30,7 @@ Verification: All active output channels are recorded to the SD card.
 
 rt-thread log rotates to `rtthread.log.1` when maximum size (ULOG_FILE_SIZE, 1 Mbyte) is reached.
 
-Debug log is changes to a new file when maximum size (LOG_SIZE_MAX, 4 MByte) is reached.
+Debug log changes to a new file when maximum size (LOG_SIZE_MAX, 4 MByte) is reached.
 
 ---
 

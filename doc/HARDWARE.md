@@ -535,7 +535,7 @@ Menu layouts would need to be reviewed and adapted for the additional space.
 
 **Hardware change required:** The SH1108 uses a 31-pin, 0.3 mm pitch FPC connector.
 
-### Alternative LCD: SH7789
+### Alternative LCD: ST7789
 
 An alternative is using cheap, easily sourced, commodity displays, as used in smartwatches. Example:
 

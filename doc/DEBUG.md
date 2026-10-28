@@ -623,9 +623,9 @@ This display contains:
 - OVERFLOW: some packets have been dropped because SWO was too slow.
 - console output (serial: ) and SWO output (swo: )
 
-The `mon dwt` command is convenient, but not necessary: a target can also set it's own DWT register from code.
+The `mon dwt` command is convenient, but not necessary: a target can also set its own DWT register from code.
 
-`Settings->Save` also saves SWO settings.
+`Settings->Store` also saves SWO settings.
 If `Startup->swo` is configured, the SWO settings are restored at startup.
 Decoding SWO does not require an SWD connection.
 

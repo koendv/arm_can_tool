@@ -6,12 +6,12 @@
 2. BOM: `Hardware/V1.0/3_BOM/BOM_Board1_PCB1_2026-04-13.xlsx`
 3. Pick & Place: `Hardware/V1.0/3_BOM/PickAndPlace_PCB1_2026-04-13.xlsx`
 4. Enclosure STL: `Hardware/V1.0/5_3D/enclosure/`
-5. Firmware: `Hardware/V1.0/7_FW/
+5. Firmware: `Hardware/V1.0/7_FW/`
 
 ## Assembly Notes
 
 | component | note                                                   |
-+-----------+--------------------------------------------------------|
++-----------+--------------------------------------------------------+
 | BT1       | No solder paste on middle pad of battery connector BT1 |
 | OLED1     | DNS.                                                   |
 

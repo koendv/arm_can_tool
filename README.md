@@ -77,6 +77,26 @@ This documentation is published as a set of Markdown files, and as an epub.
 
 ---
 
+## Video
+
+[![Isolation test of CAN transceiver](https://img.youtube.com/vi/gtetk6dEeOg/0.jpg)](https://www.youtube.com/watch?v=gtetk6dEeOg)
+
+The video shows testing the isolation of the CAN bus transceiver.
+
+Used:
+1. Fluke 1507 isolation tester
+2. Reference resistance, 1 GΩ, 5 W
+3. ARM CAN Tool
+
+- using Fluke 1507, measure resistance of 1 GΩ resistor: 1000 MΩ at 1050V
+- using Fluke 1507, measure isolation of CAN bus transceiver between probe ground and CAN bus ground: > 10.0 GΩ at 1051V (meter over-range)
+- connect "ARM CAN Tool" to usb: boot, browse menus.
+
+CAN bus transceiver is CA-IS2062VW.
+Isolation is functional, not a certified safety barrier.
+
+---
+
 ## License
 
 [CC0](https://creativecommons.org/publicdomain/zero/1.0/). Use, modify, and sell without restriction.
