@@ -535,6 +535,15 @@ Menu layouts would need to be reviewed and adapted for the additional space.
 
 **Hardware change required:** The SH1108 uses a 31-pin, 0.3 mm pitch FPC connector.
 
+### Alternative LCD: SH7789
+
+An alternative is using cheap, easily sourced, commodity displays, as used in smartwatches. Example:
+
+- replacing the 128x128 SH1107 OLED with a 240x240 ST7789 LCD.
+- replacing the 12 pixel font with a 24 pixel font
+- [documentation](https://github.com/koendv/micropython-u8g2)
+- [u8g2 ST7789 driver](https://github.com/koendv/u8g2/blob/clut/csrc/u8x8_d_st7789.c)
+
 ---
 
 ## EMI Considerations
